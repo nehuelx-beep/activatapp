@@ -1,0 +1,536 @@
+import React, { useState, useEffect } from 'react';
+import { User, Dumbbell, Send, FileText, LogOut, Users, CheckCircle, AlertCircle, X } from 'lucide-react';
+
+const GymApp = () => {
+  const [currentUser, setCurrentUser] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [workouts, setWorkouts] = useState([]);
+  const [view, setView] = useState('login');
+  const [formData, setFormData] = useState({ email: '', password: '', name: '' });
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [workoutData, setWorkoutData] = useState({ title: '', description: '', file: null });
+  const [isLoading, setIsLoading] = useState(true);
+  const [notification, setNotification] = useState(null);
+
+  useEffect(() => {
+    initializeApp();
+  }, []);
+
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => setNotification(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
+
+  const showNotification = (message, type = 'success') => {
+    setNotification({ message, type });
+  };
+
+  const initializeApp = async () => {
+    try {
+      const usersData = localStorage.getItem('gym_users');
+      const workoutsData = localStorage.getItem('gym_workouts');
+      
+      if (usersData) {
+        setUsers(JSON.parse(usersData));
+      } else {
+        const adminUser = {
+          id: '1',
+          email: 'ggcaparra38@gmail.com',
+          password: 'templerenovatio',
+          name: 'Administrador',
+          role: 'admin'
+        };
+        setUsers([adminUser]);
+        localStorage.setItem('gym_users', JSON.stringify([adminUser]));
+      }
+      
+      if (workoutsData) {
+        setWorkouts(JSON.parse(workoutsData));
+      } else {
+        setWorkouts([]);
+        localStorage.setItem('gym_workouts', JSON.stringify([]));
+      }
+    } catch (error) {
+      console.error('Error inicializando:', error);
+      const adminUser = {
+        id: '1',
+        email: 'ggcaparra38@gmail.com',
+        password: 'templerenovatio',
+        name: 'Administrador',
+        role: 'admin'
+      };
+      setUsers([adminUser]);
+      setWorkouts([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const saveUsers = async (newUsers) => {
+    try {
+      localStorage.setItem('gym_users', JSON.stringify(newUsers));
+      setUsers(newUsers);
+      return true;
+    } catch (error) {
+      console.error('Error guardando usuarios:', error);
+      showNotification('Error al guardar. Por favor intenta de nuevo.', 'error');
+      return false;
+    }
+  };
+
+  const saveWorkouts = async (newWorkouts) => {
+    try {
+      localStorage.setItem('gym_workouts', JSON.stringify(newWorkouts));
+      setWorkouts(newWorkouts);
+      return true;
+    } catch (error) {
+      console.error('Error guardando ejercicios:', error);
+      showNotification('Error al guardar. Por favor intenta de nuevo.', 'error');
+      return false;
+    }
+  };
+
+  const handleLogin = () => {
+    if (!formData.email || !formData.password) {
+      showNotification('Por favor completa todos los campos', 'error');
+      return;
+    }
+    
+    const user = users.find(u => u.email === formData.email && u.password === formData.password);
+    
+    if (user) {
+      setCurrentUser(user);
+      setView(user.role === 'admin' ? 'admin' : 'client');
+      setFormData({ email: '', password: '', name: '' });
+      showNotification(`¡Bienvenido ${user.name}!`, 'success');
+    } else {
+      showNotification('Credenciales incorrectas', 'error');
+    }
+  };
+
+  const handleRegister = async () => {
+    if (!formData.name || !formData.email || !formData.password) {
+      showNotification('Por favor completa todos los campos', 'error');
+      return;
+    }
+    
+    if (users.find(u => u.email === formData.email)) {
+      showNotification('Este email ya está registrado', 'error');
+      return;
+    }
+    
+    const newUser = {
+      id: Date.now().toString(),
+      email: formData.email,
+      password: formData.password,
+      name: formData.name,
+      role: 'client'
+    };
+    
+    const success = await saveUsers([...users, newUser]);
+    if (success) {
+      showNotification('¡Registro exitoso! Ahora puedes iniciar sesión', 'success');
+      setView('login');
+      setFormData({ email: '', password: '', name: '' });
+    }
+  };
+
+  const handleSendWorkout = async () => {
+    if (!selectedClient) {
+      showNotification('Selecciona un cliente', 'error');
+      return;
+    }
+    if (!workoutData.title || !workoutData.description) {
+      showNotification('Por favor completa el título y la descripción', 'error');
+      return;
+    }
+
+    const newWorkout = {
+      id: Date.now().toString(),
+      clientId: selectedClient,
+      title: workoutData.title,
+      description: workoutData.description,
+      fileName: workoutData.file?.name || null,
+      date: new Date().toLocaleDateString('es-ES')
+    };
+
+    const success = await saveWorkouts([...workouts, newWorkout]);
+    if (success) {
+      setWorkoutData({ title: '', description: '', file: null });
+      setSelectedClient(null);
+      showNotification('¡Ejercicio enviado correctamente!', 'success');
+    }
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setView('login');
+    showNotification('Sesión cerrada', 'success');
+  };
+
+  const clients = users.filter(u => u.role === 'client');
+  const myWorkouts = workouts.filter(w => w.clientId === currentUser?.id);
+
+  const Notification = () => {
+    if (!notification) return null;
+
+    return (
+      <div className={`fixed top-4 right-4 ${notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 z-50 max-w-md`}>
+        {notification.type === 'success' ? <CheckCircle className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+        <span>{notification.message}</span>
+        <button onClick={() => setNotification(null)} className="ml-2">
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+        <div className="text-white text-xl">Cargando...</div>
+      </div>
+    );
+  }
+
+  if (view === 'login') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4">
+        <Notification />
+        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+          <div className="flex items-center justify-center mb-6">
+            <Dumbbell className="w-12 h-12 text-blue-600" />
+          </div>
+          <h1 className="text-3xl font-bold text-center mb-2">Activa-T</h1>
+          <p className="text-gray-600 text-center mb-6">Inicia sesión en tu cuenta</p>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="tu@email.com"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+              <input
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData({...formData, password: e.target.value})}
+                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="••••••••"
+              />
+            </div>
+            <button
+              onClick={handleLogin}
+              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+            >
+              Iniciar Sesión
+            </button>
+          </div>
+          
+          <div className="mt-4 text-center">
+            <button
+              onClick={() => {
+                setView('register');
+                setFormData({ email: '', password: '', name: '' });
+              }}
+              className="text-blue-600 hover:underline text-sm"
+            >
+              ¿No tienes cuenta? Regístrate aquí
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (view === 'register') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4">
+        <Notification />
+        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+          <div className="flex items-center justify-center mb-6">
+            <Dumbbell className="w-12 h-12 text-blue-600" />
+          </div>
+          <h1 className="text-3xl font-bold text-center mb-2">Registro</h1>
+          <p className="text-gray-600 text-center mb-6">Crea tu cuenta de cliente</p>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Tu nombre completo"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="tu@email.com"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+              <input
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData({...formData, password: e.target.value})}
+                onKeyPress={(e) => e.key === 'Enter' && handleRegister()}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="••••••••"
+              />
+            </div>
+            <button
+              onClick={handleRegister}
+              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+            >
+              Registrarse
+            </button>
+          </div>
+          
+          <div className="mt-4 text-center">
+            <button
+              onClick={() => {
+                setView('login');
+                setFormData({ email: '', password: '', name: '' });
+              }}
+              className="text-blue-600 hover:underline text-sm"
+            >
+              ¿Ya tienes cuenta? Inicia sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (view === 'admin') {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Notification />
+        <div className="bg-blue-600 text-white p-4 shadow-lg">
+          <div className="max-w-6xl mx-auto flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <Dumbbell className="w-8 h-8" />
+              <div>
+                <h1 className="text-xl font-bold">Panel de Administrador</h1>
+                <p className="text-sm text-blue-100">{currentUser.name}</p>
+              </div>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 bg-blue-700 px-4 py-2 rounded-lg hover:bg-blue-800 transition"
+            >
+              <LogOut className="w-4 h-4" />
+              Salir
+            </button>
+          </div>
+        </div>
+
+        <div className="max-w-6xl mx-auto p-6">
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Users className="w-6 h-6 text-blue-600" />
+                <h2 className="text-2xl font-bold">Clientes</h2>
+              </div>
+              
+              {clients.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">No hay clientes registrados</p>
+              ) : (
+                <div className="space-y-2">
+                  {clients.map(client => (
+                    <div key={client.id} className="p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                      <p className="font-semibold">{client.name}</p>
+                      <p className="text-sm text-gray-600">{client.email}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Send className="w-6 h-6 text-blue-600" />
+                <h2 className="text-2xl font-bold">Enviar Ejercicio</h2>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Seleccionar Cliente
+                  </label>
+                  <select
+                    value={selectedClient || ''}
+                    onChange={(e) => setSelectedClient(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Elige un cliente...</option>
+                    {clients.map(client => (
+                      <option key={client.id} value={client.id}>
+                        {client.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Título del Ejercicio
+                  </label>
+                  <input
+                    type="text"
+                    value={workoutData.title}
+                    onChange={(e) => setWorkoutData({...workoutData, title: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    placeholder="Ej: Rutina de Pierna - Día 1"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Descripción
+                  </label>
+                  <textarea
+                    value={workoutData.description}
+                    onChange={(e) => setWorkoutData({...workoutData, description: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    rows="4"
+                    placeholder="Describe los ejercicios, series, repeticiones..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Archivo (opcional)
+                  </label>
+                  <input
+                    type="file"
+                    onChange={(e) => setWorkoutData({...workoutData, file: e.target.files[0]})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <button
+                  onClick={handleSendWorkout}
+                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition flex items-center justify-center gap-2"
+                >
+                  <Send className="w-5 h-5" />
+                  Enviar Ejercicio
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 bg-white rounded-xl shadow-md p-6">
+            <h2 className="text-2xl font-bold mb-4">Ejercicios Enviados</h2>
+            {workouts.length === 0 ? (
+              <p className="text-gray-500 text-center py-8">No hay ejercicios enviados</p>
+            ) : (
+              <div className="space-y-3">
+                {workouts.map(workout => {
+                  const client = users.find(u => u.id === workout.clientId);
+                  return (
+                    <div key={workout.id} className="p-4 border border-gray-200 rounded-lg">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h3 className="font-semibold text-lg">{workout.title}</h3>
+                          <p className="text-sm text-gray-600">Cliente: {client?.name}</p>
+                        </div>
+                        <span className="text-xs text-gray-500">{workout.date}</span>
+                      </div>
+                      <p className="text-gray-700 mb-2">{workout.description}</p>
+                      {workout.fileName && (
+                        <div className="flex items-center gap-2 text-sm text-blue-600">
+                          <FileText className="w-4 h-4" />
+                          {workout.fileName}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (view === 'client') {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Notification />
+        <div className="bg-blue-600 text-white p-4 shadow-lg">
+          <div className="max-w-4xl mx-auto flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <Dumbbell className="w-8 h-8" />
+              <div>
+                <h1 className="text-xl font-bold">Mis Ejercicios</h1>
+                <p className="text-sm text-blue-100">{currentUser.name}</p>
+              </div>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 bg-blue-700 px-4 py-2 rounded-lg hover:bg-blue-800 transition"
+            >
+              <LogOut className="w-4 h-4" />
+              Salir
+            </button>
+          </div>
+        </div>
+
+        <div className="max-w-4xl mx-auto p-6">
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h2 className="text-2xl font-bold mb-6">Rutinas Asignadas</h2>
+            
+            {myWorkouts.length === 0 ? (
+              <div className="text-center py-12">
+                <Dumbbell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500 text-lg">Aún no tienes ejercicios asignados</p>
+                <p className="text-gray-400 text-sm mt-2">Tu entrenador te enviará rutinas pronto</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {myWorkouts.map(workout => (
+                  <div key={workout.id} className="border border-gray-200 rounded-lg p-5 hover:shadow-md transition">
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="text-xl font-semibold text-blue-600">{workout.title}</h3>
+                      <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                        {workout.date}
+                      </span>
+                    </div>
+                    <p className="text-gray-700 mb-3 whitespace-pre-line">{workout.description}</p>
+                    {workout.fileName && (
+                      <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg text-blue-700">
+                        <FileText className="w-5 h-5" />
+                        <span className="font-medium">{workout.fileName}</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+};
+
+export default GymApp;
