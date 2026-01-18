@@ -89,11 +89,23 @@
 
                 // Escuchar Rutinas
                 const qWorkouts = window.firestore.query(
-                    window.firestore.collection(window.db, "rutinas"),
-                    window.firestore.orderBy("createdAt", "desc")
+                    window.firestore.collection(window.db, "rutinas")
                 );
                 const unsubWorkouts = window.firestore.onSnapshot(qWorkouts, (snapshot) => {
-                    setWorkouts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+                    const workoutsList = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+
+                    // ORDENAR POR FECHA (Lo más nuevo primero)
+                    // Ordena por createdAt si existe, sino por el ID
+                    workoutsList.sort((a, b) => {
+                        const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+                        const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                        return timeB - timeA; // Descendente: lo más nuevo primero
+                    });
+
+                    setWorkouts(workoutsList);
                 });
 
                 return () => { unsubUsers(); unsubWorkouts(); };
