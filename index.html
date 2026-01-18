@@ -3,29 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activa-T Gym</title>
+    <title>Activa-T Gym - Fotos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body { font-family: sans-serif; }
-        .icon-box { display: inline-flex; align-items: center; justify-content: center; }
-    </style>
 </head>
-<body>
-    <div id="root">
-        <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;">
-            <p>Cargando aplicación de Gimnasio...</p>
-            <p style="font-size: 12px; color: gray;">Si ves esto por más de 5 segundos, revisa la consola (F12).</p>
-        </div>
-    </div>
+<body class="bg-gray-50">
+    <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // --- ICONOS SIMPLES (Para evitar errores de carga) ---
         const Icon = ({ name, className = "" }) => <i className={`fa-solid fa-${name} ${className}`}></i>;
 
         function GymApp() {
@@ -35,18 +25,18 @@
             const [view, setView] = useState('login');
             const [formData, setFormData] = useState({ email: '', password: '', name: '' });
             const [selectedClient, setSelectedClient] = useState('');
-            const [workoutData, setWorkoutData] = useState({ title: '', description: '' });
+            
+            // Nuevo: Estado para la rutina con imagen
+            const [workoutData, setWorkoutData] = useState({ title: '', description: '', image: null });
+            
             const [isLoading, setIsLoading] = useState(true);
-            const [notification, setNotification] = useState(null);
 
             useEffect(() => {
                 const init = async () => {
                     const savedUsers = localStorage.getItem('gym_users');
                     const savedWorkouts = localStorage.getItem('gym_workouts');
-                    
-                    if (savedUsers) {
-                        setUsers(JSON.parse(savedUsers));
-                    } else {
+                    if (savedUsers) setUsers(JSON.parse(savedUsers));
+                    else {
                         const admin = { id: '1', email: 'ggcaparra38@gmail.com', password: 'templerenovatio', name: 'Administrador', role: 'admin' };
                         setUsers([admin]);
                         localStorage.setItem('gym_users', JSON.stringify([admin]));
@@ -57,9 +47,16 @@
                 init();
             }, []);
 
-            const showNotification = (msg) => {
-                setNotification(msg);
-                setTimeout(() => setNotification(null), 3000);
+            // Función para convertir imagen a texto (Base64)
+            const handleImageChange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        setWorkoutData({...workoutData, image: reader.result});
+                    };
+                    reader.readAsDataURL(file);
+                }
             };
 
             const handleLogin = () => {
@@ -67,103 +64,126 @@
                 if (user) {
                     setCurrentUser(user);
                     setView(user.role === 'admin' ? 'admin' : 'client');
-                } else {
-                    alert('Usuario o contraseña incorrectos');
-                }
-            };
-
-            const handleRegister = () => {
-                if (!formData.name || !formData.email || !formData.password) return alert('Rellena todo');
-                const newUser = { id: Date.now().toString(), ...formData, role: 'client' };
-                const updatedUsers = [...users, newUser];
-                setUsers(updatedUsers);
-                localStorage.setItem('gym_users', JSON.stringify(updatedUsers));
-                alert('¡Registrado! Ya puedes entrar.');
-                setView('login');
+                } else alert('Error en los datos');
             };
 
             const handleSendWorkout = () => {
                 if (!selectedClient || !workoutData.title) return alert('Falta cliente o título');
-                const newWorkout = { id: Date.now().toString(), clientId: selectedClient, ...workoutData, date: new Date().toLocaleDateString() };
+                
+                const newWorkout = { 
+                    id: Date.now().toString(), 
+                    clientId: selectedClient, 
+                    ...workoutData, 
+                    date: new Date().toLocaleDateString() 
+                };
+
                 const updated = [...workouts, newWorkout];
                 setWorkouts(updated);
                 localStorage.setItem('gym_workouts', JSON.stringify(updated));
-                setWorkoutData({ title: '', description: '' });
-                showNotification('Rutina enviada con éxito');
+                
+                setWorkoutData({ title: '', description: '', image: null });
+                alert('Rutina con foto enviada');
             };
 
-            if (isLoading) return <div className="flex h-screen items-center justify-center">Cargando datos...</div>;
+            if (isLoading) return <div className="p-10 text-center">Cargando...</div>;
 
+            // VISTA LOGIN
             if (view === 'login') return (
                 <div className="min-h-screen bg-blue-600 flex items-center justify-center p-4">
                     <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
                         <div className="text-center mb-6">
                             <Icon name="dumbbell" className="text-4xl text-blue-600 mb-2" />
-                            <h1 className="text-2xl font-bold">Activa-T</h1>
+                            <h1 className="text-2xl font-bold italic text-blue-800">ACTIVA-T</h1>
                         </div>
                         <input className="w-full p-3 border rounded mb-3" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
                         <input className="w-full p-3 border rounded mb-3" type="password" placeholder="Contraseña" onChange={e => setFormData({...formData, password: e.target.value})} />
-                        <button onClick={handleLogin} className="w-full bg-blue-600 text-white p-3 rounded-lg font-bold">Iniciar Sesión</button>
-                        <button onClick={() => setView('register')} className="w-full mt-4 text-blue-600 text-sm">Crear cuenta de cliente</button>
+                        <button onClick={handleLogin} className="w-full bg-blue-600 text-white p-3 rounded-lg font-bold">ENTRAR</button>
+                        <button onClick={() => setView('register')} className="w-full mt-4 text-blue-600 text-sm italic underline">Registrar nuevo cliente</button>
                     </div>
                 </div>
             );
 
+            // VISTA REGISTRO
             if (view === 'register') return (
                 <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
                     <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
-                        <h2 className="text-2xl font-bold mb-4">Registro</h2>
-                        <input className="w-full p-3 border rounded mb-3" placeholder="Nombre completo" onChange={e => setFormData({...formData, name: e.target.value})} />
+                        <h2 className="text-xl font-bold mb-4">Nuevo Cliente</h2>
+                        <input className="w-full p-3 border rounded mb-3" placeholder="Nombre" onChange={e => setFormData({...formData, name: e.target.value})} />
                         <input className="w-full p-3 border rounded mb-3" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
                         <input className="w-full p-3 border rounded mb-3" type="password" placeholder="Contraseña" onChange={e => setFormData({...formData, password: e.target.value})} />
-                        <button onClick={handleRegister} className="w-full bg-green-600 text-white p-3 rounded-lg font-bold">Registrarse</button>
-                        <button onClick={() => setView('login')} className="w-full mt-4 text-gray-500 text-sm text-center block">Volver</button>
+                        <button onClick={() => {
+                            const newUser = { id: Date.now().toString(), ...formData, role: 'client' };
+                            const up = [...users, newUser];
+                            setUsers(up);
+                            localStorage.setItem('gym_users', JSON.stringify(up));
+                            setView('login');
+                        }} className="w-full bg-green-600 text-white p-3 rounded-lg font-bold">GUARDAR CLIENTE</button>
+                        <button onClick={() => setView('login')} className="w-full mt-2 text-gray-500 text-xs">Volver</button>
                     </div>
                 </div>
             );
 
+            // VISTA ADMIN
             if (view === 'admin') return (
-                <div className="min-h-screen bg-gray-50 text-gray-800">
-                    <nav className="bg-blue-600 p-4 text-white flex justify-between items-center shadow-lg">
-                        <span className="font-bold"><Icon name="user-gear" /> Panel Admin</span>
-                        <button onClick={() => setView('login')} className="bg-blue-800 px-3 py-1 rounded">Salir</button>
+                <div className="min-h-screen bg-gray-50">
+                    <nav className="bg-blue-700 p-4 text-white flex justify-between shadow-lg">
+                        <span className="font-bold uppercase tracking-wider">Panel Padre (Admin)</span>
+                        <button onClick={() => setView('login')} className="text-sm border border-white px-2 py-1 rounded">Cerrar</button>
                     </nav>
-                    <div className="p-4 max-w-4xl mx-auto space-y-6">
-                        {notification && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">{notification}</div>}
-                        <div className="bg-white p-6 rounded-xl shadow">
-                            <h3 className="font-bold mb-4 text-blue-600"><Icon name="paper-plane" /> Enviar Nueva Rutina</h3>
-                            <select className="w-full p-2 border rounded mb-3" onChange={e => setSelectedClient(e.target.value)}>
-                                <option value="">¿A qué cliente?</option>
+                    <div className="p-4 max-w-xl mx-auto">
+                        <div className="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-600">
+                            <h3 className="font-bold mb-4 text-gray-700">CREAR RUTINA CON FOTO</h3>
+                            
+                            <select className="w-full p-3 border rounded-lg mb-4 bg-gray-50" onChange={e => setSelectedClient(e.target.value)}>
+                                <option value="">Selecciona al cliente</option>
                                 {users.filter(u => u.role === 'client').map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                             </select>
-                            <input className="w-full p-2 border rounded mb-3" placeholder="Título (ej: Rutina Lunes)" value={workoutData.title} onChange={e => setWorkoutData({...workoutData, title: e.target.value})} />
-                            <textarea className="w-full p-2 border rounded mb-3" rows="4" placeholder="Ejercicios y repeticiones..." value={workoutData.description} onChange={e => setWorkoutData({...workoutData, description: e.target.value})}></textarea>
-                            <button onClick={handleSendWorkout} className="w-full bg-blue-600 text-white p-3 rounded font-bold">Enviar al Cliente</button>
+
+                            <input className="w-full p-3 border rounded-lg mb-4" placeholder="Título (ej: Pecho y Tríceps)" value={workoutData.title} onChange={e => setWorkoutData({...workoutData, title: e.target.value})} />
+                            
+                            <textarea className="w-full p-3 border rounded-lg mb-4" rows="4" placeholder="Instrucciones del ejercicio..." value={workoutData.description} onChange={e => setWorkoutData({...workoutData, description: e.target.value})}></textarea>
+                            
+                            <div className="mb-6">
+                                <label className="block text-sm font-bold text-gray-600 mb-2">Añadir foto del ejercicio:</label>
+                                <input type="file" accept="image/*" onChange={handleImageChange} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                                {workoutData.image && <img src={workoutData.image} className="mt-4 rounded-lg h-32 w-full object-cover border" />}
+                            </div>
+
+                            <button onClick={handleSendWorkout} className="w-full bg-blue-600 text-white p-4 rounded-xl font-bold shadow-lg hover:bg-blue-700 active:scale-95 transition">
+                                <Icon name="share-from-square" className="mr-2" /> ENVIAR RUTINA
+                            </button>
                         </div>
                     </div>
                 </div>
             );
 
+            // VISTA CLIENTE
             if (view === 'client') return (
-                <div className="min-h-screen bg-gray-50">
-                    <nav className="bg-indigo-600 p-4 text-white flex justify-between shadow-md">
-                        <span className="font-bold"><Icon name="dumbbell" /> Mis Rutinas</span>
-                        <button onClick={() => setView('login')} className="bg-indigo-800 px-3 py-1 rounded">Cerrar Sesión</button>
+                <div className="min-h-screen bg-gray-100">
+                    <nav className="bg-indigo-700 p-4 text-white shadow-md">
+                        <span className="font-bold italic">MIS RUTINAS - ACTIVA-T</span>
                     </nav>
-                    <div className="p-4 max-w-2xl mx-auto">
-                        <h2 className="text-xl font-bold mb-4 text-gray-700">Hola, {currentUser.name}</h2>
-                        {workouts.filter(w => w.clientId === currentUser.id).length === 0 ? 
-                            <p className="text-gray-500 text-center py-10">Aún no tienes rutinas asignadas.</p> :
-                            workouts.filter(w => w.clientId === currentUser.id).map(w => (
-                                <div key={w.id} className="bg-white p-5 rounded-xl shadow mb-4 border-l-4 border-indigo-500">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <h3 className="font-bold text-lg text-indigo-700">{w.title}</h3>
-                                        <span className="text-xs text-gray-400">{w.date}</span>
+                    <div className="p-4 max-w-lg mx-auto">
+                        <h2 className="text-xl font-bold mb-6 text-indigo-900 text-center">¡Vamos {currentUser.name}! 💪</h2>
+                        
+                        {workouts.filter(w => w.clientId === currentUser.id).reverse().map(w => (
+                            <div key={w.id} className="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-b-4 border-indigo-500">
+                                {w.image && <img src={w.image} className="w-full h-56 object-cover" />}
+                                <div className="p-5">
+                                    <div className="flex justify-between items-center mb-3">
+                                        <h3 className="font-bold text-xl text-gray-800 uppercase">{w.title}</h3>
+                                        <span className="text-[10px] bg-gray-100 px-2 py-1 rounded text-gray-400">{w.date}</span>
                                     </div>
-                                    <p className="text-gray-600 whitespace-pre-line">{w.description}</p>
+                                    <p className="text-gray-600 text-sm leading-relaxed border-t pt-3">{w.description}</p>
                                 </div>
-                            ))
-                        }
+                            </div>
+                        ))}
+
+                        {workouts.filter(w => w.clientId === currentUser.id).length === 0 && (
+                            <div className="text-center p-10 bg-white rounded-2xl text-gray-400 italic">No tienes rutinas todavía.</div>
+                        )}
+                        
+                        <button onClick={() => setView('login')} className="w-full mt-10 text-gray-400 text-sm">Cerrar sesión</button>
                     </div>
                 </div>
             );
