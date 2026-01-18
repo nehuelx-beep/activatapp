@@ -286,7 +286,7 @@ installButton.addEventListener('click', async () => {
         <div className="p-4 max-w-lg mx-auto">
             <h2 className="text-xl font-bold mb-6 text-indigo-900 text-center">¡Vamos {currentUser.name}! 💪</h2>
             
-            {workouts.filter(w => w.clientId === currentUser.id).reverse().map(w => (
+            {workouts.filter(w => w.clientId === currentUser.id).map(w => (
                 <div key={w.id} className="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-b-4 border-indigo-500">
                     
                     {/* FOTO Y VIDEO MEJORADOS CON AVISO DE CLIC */}
