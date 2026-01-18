@@ -99,13 +99,22 @@
                 return () => { unsubUsers(); unsubWorkouts(); };
             }, []);
 
-            const handleImageChange = (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => setWorkoutData({...workoutData, image: reader.result});
-                    reader.readAsDataURL(file);
-                }
+          const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        // Opcional: Limitar a 20MB para no saturar Firebase
+        if (file.size > 20 * 1024 * 1024) {
+            alert("El vídeo es demasiado grande. Máximo 20MB.");
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setWorkoutData({ ...workoutData, image: reader.result });
+        };
+        reader.readAsDataURL(file);
+    }
+};
             };
 
             const handleLogin = () => {
@@ -269,15 +278,31 @@ installButton.addEventListener('click', async () => {
             {workouts.filter(w => w.clientId === currentUser.id).reverse().map(w => (
                 <div key={w.id} className="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-b-4 border-indigo-500">
                     
-                    {/* FOTO MEJORADA CON AVISO DE CLIC */}
+                    {/* FOTO Y VIDEO MEJORADOS CON AVISO DE CLIC */}
                     {w.image && (
-                        <div className="relative group cursor-pointer" onClick={() => setZoomImage(w.image)}>
-                            <img src={w.image} className="w-full h-64 object-cover" />
-                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition flex items-center justify-center">
-                                <span className="bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded opacity-70">
-                                    <Icon name="magnifying-glass" /> Toca para ampliar
-                                </span>
-                            </div>
+                        <div className="relative group cursor-pointer">
+                            {w.image.includes('video/mp4') || w.image.startsWith('data:video/mp4') ? (
+                                <video 
+                                    src={w.image} 
+                                    controls 
+                                    className="w-full h-64 object-cover"
+                                />
+                            ) : (
+                                <img 
+                                    src={w.image} 
+                                    className="w-full h-64 object-cover" 
+                                    onClick={() => setZoomImage(w.image)}
+                                />
+                            )}
+                            
+                            {/* Solo mostramos la lupa si es imagen, el video ya tiene sus controles */}
+                            {!w.image.includes('video/mp4') && (
+                                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition flex items-center justify-center pointer-events-none">
+                                    <span className="bg-black bg-opacity-50 text-white text-[10px] px-2 py-1 rounded">
+                                        🔍 Toca para ampliar
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     )}
 
