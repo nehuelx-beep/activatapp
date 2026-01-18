@@ -221,7 +221,13 @@ installButton.addEventListener('click', async () => {
                             </select>
                             <input className="w-full p-3 border rounded mb-4" placeholder="Título" value={workoutData.title} onChange={e => setWorkoutData({...workoutData, title: e.target.value})} />
                             <textarea className="w-full p-3 border rounded mb-4" placeholder="Ejercicios..." value={workoutData.description} onChange={e => setWorkoutData({...workoutData, description: e.target.value})}></textarea>
-                            <input type="file" accept="image/*" onChange={handleImageChange} className="mb-4 text-xs" />
+                            // Cambia el accept para incluir video
+                            <input 
+                             type="file" 
+                             accept="image/*,video/mp4" 
+                             onChange={handleImageChange} 
+                             className="w-full text-sm" 
+                             />
                             <button onClick={handleSendWorkout} className="w-full bg-blue-600 text-white p-4 rounded font-bold">ENVIAR</button>
                         </div>
                     </div>
