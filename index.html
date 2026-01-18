@@ -107,7 +107,7 @@
                         role: 'client',
                         createdAt: new Date().toISOString()
                     });
-                    alert("Cliente registrado en la nube");
+                    alert("Cliente registrado");
                     setView('login');
                 } catch (e) { alert("Error al registrar"); }
             };
@@ -124,7 +124,7 @@
                         createdAt: new Date().toISOString()
                     });
                     setWorkoutData({ title: '', description: '', image: null });
-                    alert("¡Rutina enviada a la nube!");
+                    alert("¡ejercicio enviado!");
                 } catch (e) { alert("Error al enviar"); }
             };
 
@@ -134,11 +134,11 @@
             if (view === 'login') return (
                 <div className="min-h-screen bg-blue-600 flex items-center justify-center p-4">
                     <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
-                        <h1 className="text-2xl font-bold text-center mb-6 text-blue-800 italic">ACTIVA-T CLOUD</h1>
+                        <h1 className="text-2xl font-bold text-center mb-6 text-blue-800 italic">ACTIVA-T GYM</h1>
                         <input className="w-full p-3 border rounded mb-3" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
                         <input className="w-full p-3 border rounded mb-3" type="password" placeholder="Contraseña" onChange={e => setFormData({...formData, password: e.target.value})} />
                         <button onClick={handleLogin} className="w-full bg-blue-600 text-white p-3 rounded-lg font-bold">ENTRAR</button>
-                        <button onClick={() => setView('register')} className="w-full mt-4 text-blue-600 text-sm italic">Registrar cliente</button>
+                        <button onClick={() => setView('register')} className="w-full mt-4 text-blue-600 text-sm italic">¿No tienes cuenta? Registrate</button>
                     </div>
                 </div>
             );
@@ -146,11 +146,11 @@
             if (view === 'register') return (
                 <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
                     <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
-                        <h2 className="text-xl font-bold mb-4">Nuevo Cliente Cloud</h2>
+                        <h2 className="text-xl font-bold mb-4">Nuevo Cliente</h2>
                         <input className="w-full p-3 border rounded mb-3" placeholder="Nombre" onChange={e => setFormData({...formData, name: e.target.value})} />
                         <input className="w-full p-3 border rounded mb-3" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
                         <input className="w-full p-3 border rounded mb-3" type="password" placeholder="Contraseña" onChange={e => setFormData({...formData, password: e.target.value})} />
-                        <button onClick={handleRegister} className="w-full bg-green-600 text-white p-3 rounded-lg font-bold">CREAR EN NUBE</button>
+                        <button onClick={handleRegister} className="w-full bg-green-600 text-white p-3 rounded-lg font-bold">REGISTRARSE</button>
                         <button onClick={() => setView('login')} className="w-full mt-2 text-gray-500 text-xs text-center block">Volver</button>
                     </div>
                 </div>
@@ -159,7 +159,7 @@
             if (view === 'admin') return (
                 <div className="min-h-screen bg-gray-50">
                     <nav className="bg-blue-800 p-4 text-white flex justify-between">
-                        <span className="font-bold">ADMIN (CLOUD)</span>
+                        <span className="font-bold">ADMIN</span>
                         <button onClick={() => setView('login')} className="text-xs">Salir</button>
                     </nav>
                     <div className="p-4 max-w-xl mx-auto">
@@ -171,7 +171,7 @@
                             <input className="w-full p-3 border rounded mb-4" placeholder="Título" value={workoutData.title} onChange={e => setWorkoutData({...workoutData, title: e.target.value})} />
                             <textarea className="w-full p-3 border rounded mb-4" placeholder="Ejercicios..." value={workoutData.description} onChange={e => setWorkoutData({...workoutData, description: e.target.value})}></textarea>
                             <input type="file" accept="image/*" onChange={handleImageChange} className="mb-4 text-xs" />
-                            <button onClick={handleSendWorkout} className="w-full bg-blue-600 text-white p-4 rounded font-bold">ENVIAR A LA NUBE</button>
+                            <button onClick={handleSendWorkout} className="w-full bg-blue-600 text-white p-4 rounded font-bold">ENVIAR</button>
                         </div>
                     </div>
                 </div>
@@ -179,7 +179,7 @@
 
             if (view === 'client') return (
                 <div className="min-h-screen bg-gray-100">
-                    <nav className="bg-indigo-700 p-4 text-white font-bold">MIS RUTINAS ONLINE</nav>
+                    <nav className="bg-indigo-700 p-4 text-white font-bold">MIS EJERCICIOS</nav>
                     <div className="p-4 max-w-lg mx-auto">
                         {workouts.filter(w => w.clientId === currentUser.id).map(w => (
                             <div key={w.id} className="bg-white rounded-xl shadow mb-6 overflow-hidden">
