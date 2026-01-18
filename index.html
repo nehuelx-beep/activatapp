@@ -139,6 +139,29 @@
                     alert("¡ejercicio enviado!");
                 } catch (e) { alert("Error al enviar"); }
             };
+            let deferredPrompt;
+const installBanner = document.getElementById('install-banner');
+const installButton = document.getElementById('install-button');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Evita que Chrome muestre su aviso automático feo
+    e.preventDefault();
+    // Guarda el evento para usarlo luego
+    deferredPrompt = e;
+    // Muestra nuestro botón bonito
+    installBanner.style.display = 'flex';
+});
+
+installButton.addEventListener('click', async () => {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            installBanner.style.display = 'none';
+        }
+        deferredPrompt = null;
+    }
+});
 
             // (El resto de las vistas Login, Register, Admin y Client se mantienen igual que en la versión anterior)
             // Solo asegúrate de copiar el 'return' de las vistas del código anterior aquí abajo.
