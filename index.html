@@ -59,6 +59,9 @@
 
     <script type="text/babel">
         const { useState, useEffect } = React;
+        const Icon = ({ name, className = "" }) => (
+  <i className={`fa-solid fa-${name} ${className}`}></i>
+);
 
         function GymApp() {
             const [currentUser, setCurrentUser] = useState(null);
