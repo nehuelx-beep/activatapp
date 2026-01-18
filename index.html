@@ -68,6 +68,8 @@
             const [formData, setFormData] = useState({ email: '', password: '', name: '' });
             const [workoutData, setWorkoutData] = useState({ title: '', description: '', image: null });
             const [selectedClient, setSelectedClient] = useState('');
+            const [selectedClient, setSelectedClient] = useState('');
+            const [zoomImage, setZoomImage] = useState(null);
 
             // --- ESCUCHAR DATOS EN TIEMPO REAL ---
             useEffect(() => {
@@ -225,22 +227,68 @@ installButton.addEventListener('click', async () => {
             );
 
             if (view === 'client') return (
-                <div className="min-h-screen bg-gray-100">
-                    <nav className="bg-indigo-700 p-4 text-white font-bold">MIS EJERCICIOS</nav>
-                    <div className="p-4 max-w-lg mx-auto">
-                        {workouts.filter(w => w.clientId === currentUser.id).map(w => (
-                            <div key={w.id} className="bg-white rounded-xl shadow mb-6 overflow-hidden">
-                                {w.image && <img src={w.image} className="w-full h-48 object-cover" />}
-                                <div className="p-4">
-                                    <h3 className="font-bold text-lg">{w.title}</h3>
-                                    <p className="text-gray-600 text-sm mt-2">{w.description}</p>
-                                    <div className="text-[10px] text-gray-400 mt-2 text-right">{w.date}</div>
-                                </div>
+    <div className="min-h-screen bg-gray-100">
+        {/* --- MODAL DE ZOOM (PANTALLA COMPLETA) --- */}
+        {zoomImage && (
+            <div className="fixed inset-0 z-50 bg-black bg-opacity-95 flex flex-col items-center justify-center p-4" onClick={() => setZoomImage(null)}>
+                <button className="absolute top-4 right-4 text-white text-xl bg-gray-800 rounded-full w-10 h-10 flex items-center justify-center">
+                    <Icon name="xmark" />
+                </button>
+                
+                <img src={zoomImage} className="max-w-full max-h-[70vh] rounded shadow-2xl mb-6 object-contain" onClick={(e) => e.stopPropagation()} />
+                
+                <a 
+                    href={zoomImage} 
+                    download={`rutina-${new Date().toLocaleDateString()}.png`}
+                    className="bg-green-600 text-white px-6 py-3 rounded-full font-bold text-lg flex items-center gap-2 shadow-lg hover:bg-green-500 transition"
+                    onClick={(e) => e.stopPropagation()} // Para que no se cierre al pulsar descargar
+                >
+                    <Icon name="download" /> DESCARGAR FOTO
+                </a>
+                <p className="text-gray-400 mt-4 text-sm">Toca fuera para cerrar</p>
+            </div>
+        )}
+
+        {/* --- VISTA NORMAL --- */}
+        <nav className="bg-indigo-700 p-4 text-white shadow-md flex justify-between items-center">
+            <span className="font-bold italic">MIS RUTINAS</span>
+            <button onClick={() => setView('login')} className="text-xs bg-indigo-800 px-3 py-1 rounded">Salir</button>
+        </nav>
+        
+        <div className="p-4 max-w-lg mx-auto">
+            <h2 className="text-xl font-bold mb-6 text-indigo-900 text-center">¡Vamos {currentUser.name}! 💪</h2>
+            
+            {workouts.filter(w => w.clientId === currentUser.id).reverse().map(w => (
+                <div key={w.id} className="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-b-4 border-indigo-500">
+                    
+                    {/* FOTO MEJORADA CON AVISO DE CLIC */}
+                    {w.image && (
+                        <div className="relative group cursor-pointer" onClick={() => setZoomImage(w.image)}>
+                            <img src={w.image} className="w-full h-64 object-cover" />
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition flex items-center justify-center">
+                                <span className="bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded opacity-70">
+                                    <Icon name="magnifying-glass" /> Toca para ampliar
+                                </span>
                             </div>
-                        ))}
+                        </div>
+                    )}
+
+                    <div className="p-5">
+                        <div className="flex justify-between items-center mb-3">
+                            <h3 className="font-bold text-xl text-gray-800 uppercase">{w.title}</h3>
+                            <span className="text-[10px] bg-gray-100 px-2 py-1 rounded text-gray-400">{w.date}</span>
+                        </div>
+                        <p className="text-gray-600 text-sm leading-relaxed border-t pt-3 whitespace-pre-line">{w.description}</p>
                     </div>
                 </div>
-            );
+            ))}
+
+            {workouts.filter(w => w.clientId === currentUser.id).length === 0 && (
+                <div className="text-center p-10 bg-white rounded-2xl text-gray-400 italic">No tienes rutinas todavía.</div>
+            )}
+        </div>
+    </div>
+);
 
             return null;
         }
