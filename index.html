@@ -69,7 +69,7 @@
             const [selectedClient, setSelectedClient] = useState('');
             const [zoomImage, setZoomImage] = useState(null);
             const [loading, setLoading] = useState(true);
-            const [selectedFile, setSelectedFile] = useState(null);
+            const [file, setFile] = useState(null);
 
             const handleDeleteWorkout = async (workoutId) => {
         if (window.confirm("¿Quieres eliminar esta rutina de tu lista?")) {
@@ -145,12 +145,17 @@
             };
 
             const handleImageChange = (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    if (file.size > 20 * 1024 * 1024) return alert("Máximo 20MB");
+                const selectedFile = e.target.files[0]; // Usamos un nombre temporal
+                if (selectedFile) {
+                    if (selectedFile.size > 20 * 1024 * 1024) return alert("Máximo 20MB");
+                    
+                    // 1. Guardamos el archivo en el estado "file" para poder enviarlo luego
+                    setFile(selectedFile); 
+
+                    // 2. Creamos la vista previa
                     const reader = new FileReader();
                     reader.onloadend = () => setWorkoutData({ ...workoutData, image: reader.result });
-                    reader.readAsDataURL(file);
+                    reader.readAsDataURL(selectedFile);
                 }
             };
 
