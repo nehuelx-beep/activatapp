@@ -87,14 +87,19 @@
                     setLoading(false);
                 });
                 
-                const handleDeleteWorkout = async (workoutId) => {
+            const handleDeleteWorkout = async (workoutId) => {
+    console.log("Intentando borrar la rutina con ID:", workoutId); // Chivato 1
+    
     if (window.confirm("¿Quieres eliminar esta rutina de tu lista?")) {
         try {
             const docRef = window.firestore.doc(window.db, "rutinas", workoutId);
+            console.log("Referencia creada:", docRef); // Chivato 2
+            
             await window.firestore.deleteDoc(docRef);
-            // No hace falta hacer nada más, onSnapshot actualizará la lista sola
+            console.log("¡Borrado con éxito!"); // Chivato 3
         } catch (e) {
-            alert("No se pudo borrar la rutina");
+            console.error("Error detallado al borrar:", e);
+            alert("No se pudo borrar: " + e.message);
         }
     }
 };
