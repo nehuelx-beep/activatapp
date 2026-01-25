@@ -96,7 +96,7 @@
                         docs.push({ 
                             email: 'ggcaparra38@gmail.com', 
                             password: 'templerenovatio', 
-                            name: 'Admin', 
+                            name: 'Gabi', 
                             role: 'admin' 
                         });
                     }
@@ -197,7 +197,7 @@
             if (currentUser.role === 'admin' || view === 'admin') return (
                 <div className="min-h-screen bg-gray-50">
                     <nav className="bg-blue-800 p-4 text-white flex justify-between">
-                        <span className="font-bold">ADMIN:Gabi {currentUser.name}</span>
+                        <span className="font-bold">ADMIN: {currentUser.name}</span>
                         <button onClick={handleLogout} className="text-xs">Salir</button>
                     </nav>
                     <div className="p-4 max-w-xl mx-auto">
