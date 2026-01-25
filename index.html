@@ -76,29 +76,17 @@
             // --- ESCUCHAR DATOS EN TIEMPO REAL ---
             useEffect(() => {
                 if (!window.db) return;
-                
-                import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-// ... dentro de tu componente principal ...
-
-useEffect(() => {
-    const auth = getAuth();
-    
-    // Esta función se activa sola cuando abres la app
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-        if (user) {
-            // Si el usuario ya estaba logueado, lo mandamos a su vista
-            console.log("Sesión activa:", user.email);
-            setUser(user); 
-            // Aquí podrías cargar automáticamente sus datos de Firestore
-        } else {
-            // Si no hay usuario, se queda en la pantalla de Login
-            setUser(null);
-        }
-    });
-
-    return () => unsubscribe(); // Limpiamos al cerrar
-}, []);
+                // 1. ESTO ES LO QUE RECUERDA LA SESIÓN
+              const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+              if (firebaseUser) {
+                // Si hay un usuario guardado en el navegador, lo logueamos automáticamente
+              console.log("Sesión recuperada de:", firebaseUser.email);
+               setUser(firebaseUser);
+              } else {
+               // Si no hay sesión o el usuario le dio a "Cerrar sesión"
+               setUser(null);
+             }
 
                 // Escuchar Usuarios
                 const qUsers = window.firestore.query(window.firestore.collection(window.db, "usuarios"));
