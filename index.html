@@ -231,59 +231,61 @@
                 <div className="min-h-screen bg-gray-100">
                     {zoomImage && (
                         <div className="fixed inset-0 z-50 bg-black bg-opacity-95 flex flex-col items-center justify-center p-4" onClick={() => setZoomImage(null)}>
-                            <img src={zoomImage} className="max-w-full max-h-[70vh] rounded mb-6 object-contain" />
-                            <button className="bg-green-600 text-white px-6 py-3 rounded-full font-bold">Cerrar</button>
+                            <button className="absolute top-4 right-4 text-white text-xl bg-gray-800 rounded-full w-10 h-10 flex items-center justify-center">
+                                <Icon name="xmark" />
+                            </button>
+                            <img src={zoomImage} className="max-w-full max-h-[70vh] rounded shadow-2xl mb-6 object-contain" />
+                            <p className="text-gray-400 mt-4 text-sm">Toca fuera para cerrar</p>
                         </div>
                     )}
+
                     <nav className="bg-indigo-700 p-4 text-white shadow-md flex justify-between items-center">
                         <span className="font-bold italic">MIS RUTINAS</span>
-                        <button onClick={handleLogout} className="text-xs bg-indigo-800 px-3 py-1 rounded">Salir</button>
+                        <button onClick={() => { localStorage.removeItem("user_gym"); setCurrentUser(null); setView('login'); }} className="text-xs bg-indigo-800 px-3 py-1 rounded">Salir</button>
                     </nav>
+                    
                     <div className="p-4 max-w-lg mx-auto">
-                        <h2 className="text-xl font-bold mb-6 text-indigo-900 text-center">¡Vamos {currentUser.name}! 💪</h2>
-                        {workouts.filter(w => w.clientId === currentUser.id).map(w => (
-                    {workouts.filter(w => w.clientId === currentUser.id).map(w => (
-    <div key={w.id} className="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-b-4 border-indigo-500 relative">
-        
-        {/* BOTÓN DE BORRAR PARA EL CLIENTE */}
-        <button 
-            onClick={() => handleDeleteWorkout(w.id)}
-            className="absolute top-2 right-2 z-10 bg-white/80 backdrop-blur-sm text-red-500 w-8 h-8 rounded-full shadow-md flex items-center justify-center hover:bg-red-50 transition"
-        >
-            <i className="fa-solid fa-trash text-xs"></i>
-        </button>
+                        <h2 className="text-xl font-bold mb-6 text-indigo-900 text-center">¡Vamos {currentUser?.name}! 💪</h2>
+                        
+                        {workouts.filter(w => w.clientId === currentUser?.id).map(w => (
+                            <div key={w.id} className="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-b-4 border-indigo-500 relative">
+                                
+                                {/* BOTÓN DE BORRAR */}
+                                <button 
+                                    onClick={() => handleDeleteWorkout(w.id)}
+                                    className="absolute top-2 right-2 z-20 bg-white/90 text-red-500 w-10 h-10 rounded-full shadow-lg flex items-center justify-center hover:bg-red-50 active:scale-90 transition-all border border-red-100"
+                                >
+                                    <i className="fa-solid fa-trash-can text-sm"></i>
+                                </button>
 
-        {w.image && (
-            // ... resto del código de la imagen/video ...
-        )}
-        
-        <div className="p-5">
-            <h3 className="font-bold text-xl text-gray-800 uppercase">{w.title}</h3>
-            {/* ... resto del contenido ... */}
-        </div>
-    </div>
-))}
-                            <div key={w.id} className="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-b-4 border-indigo-500">
                                 {w.image && (
-                                    <div className="relative cursor-pointer">
-                                        {w.image.startsWith('data:video') ? (
+                                    <div className="relative">
+                                        {w.image.includes('video/mp4') || w.image.startsWith('data:video/mp4') ? (
                                             <video src={w.image} controls className="w-full h-64 object-cover" />
                                         ) : (
                                             <img src={w.image} className="w-full h-64 object-cover" onClick={() => setZoomImage(w.image)} />
                                         )}
                                     </div>
                                 )}
+
                                 <div className="p-5">
-                                    <h3 className="font-bold text-xl text-gray-800 uppercase">{w.title}</h3>
-                                    <p className="text-gray-400 text-[10px] mb-2">{w.date}</p>
-                                    <p className="text-gray-600 text-sm whitespace-pre-line border-t pt-3">{w.description}</p>
+                                    <div className="flex justify-between items-center mb-3">
+                                        <h3 className="font-bold text-xl text-gray-800 uppercase">{w.title}</h3>
+                                        <span className="text-[10px] bg-gray-100 px-2 py-1 rounded text-gray-400">{w.date}</span>
+                                    </div>
+                                    <p className="text-gray-600 text-sm leading-relaxed border-t pt-3 whitespace-pre-line">{w.description}</p>
                                 </div>
                             </div>
                         ))}
+
+                        {workouts.filter(w => w.clientId === currentUser?.id).length === 0 && (
+                            <div className="text-center p-10 bg-white rounded-2xl text-gray-400 italic shadow-sm">
+                                No tienes rutinas todavía.
+                            </div>
+                        )}
                     </div>
                 </div>
             );
-        }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<GymApp />);
