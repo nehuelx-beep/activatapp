@@ -164,21 +164,60 @@
             };
 
             const handleSendWorkout = async () => {
-                if (!selectedClient || !workoutData.title) return alert("Faltan datos");
-                try {
-                    await window.firestore.addDoc(window.firestore.collection(window.db, "rutinas"), {
-                        clientId: selectedClient,
-                        title: workoutData.title,
-                        description: workoutData.description,
-                        image: workoutData.image,
-                        date: new Date().toLocaleDateString(),
-                        createdAt: new Date().toISOString()
-                    });
-                    setWorkoutData({ title: '', description: '', image: null });
-                    alert("Enviado");
-                } catch (e) { alert("Error"); }
-            };
+    console.log("Iniciando envío...", { selectedClient, workoutData, file });
 
+    // 1. Verificaciones de seguridad
+    if (!selectedClient) return alert("Error: No has seleccionado a ningún cliente");
+    if (!workoutData.title) return alert("Error: El título es obligatorio");
+
+    // Esta es la parte que guarda en Firebase
+    const saveToFirestore = async (finalImage) => {
+        try {
+            console.log("Subiendo a Firebase con imagen:", finalImage ? "Sí" : "No");
+            await window.firestore.addDoc(window.firestore.collection(window.db, "rutinas"), {
+                clientId: selectedClient,
+                title: workoutData.title,
+                description: workoutData.description || "",
+                image: finalImage || "", // Si no hay imagen, guarda texto vacío
+                date: new Date().toLocaleDateString()
+            });
+            
+            alert("✅ ¡Rutina enviada correctamente!");
+            
+            // Limpiar todo después de enviar
+            setWorkoutData({ title: '', description: '' });
+            setFile(null);
+            // Si tienes un input de tipo file, esto lo resetea visualmente:
+            const fileInput = document.querySelector('input[type="file"]');
+            if (fileInput) fileInput.value = "";
+
+        } catch (error) {
+            console.error("Error al guardar en Firestore:", error);
+            alert("Error en la base de datos: " + error.message);
+        }
+    };
+
+    // 2. Lógica de procesamiento
+    if (file) {
+        console.log("Procesando archivo...");
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            console.log("Archivo leído con éxito");
+            saveToFirestore(e.target.result);
+        };
+
+        reader.onerror = (err) => {
+            console.error("Error al leer el archivo:", err);
+            alert("Error al procesar la foto/video");
+        };
+
+        reader.readAsDataURL(file);
+    } else {
+        console.log("Enviando sin archivo...");
+        saveToFirestore("");
+    }
+};
             if (loading) return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
 
             if (!currentUser || view === 'login') return (
