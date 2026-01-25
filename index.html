@@ -69,6 +69,7 @@
             const [selectedClient, setSelectedClient] = useState('');
             const [zoomImage, setZoomImage] = useState(null);
             const [loading, setLoading] = useState(true);
+            const [selectedFile, setSelectedFile] = useState(null);
 
             const handleDeleteWorkout = async (workoutId) => {
         if (window.confirm("¿Quieres eliminar esta rutina de tu lista?")) {
