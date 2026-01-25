@@ -86,9 +86,7 @@
               } else {
                // Si no hay sesión o el usuario le dio a "Cerrar sesión"
                setUser(null);
-             }
-
-                // Escuchar Usuarios
+               // Escuchar Usuarios
                 const qUsers = window.firestore.query(window.firestore.collection(window.db, "usuarios"));
                 const unsubUsers = window.firestore.onSnapshot(qUsers, (snapshot) => {
                     const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
