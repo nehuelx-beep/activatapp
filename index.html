@@ -70,6 +70,18 @@
             const [zoomImage, setZoomImage] = useState(null);
             const [loading, setLoading] = useState(true);
 
+            const handleDeleteWorkout = async (workoutId) => {
+        if (window.confirm("¿Quieres eliminar esta rutina de tu lista?")) {
+            try {
+                const docRef = window.firestore.doc(window.db, "rutinas", workoutId);
+                await window.firestore.deleteDoc(docRef);
+            } catch (e) {
+                console.error("Error al borrar:", e);
+                alert("No se pudo borrar la rutina");
+            }
+        }
+    };
+
             useEffect(() => {
                 if (!window.db || !window.auth) return;
 
@@ -86,23 +98,6 @@
                     }
                     setLoading(false);
                 });
-                
-            const handleDeleteWorkout = async (workoutId) => {
-    console.log("Intentando borrar la rutina con ID:", workoutId); // Chivato 1
-    
-    if (window.confirm("¿Quieres eliminar esta rutina de tu lista?")) {
-        try {
-            const docRef = window.firestore.doc(window.db, "rutinas", workoutId);
-            console.log("Referencia creada:", docRef); // Chivato 2
-            
-            await window.firestore.deleteDoc(docRef);
-            console.log("¡Borrado con éxito!"); // Chivato 3
-        } catch (e) {
-            console.error("Error detallado al borrar:", e);
-            alert("No se pudo borrar: " + e.message);
-        }
-    }
-};
 
                 // 2. ESCUCHAR USUARIOS
                 const qUsers = window.firestore.query(window.firestore.collection(window.db, "usuarios"));
