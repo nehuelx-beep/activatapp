@@ -29,7 +29,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -48,7 +48,7 @@
         // Compartir con React
         window.db = db;
         window.auth = auth;
-        window.firestore = { collection, addDoc, onSnapshot, query, orderBy };
+        window.firestore = { collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc };
         window.firebaseAuth = { onAuthStateChanged, signOut };
     </script>
 
@@ -86,6 +86,18 @@
                     }
                     setLoading(false);
                 });
+                
+                const handleDeleteWorkout = async (workoutId) => {
+    if (window.confirm("¿Quieres eliminar esta rutina de tu lista?")) {
+        try {
+            const docRef = window.firestore.doc(window.db, "rutinas", workoutId);
+            await window.firestore.deleteDoc(docRef);
+            // No hace falta hacer nada más, onSnapshot actualizará la lista sola
+        } catch (e) {
+            alert("No se pudo borrar la rutina");
+        }
+    }
+};
 
                 // 2. ESCUCHAR USUARIOS
                 const qUsers = window.firestore.query(window.firestore.collection(window.db, "usuarios"));
@@ -230,6 +242,27 @@
                     <div className="p-4 max-w-lg mx-auto">
                         <h2 className="text-xl font-bold mb-6 text-indigo-900 text-center">¡Vamos {currentUser.name}! 💪</h2>
                         {workouts.filter(w => w.clientId === currentUser.id).map(w => (
+                    {workouts.filter(w => w.clientId === currentUser.id).map(w => (
+    <div key={w.id} className="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-b-4 border-indigo-500 relative">
+        
+        {/* BOTÓN DE BORRAR PARA EL CLIENTE */}
+        <button 
+            onClick={() => handleDeleteWorkout(w.id)}
+            className="absolute top-2 right-2 z-10 bg-white/80 backdrop-blur-sm text-red-500 w-8 h-8 rounded-full shadow-md flex items-center justify-center hover:bg-red-50 transition"
+        >
+            <i className="fa-solid fa-trash text-xs"></i>
+        </button>
+
+        {w.image && (
+            // ... resto del código de la imagen/video ...
+        )}
+        
+        <div className="p-5">
+            <h3 className="font-bold text-xl text-gray-800 uppercase">{w.title}</h3>
+            {/* ... resto del contenido ... */}
+        </div>
+    </div>
+))}
                             <div key={w.id} className="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-b-4 border-indigo-500">
                                 {w.image && (
                                     <div className="relative cursor-pointer">
