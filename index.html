@@ -285,8 +285,12 @@
                         )}
                     </div>
                 </div>
-            );
+           ); // Aquí termina el return de la vista cliente
 
+            return null; // Retorno de seguridad
+        } // <--- ESTA ES LA LLAVE QUE TE FALTA (Cierra la función GymApp)
+
+        // Ahora sí, fuera de la función, inicializamos React
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<GymApp />);
     </script>
