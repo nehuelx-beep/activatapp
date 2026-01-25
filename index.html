@@ -74,25 +74,22 @@
             const [zoomImage, setZoomImage] = useState(null);
 
             // --- ESCUCHAR DATOS EN TIEMPO REAL ---
-           useEffect(() => {
+          useEffect(() => {
     if (!window.db) return;
 
-    // 1. ESCUCHAR EL ESTADO DE LA SESIÓN (Para recordar al usuario)
+    // 1. Escuchar el estado de la sesión (Login persistente)
     const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
-            console.log("Sesión recuperada de:", firebaseUser.email);
             setUser(firebaseUser);
         } else {
             setUser(null);
         }
     });
 
-    // 2. ESCUCHAR USUARIOS (Fuera del if/else para que siempre carguen)
+    // 2. Escuchar Usuarios
     const qUsers = window.firestore.query(window.firestore.collection(window.db, "usuarios"));
     const unsubscribeUsers = window.firestore.onSnapshot(qUsers, (snapshot) => {
         const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        
-        // Si no hay admin, lo añadimos
         const adminExist = docs.find(u => u.role === 'admin');
         if (!adminExist) {
             docs.push({ 
@@ -104,6 +101,21 @@
         }
         setUsers(docs);
     });
+
+    // 3. Escuchar Rutinas (si lo tenías aquí)
+    const qWorkouts = window.firestore.query(window.firestore.collection(window.db, "workouts"));
+    const unsubscribeWorkouts = window.firestore.onSnapshot(qWorkouts, (snapshot) => {
+        const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setWorkouts(docs);
+    });
+
+    // Al cerrar, limpiamos los tres escuchadores
+    return () => {
+        unsubscribeAuth();
+        unsubscribeUsers();
+        unsubscribeWorkouts();
+    };
+}, []);
 
     // 3. LIMPIEZA: Al cerrar la app, detenemos ambos escuchadores
     return () => {
