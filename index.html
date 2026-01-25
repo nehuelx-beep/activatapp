@@ -2,15 +2,8 @@
 <html lang="es">
 <head>
     <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
-<link rel="apple-touch-icon" href="icon.png">
-
-<script>
-  // Registrar el Service Worker
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
-</script>
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Activa-T Gym</title>
@@ -22,24 +15,23 @@
 </head>
 <body class="bg-gray-50">
     <div id="root"></div>
+    
     <div id="install-banner" style="display: none;" class="fixed bottom-4 left-4 right-4 bg-blue-700 text-white p-4 rounded-2xl shadow-2xl z-50 flex justify-between items-center border-2 border-white">
-    <div class="flex items-center gap-3">
-        <i class="fa-solid fa-mobile-screen-button text-2xl"></i>
-        <div>
-            <p class="font-bold text-sm">Instalar Activa-T Gym</p>
-            <p class="text-xs opacity-80">Acceso rápido desde tu menú</p>
+        <div class="flex items-center gap-3">
+            <i class="fa-solid fa-mobile-screen-button text-2xl"></i>
+            <div>
+                <p class="font-bold text-sm">Instalar Activa-T Gym</p>
+                <p class="text-xs opacity-80">Acceso rápido desde tu menú</p>
+            </div>
         </div>
+        <button id="install-button" class="bg-white text-blue-700 px-4 py-2 rounded-lg font-bold text-sm">INSTALAR</button>
     </div>
-    <button id="install-button" class="bg-white text-blue-700 px-4 py-2 rounded-lg font-bold text-sm">
-        INSTALAR
-    </button>
-</div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // --- 1. PEGA TUS DATOS DE FIREBASE AQUÍ ---
         const firebaseConfig = {
             apiKey: "AIzaSyDVT1Mx8dbizJ9nXBIXJcIWjcof_b0fsec",
             authDomain: "activa-t-aea86.firebaseapp.com",
@@ -51,17 +43,21 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
-        // Hacemos que React pueda usar Firebase
+        // Compartir con React
         window.db = db;
+        window.auth = auth;
         window.firestore = { collection, addDoc, onSnapshot, query, orderBy };
+        window.firebaseAuth = { onAuthStateChanged, signOut };
     </script>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
+
         const Icon = ({ name, className = "" }) => (
-  <i className={`fa-solid fa-${name} ${className}`}></i>
-);
+            <i className={`fa-solid fa-${name} ${className}`}></i>
+        );
 
         function GymApp() {
             const [currentUser, setCurrentUser] = useState(null);
@@ -72,92 +68,55 @@
             const [workoutData, setWorkoutData] = useState({ title: '', description: '', image: null });
             const [selectedClient, setSelectedClient] = useState('');
             const [zoomImage, setZoomImage] = useState(null);
+            const [loading, setLoading] = useState(true);
 
-            // --- ESCUCHAR DATOS EN TIEMPO REAL ---
-useEffect(() => {
-        if (!window.db) return;
+            useEffect(() => {
+                if (!window.db || !window.auth) return;
 
-        // 1. Escuchar el estado de la sesión
-        const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
-            if (firebaseUser) {
-                setUser(firebaseUser);
-            } else {
-                setUser(null);
-            }
-        });
-
-        // 2. Escuchar Usuarios
-        const qUsers = window.firestore.query(window.firestore.collection(window.db, "usuarios"));
-        const unsubscribeUsers = window.firestore.onSnapshot(qUsers, (snapshot) => {
-            const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            const adminExist = docs.find(u => u.role === 'admin');
-            if (!adminExist) {
-                docs.push({ 
-                    email: 'ggcaparra38@gmail.com', 
-                    password: 'templerenovatio', 
-                    name: 'Admin', 
-                    role: 'admin' 
+                // 1. RECORDAR SESIÓN
+                const unsubAuth = window.firebaseAuth.onAuthStateChanged(window.auth, (user) => {
+                    if (user) {
+                        // Buscamos los datos extra del usuario en nuestra lista de Firestore
+                        // (Nota: Para que esto sea perfecto, el login debería ser via Firebase Auth Real, 
+                        // pero con tu sistema actual, esto mantendrá el objeto user)
+                        setCurrentUser(user);
+                    } else {
+                        setCurrentUser(null);
+                        setView('login');
+                    }
+                    setLoading(false);
                 });
-            }
-            setUsers(docs);
-        });
 
-        // 3. Escuchar Rutinas (AHORA DENTRO DEL BLOQUE CORRECTO)
-        const qWorkouts = window.firestore.query(window.firestore.collection(window.db, "workouts"));
-        const unsubscribeWorkouts = window.firestore.onSnapshot(qWorkouts, (snapshot) => {
-            const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setWorkouts(docs);
-        });
+                // 2. ESCUCHAR USUARIOS
+                const qUsers = window.firestore.query(window.firestore.collection(window.db, "usuarios"));
+                const unsubUsers = window.firestore.onSnapshot(qUsers, (snapshot) => {
+                    const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    const adminExist = docs.find(u => u.role === 'admin');
+                    if (!adminExist) {
+                        docs.push({ 
+                            email: 'ggcaparra38@gmail.com', 
+                            password: 'templerenovatio', 
+                            name: 'Admin', 
+                            role: 'admin' 
+                        });
+                    }
+                    setUsers(docs);
+                });
 
-        // El return con TODAS las limpiezas juntas
-        return () => {
-            unsubscribeAuth();
-            unsubscribeUsers();
-            unsubscribeWorkouts();
-        };
-
-    }, []); // ESTE ES EL ÚNICO CIERRE QUE DEBE HABER AL FINAL
-
-                // Escuchar Rutinas
-                const qWorkouts = window.firestore.query(
-                    window.firestore.collection(window.db, "rutinas")
-                );
+                // 3. ESCUCHAR RUTINAS
+                const qWorkouts = window.firestore.query(window.firestore.collection(window.db, "rutinas"));
                 const unsubWorkouts = window.firestore.onSnapshot(qWorkouts, (snapshot) => {
-                    const workoutsList = snapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data()
-                    }));
-
-                    // ORDENAR POR FECHA (Lo más nuevo primero)
-                    // Ordena por createdAt si existe, sino por el ID
-                    workoutsList.sort((a, b) => {
+                    const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    list.sort((a, b) => {
                         const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
                         const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-                        return timeB - timeA; // Descendente: lo más nuevo primero
+                        return timeB - timeA;
                     });
-
-                    setWorkouts(workoutsList);
+                    setWorkouts(list);
                 });
 
-                return () => { unsubUsers(); unsubWorkouts(); };
+                return () => { unsubAuth(); unsubUsers(); unsubWorkouts(); };
             }, []);
-
-          const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        // Opcional: Limitar a 20MB para no saturar Firebase
-        if (file.size > 20 * 1024 * 1024) {
-            alert("El vídeo es demasiado grande. Máximo 20MB.");
-            return;
-        }
-        
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setWorkoutData({ ...workoutData, image: reader.result });
-        };
-        reader.readAsDataURL(file);
-    }
-};
 
             const handleLogin = () => {
                 const user = users.find(u => u.email === formData.email && u.password === formData.password);
@@ -167,16 +126,29 @@ useEffect(() => {
                 } else alert("Datos incorrectos");
             };
 
+            const handleLogout = () => {
+                setCurrentUser(null);
+                setView('login');
+            };
+
+            const handleImageChange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    if (file.size > 20 * 1024 * 1024) return alert("Máximo 20MB");
+                    const reader = new FileReader();
+                    reader.onloadend = () => setWorkoutData({ ...workoutData, image: reader.result });
+                    reader.readAsDataURL(file);
+                }
+            };
+
             const handleRegister = async () => {
                 try {
                     await window.firestore.addDoc(window.firestore.collection(window.db, "usuarios"), {
-                        ...formData,
-                        role: 'client',
-                        createdAt: new Date().toISOString()
+                        ...formData, role: 'client', createdAt: new Date().toISOString()
                     });
-                    alert("Cliente registrado");
+                    alert("Registrado");
                     setView('login');
-                } catch (e) { alert("Error al registrar"); }
+                } catch (e) { alert("Error"); }
             };
 
             const handleSendWorkout = async () => {
@@ -191,56 +163,20 @@ useEffect(() => {
                         createdAt: new Date().toISOString()
                     });
                     setWorkoutData({ title: '', description: '', image: null });
-                    alert("¡ejercicio enviado!");
-                } catch (e) { alert("Error al enviar"); }
+                    alert("Enviado");
+                } catch (e) { alert("Error"); }
             };
-            let deferredPrompt;
-const installBanner = document.getElementById('install-banner');
-const installButton = document.getElementById('install-button');
 
-window.addEventListener('beforeinstallprompt', (e) => {
-    // Evita que Chrome muestre su aviso automático feo
-    e.preventDefault();
-    // Guarda el evento para usarlo luego
-    deferredPrompt = e;
-    // Muestra nuestro botón bonito
-    installBanner.style.display = 'flex';
-});
+            if (loading) return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
 
-installButton.addEventListener('click', async () => {
-    if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-            installBanner.style.display = 'none';
-        }
-        deferredPrompt = null;
-    }
-});
-
-            // (El resto de las vistas Login, Register, Admin y Client se mantienen igual que en la versión anterior)
-            // Solo asegúrate de copiar el 'return' de las vistas del código anterior aquí abajo.
-            
-            if (view === 'login') return (
+            if (!currentUser || view === 'login') return (
                 <div className="min-h-screen bg-blue-600 flex items-center justify-center p-4">
                     <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
                         <h1 className="text-2xl font-bold text-center mb-6 text-blue-800 italic">ACTIVA-T GYM</h1>
                         <input className="w-full p-3 border rounded mb-3" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
                         <input className="w-full p-3 border rounded mb-3" type="password" placeholder="Contraseña" onChange={e => setFormData({...formData, password: e.target.value})} />
-                        {/* Mensaje de ayuda para instalación */}
-<div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200 text-xs text-blue-800">
-    <p className="font-bold mb-1">📲 Cómo instalar la App:</p>
-    <div className="block md:hidden">
-        {navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad') ? (
-            <p>Pulsa el botón de <strong>Compartir</strong> (cuadrado con flecha) dale a los 3 puntos y <strong>"Añadir a pantalla de inicio"</strong>.</p>
-        ) : (
-            <p>Pulsa el boton de abajo <strong></strong>que pone <strong>"Instalar"</strong>.</p>
-        )}
-    </div>
-    <p className="hidden md:block">Abre esta web en tu móvil para instalarla como una App.</p>
-</div>
                         <button onClick={handleLogin} className="w-full bg-blue-600 text-white p-3 rounded-lg font-bold">ENTRAR</button>
-                        <button onClick={() => setView('register')} className="w-full mt-4 text-blue-600 text-sm italic">¿No tienes cuenta? Registrate</button>
+                        <button onClick={() => setView('register')} className="w-full mt-4 text-blue-600 text-sm italic text-center block">¿No tienes cuenta? Regístrate</button>
                     </div>
                 </div>
             );
@@ -258,11 +194,11 @@ installButton.addEventListener('click', async () => {
                 </div>
             );
 
-            if (view === 'admin') return (
+            if (currentUser.role === 'admin' || view === 'admin') return (
                 <div className="min-h-screen bg-gray-50">
                     <nav className="bg-blue-800 p-4 text-white flex justify-between">
-                        <span className="font-bold">ADMIN</span>
-                        <button onClick={() => setView('login')} className="text-xs">Salir</button>
+                        <span className="font-bold">ADMIN: {currentUser.name}</span>
+                        <button onClick={handleLogout} className="text-xs">Salir</button>
                     </nav>
                     <div className="p-4 max-w-xl mx-auto">
                         <div className="bg-white p-6 rounded-xl shadow">
@@ -272,100 +208,48 @@ installButton.addEventListener('click', async () => {
                             </select>
                             <input className="w-full p-3 border rounded mb-4" placeholder="Título" value={workoutData.title} onChange={e => setWorkoutData({...workoutData, title: e.target.value})} />
                             <textarea className="w-full p-3 border rounded mb-4" placeholder="Ejercicios..." value={workoutData.description} onChange={e => setWorkoutData({...workoutData, description: e.target.value})}></textarea>
-                            // Cambia el accept para incluir video
-                            <input 
-                             type="file" 
-                             accept="image/*,video/mp4" 
-                             onChange={handleImageChange} 
-                             className="w-full text-sm" 
-                             />
-                            <button onClick={handleSendWorkout} className="w-full bg-blue-600 text-white p-4 rounded font-bold">ENVIAR</button>
+                            <input type="file" accept="image/*,video/mp4" onChange={handleImageChange} className="w-full text-sm mb-4" />
+                            <button onClick={handleSendWorkout} className="w-full bg-blue-600 text-white p-4 rounded font-bold">ENVIAR RUTINA</button>
                         </div>
                     </div>
                 </div>
             );
 
-            if (view === 'client') return (
-    <div className="min-h-screen bg-gray-100">
-        {/* --- MODAL DE ZOOM (PANTALLA COMPLETA) --- */}
-        {zoomImage && (
-            <div className="fixed inset-0 z-50 bg-black bg-opacity-95 flex flex-col items-center justify-center p-4" onClick={() => setZoomImage(null)}>
-                <button className="absolute top-4 right-4 text-white text-xl bg-gray-800 rounded-full w-10 h-10 flex items-center justify-center">
-                    <Icon name="xmark" />
-                </button>
-                
-                <img src={zoomImage} className="max-w-full max-h-[70vh] rounded shadow-2xl mb-6 object-contain" onClick={(e) => e.stopPropagation()} />
-                
-                <a 
-                    href={zoomImage} 
-                    download={`rutina-${new Date().toLocaleDateString()}.png`}
-                    className="bg-green-600 text-white px-6 py-3 rounded-full font-bold text-lg flex items-center gap-2 shadow-lg hover:bg-green-500 transition"
-                    onClick={(e) => e.stopPropagation()} // Para que no se cierre al pulsar descargar
-                >
-                    <Icon name="download" /> DESCARGAR FOTO
-                </a>
-                <p className="text-gray-400 mt-4 text-sm">Toca fuera para cerrar</p>
-            </div>
-        )}
-
-        {/* --- VISTA NORMAL --- */}
-        <nav className="bg-indigo-700 p-4 text-white shadow-md flex justify-between items-center">
-            <span className="font-bold italic">MIS RUTINAS</span>
-            <button onClick={() => setView('login')} className="text-xs bg-indigo-800 px-3 py-1 rounded">Salir</button>
-        </nav>
-        
-        <div className="p-4 max-w-lg mx-auto">
-            <h2 className="text-xl font-bold mb-6 text-indigo-900 text-center">¡Vamos {currentUser.name}! 💪</h2>
-            
-            {workouts.filter(w => w.clientId === currentUser.id).map(w => (
-                <div key={w.id} className="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-b-4 border-indigo-500">
-                    
-                    {/* FOTO Y VIDEO MEJORADOS CON AVISO DE CLIC */}
-                    {w.image && (
-                        <div className="relative group cursor-pointer">
-                            {w.image.includes('video/mp4') || w.image.startsWith('data:video/mp4') ? (
-                                <video 
-                                    src={w.image} 
-                                    controls 
-                                    className="w-full h-64 object-cover"
-                                />
-                            ) : (
-                                <img 
-                                    src={w.image} 
-                                    className="w-full h-64 object-cover" 
-                                    onClick={() => setZoomImage(w.image)}
-                                />
-                            )}
-                            
-                            {/* Solo mostramos la lupa si es imagen, el video ya tiene sus controles */}
-                            {!w.image.includes('video/mp4') && (
-                                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition flex items-center justify-center pointer-events-none">
-                                    <span className="bg-black bg-opacity-50 text-white text-[10px] px-2 py-1 rounded">
-                                        🔍 Toca para ampliar
-                                    </span>
-                                </div>
-                            )}
+            if (currentUser.role === 'client' || view === 'client') return (
+                <div className="min-h-screen bg-gray-100">
+                    {zoomImage && (
+                        <div className="fixed inset-0 z-50 bg-black bg-opacity-95 flex flex-col items-center justify-center p-4" onClick={() => setZoomImage(null)}>
+                            <img src={zoomImage} className="max-w-full max-h-[70vh] rounded mb-6 object-contain" />
+                            <button className="bg-green-600 text-white px-6 py-3 rounded-full font-bold">Cerrar</button>
                         </div>
                     )}
-
-                    <div className="p-5">
-                        <div className="flex justify-between items-center mb-3">
-                            <h3 className="font-bold text-xl text-gray-800 uppercase">{w.title}</h3>
-                            <span className="text-[10px] bg-gray-100 px-2 py-1 rounded text-gray-400">{w.date}</span>
-                        </div>
-                        <p className="text-gray-600 text-sm leading-relaxed border-t pt-3 whitespace-pre-line">{w.description}</p>
+                    <nav className="bg-indigo-700 p-4 text-white shadow-md flex justify-between items-center">
+                        <span className="font-bold italic">MIS RUTINAS</span>
+                        <button onClick={handleLogout} className="text-xs bg-indigo-800 px-3 py-1 rounded">Salir</button>
+                    </nav>
+                    <div className="p-4 max-w-lg mx-auto">
+                        <h2 className="text-xl font-bold mb-6 text-indigo-900 text-center">¡Vamos {currentUser.name}! 💪</h2>
+                        {workouts.filter(w => w.clientId === currentUser.id).map(w => (
+                            <div key={w.id} className="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-b-4 border-indigo-500">
+                                {w.image && (
+                                    <div className="relative cursor-pointer">
+                                        {w.image.startsWith('data:video') ? (
+                                            <video src={w.image} controls className="w-full h-64 object-cover" />
+                                        ) : (
+                                            <img src={w.image} className="w-full h-64 object-cover" onClick={() => setZoomImage(w.image)} />
+                                        )}
+                                    </div>
+                                )}
+                                <div className="p-5">
+                                    <h3 className="font-bold text-xl text-gray-800 uppercase">{w.title}</h3>
+                                    <p className="text-gray-400 text-[10px] mb-2">{w.date}</p>
+                                    <p className="text-gray-600 text-sm whitespace-pre-line border-t pt-3">{w.description}</p>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
-            ))}
-
-            {workouts.filter(w => w.clientId === currentUser.id).length === 0 && (
-                <div className="text-center p-10 bg-white rounded-2xl text-gray-400 italic">No tienes rutinas todavía.</div>
-            )}
-        </div>
-    </div>
-);
-
-            return null;
+            );
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
