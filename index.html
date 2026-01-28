@@ -306,7 +306,6 @@ if (!currentUser) return (
             );
 
             // VISTA CLIENTE
-
             if (currentUser.role === 'client' || view === 'client') return (
                 <div className="min-h-screen bg-gray-100">
                     {zoomImage && (
@@ -321,7 +320,7 @@ if (!currentUser) return (
 
                     <nav className="bg-indigo-700 p-4 text-white shadow-md flex justify-between items-center">
                         <span className="font-bold italic">MIS RUTINAS</span>
-                        <button onClick={() => { localStorage.removeItem("user_gym"); setCurrentUser(null); setView('login'); }} className="text-xs bg-indigo-800 px-3 py-1 rounded">Salir</button>
+                        <button onClick={handleLogout} className="text-xs bg-indigo-800 px-3 py-1 rounded">Salir</button>
                     </nav>
                     
                     <div className="p-4 max-w-lg mx-auto">
@@ -329,8 +328,6 @@ if (!currentUser) return (
                         
                         {workouts.filter(w => w.clientId === currentUser?.id).map(w => (
                             <div key={w.id} className="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-b-4 border-indigo-500 relative">
-                                
-                                {/* BOTÓN DE BORRAR */}
                                 <button 
                                     onClick={() => handleDeleteWorkout(w.id)}
                                     className="absolute top-2 right-2 z-20 bg-white/90 text-red-500 w-10 h-10 rounded-full shadow-lg flex items-center justify-center hover:bg-red-50 active:scale-90 transition-all border border-red-100"
@@ -365,12 +362,11 @@ if (!currentUser) return (
                         )}
                     </div>
                 </div>
-           ); // Aquí termina el return de la vista cliente
+            );
 
-            return null; // Retorno de seguridad
-        } // <--- ESTA ES LA LLAVE QUE TE FALTA (Cierra la función GymApp)
+            return null;
+        }
 
-        // Ahora sí, fuera de la función, inicializamos React
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<GymApp />);
     </script>
