@@ -80,14 +80,12 @@
                 console.error("Error al borrar:", e);
                 alert("No se pudo borrar la rutina");
                 const handleDeleteUser = async (userId, userName) => {
-    if (window.confirm(`¿Estás seguro de que quieres eliminar a ${userName}? Se borrarán sus datos de acceso.`)) {
+    if (window.confirm(`¿Borrar a ${userName}?`)) {
         try {
             const docRef = window.firestore.doc(window.db, "usuarios", userId);
             await window.firestore.deleteDoc(docRef);
-            alert("Usuario eliminado correctamente");
         } catch (e) {
-            console.error("Error al borrar usuario:", e);
-            alert("No se pudo eliminar al usuario");
+            alert("Error al borrar");
         }
     }
 };
