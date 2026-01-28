@@ -362,11 +362,12 @@ if (!currentUser) return (
                         )}
                     </div>
                 </div>
-            );
+); // Aquí cierra el return del cliente
 
-            return null;
-        }
+            return null; // Por si acaso ninguna vista coincide
+        } // AQUÍ CIERRA LA FUNCIÓN GymApp
 
+        // 3. INICIALIZACIÓN DE REACT (FUERA DE GymApp)
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<GymApp />);
     </script>
