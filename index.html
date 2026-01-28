@@ -224,32 +224,35 @@
         saveToFirestore("");
     }
 };
-            if (loading) return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
+            // 1. Si está cargando, mostramos carga
+if (loading) return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
 
-            if (!currentUser || view === 'login') return (
-                <div className="min-h-screen bg-blue-600 flex items-center justify-center p-4">
-                    <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
-                        <h1 className="text-2xl font-bold text-center mb-6 text-blue-800 italic">ACTIVA-T GYM</h1>
-                        <input className="w-full p-3 border rounded mb-3" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
-                        <input className="w-full p-3 border rounded mb-3" type="password" placeholder="Contraseña" onChange={e => setFormData({...formData, password: e.target.value})} />
-                        <button onClick={handleLogin} className="w-full bg-blue-600 text-white p-3 rounded-lg font-bold">ENTRAR</button>
-                        <button onClick={() => setView('register')} className="w-full mt-4 text-blue-600 text-sm italic text-center block">¿No tienes cuenta? Regístrate</button>
-                    </div>
-                </div>
-            );
+// 2. Si la vista es 'register', mostramos registro (IMPORTANTE: Esto debe ir antes que el login)
+if (view === 'register') return (
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+        <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
+            <h2 className="text-xl font-bold mb-4">Nuevo Cliente</h2>
+            <input className="w-full p-3 border rounded mb-3" placeholder="Nombre" onChange={e => setFormData({...formData, name: e.target.value})} />
+            <input className="w-full p-3 border rounded mb-3" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
+            <input className="w-full p-3 border rounded mb-3" type="password" placeholder="Contraseña" onChange={e => setFormData({...formData, password: e.target.value})} />
+            <button onClick={handleRegister} className="w-full bg-green-600 text-white p-3 rounded-lg font-bold">REGISTRARSE</button>
+            <button onClick={() => setView('login')} className="w-full mt-2 text-gray-500 text-xs text-center block">Volver</button>
+        </div>
+    </div>
+);
 
-            if (view === 'register') return (
-                <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-                    <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
-                        <h2 className="text-xl font-bold mb-4">Nuevo Cliente</h2>
-                        <input className="w-full p-3 border rounded mb-3" placeholder="Nombre" onChange={e => setFormData({...formData, name: e.target.value})} />
-                        <input className="w-full p-3 border rounded mb-3" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
-                        <input className="w-full p-3 border rounded mb-3" type="password" placeholder="Contraseña" onChange={e => setFormData({...formData, password: e.target.value})} />
-                        <button onClick={handleRegister} className="w-full bg-green-600 text-white p-3 rounded-lg font-bold">REGISTRARSE</button>
-                        <button onClick={() => setView('login')} className="w-full mt-2 text-gray-500 text-xs text-center block">Volver</button>
-                    </div>
-                </div>
-            );
+// 3. Si no hay usuario, mostramos login
+if (!currentUser) return (
+    <div className="min-h-screen bg-blue-600 flex items-center justify-center p-4">
+        <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
+            <h1 className="text-2xl font-bold text-center mb-6 text-blue-800 italic">ACTIVA-T GYM</h1>
+            <input className="w-full p-3 border rounded mb-3" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
+            <input className="w-full p-3 border rounded mb-3" type="password" placeholder="Contraseña" onChange={e => setFormData({...formData, password: e.target.value})} />
+            <button onClick={handleLogin} className="w-full bg-blue-600 text-white p-3 rounded-lg font-bold">ENTRAR</button>
+            <button onClick={() => setView('register')} className="w-full mt-4 text-blue-600 text-sm italic text-center block">¿No tienes cuenta? Regístrate</button>
+        </div>
+    </div>
+);
 
             if (currentUser.role === 'admin' || view === 'admin') return (
                 <div className="min-h-screen bg-gray-50">
