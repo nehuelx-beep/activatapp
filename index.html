@@ -71,34 +71,36 @@
             const [loading, setLoading] = useState(true);
             const [file, setFile] = useState(null);
 
+            // FUNCIÓN BORRAR RUTINA
             const handleDeleteWorkout = async (workoutId) => {
-        if (window.confirm("¿Quieres eliminar esta rutina de tu lista?")) {
-            try {
-                const docRef = window.firestore.doc(window.db, "rutinas", workoutId);
-                await window.firestore.deleteDoc(docRef);
-            } catch (e) {
-                console.error("Error al borrar:", e);
-                alert("No se pudo borrar la rutina");
-                const handleDeleteUser = async (userId, userName) => {
-    if (window.confirm(`¿Borrar a ${userName}?`)) {
-        try {
-            const docRef = window.firestore.doc(window.db, "usuarios", userId);
-            await window.firestore.deleteDoc(docRef);
-        } catch (e) {
-            alert("Error al borrar");
-        }
-    }
-};
-                
-            useEffect(() => {
-                if (!window.db || !window.auth) return;
+                if (window.confirm("¿Quieres eliminar esta rutina?")) {
+                    try {
+                        const docRef = window.firestore.doc(window.db, "rutinas", workoutId);
+                        await window.firestore.deleteDoc(docRef);
+                    } catch (e) {
+                        console.error("Error al borrar:", e);
+                        alert("No se pudo borrar");
+                    }
+                }
+            };
 
-                // 1. RECORDAR SESIÓN
+            // FUNCIÓN BORRAR USUARIO
+            const handleDeleteUser = async (userId, userName) => {
+                if (window.confirm(`¿Borrar a ${userName}?`)) {
+                    try {
+                        const docRef = window.firestore.doc(window.db, "usuarios", userId);
+                        await window.firestore.deleteDoc(docRef);
+                    } catch (e) {
+                        alert("Error al borrar usuario");
+                    }
+                }
+            };
+
+            useEffect(() => {
+                if (!window.db) return;
+
                 const unsubAuth = window.firebaseAuth.onAuthStateChanged(window.auth, (user) => {
                     if (user) {
-                        // Buscamos los datos extra del usuario en nuestra lista de Firestore
-                        // (Nota: Para que esto sea perfecto, el login debería ser via Firebase Auth Real, 
-                        // pero con tu sistema actual, esto mantendrá el objeto user)
                         setCurrentUser(user);
                     } else {
                         setCurrentUser(null);
@@ -107,7 +109,6 @@
                     setLoading(false);
                 });
 
-                // 2. ESCUCHAR USUARIOS
                 const qUsers = window.firestore.query(window.firestore.collection(window.db, "usuarios"));
                 const unsubUsers = window.firestore.onSnapshot(qUsers, (snapshot) => {
                     const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -123,7 +124,6 @@
                     setUsers(docs);
                 });
 
-                // 3. ESCUCHAR RUTINAS
                 const qWorkouts = window.firestore.query(window.firestore.collection(window.db, "rutinas"));
                 const unsubWorkouts = window.firestore.onSnapshot(qWorkouts, (snapshot) => {
                     const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -152,14 +152,10 @@
             };
 
             const handleImageChange = (e) => {
-                const selectedFile = e.target.files[0]; // Usamos un nombre temporal
+                const selectedFile = e.target.files[0];
                 if (selectedFile) {
                     if (selectedFile.size > 20 * 1024 * 1024) return alert("Máximo 20MB");
-                    
-                    // 1. Guardamos el archivo en el estado "file" para poder enviarlo luego
                     setFile(selectedFile); 
-
-                    // 2. Creamos la vista previa
                     const reader = new FileReader();
                     reader.onloadend = () => setWorkoutData({ ...workoutData, image: reader.result });
                     reader.readAsDataURL(selectedFile);
@@ -177,203 +173,131 @@
             };
 
             const handleSendWorkout = async () => {
-    console.log("Iniciando envío...", { selectedClient, workoutData, file });
+                if (!selectedClient) return alert("Selecciona cliente");
+                if (!workoutData.title) return alert("Título obligatorio");
 
-    // 1. Verificaciones de seguridad
-    if (!selectedClient) return alert("Error: No has seleccionado a ningún cliente");
-    if (!workoutData.title) return alert("Error: El título es obligatorio");
+                const saveToFirestore = async (finalImage) => {
+                    try {
+                        await window.firestore.addDoc(window.firestore.collection(window.db, "rutinas"), {
+                            clientId: selectedClient,
+                            title: workoutData.title,
+                            description: workoutData.description || "",
+                            image: finalImage || "",
+                            date: new Date().toLocaleDateString(),
+                            createdAt: new Date().toISOString()
+                        });
+                        alert("✅ Rutina enviada");
+                        setWorkoutData({ title: '', description: '', image: null });
+                        setFile(null);
+                    } catch (error) {
+                        alert("Error: " + error.message);
+                    }
+                };
 
-    // Esta es la parte que guarda en Firebase
-    const saveToFirestore = async (finalImage) => {
-        try {
-            console.log("Subiendo a Firebase con imagen:", finalImage ? "Sí" : "No");
-            await window.firestore.addDoc(window.firestore.collection(window.db, "rutinas"), {
-                clientId: selectedClient,
-                title: workoutData.title,
-                description: workoutData.description || "",
-                image: finalImage || "", // Si no hay imagen, guarda texto vacío
-                date: new Date().toLocaleDateString()
-            });
-            
-            alert("✅ ¡Rutina enviada correctamente!");
-            
-            // Limpiar todo después de enviar
-            setWorkoutData({ title: '', description: '' });
-            setFile(null);
-            // Si tienes un input de tipo file, esto lo resetea visualmente:
-            const fileInput = document.querySelector('input[type="file"]');
-            if (fileInput) fileInput.value = "";
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => saveToFirestore(e.target.result);
+                    reader.readAsDataURL(file);
+                } else {
+                    saveToFirestore("");
+                }
+            };
 
-        } catch (error) {
-            console.error("Error al guardar en Firestore:", error);
-            alert("Error en la base de datos: " + error.message);
-        }
-    };
+            if (loading) return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
 
-    // 2. Lógica de procesamiento
-    if (file) {
-        console.log("Procesando archivo...");
-        const reader = new FileReader();
-        
-        reader.onload = (e) => {
-            console.log("Archivo leído con éxito");
-            saveToFirestore(e.target.result);
-        };
-
-        reader.onerror = (err) => {
-            console.error("Error al leer el archivo:", err);
-            alert("Error al procesar la foto/video");
-        };
-
-        reader.readAsDataURL(file);
-    } else {
-        console.log("Enviando sin archivo...");
-        saveToFirestore("");
-    }
-};
-            // 1. Si está cargando, mostramos carga
-if (loading) return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
-
-// 2. Si la vista es 'register', mostramos registro (IMPORTANTE: Esto debe ir antes que el login)
-if (view === 'register') return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
-            <h2 className="text-xl font-bold mb-4">Nuevo Cliente</h2>
-            <input className="w-full p-3 border rounded mb-3" placeholder="Nombre" onChange={e => setFormData({...formData, name: e.target.value})} />
-            <input className="w-full p-3 border rounded mb-3" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
-            <input className="w-full p-3 border rounded mb-3" type="password" placeholder="Contraseña" onChange={e => setFormData({...formData, password: e.target.value})} />
-            <button onClick={handleRegister} className="w-full bg-green-600 text-white p-3 rounded-lg font-bold">REGISTRARSE</button>
-            <button onClick={() => setView('login')} className="w-full mt-2 text-gray-500 text-xs text-center block">Volver</button>
-        </div>
-    </div>
-);
-
-// 3. Si no hay usuario, mostramos login
-if (!currentUser) return (
-    <div className="min-h-screen bg-blue-600 flex items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
-            <h1 className="text-2xl font-bold text-center mb-6 text-blue-800 italic">ACTIVA-T GYM</h1>
-            <input className="w-full p-3 border rounded mb-3" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
-            <input className="w-full p-3 border rounded mb-3" type="password" placeholder="Contraseña" onChange={e => setFormData({...formData, password: e.target.value})} />
-            <button onClick={handleLogin} className="w-full bg-blue-600 text-white p-3 rounded-lg font-bold">ENTRAR</button>
-            <button onClick={() => setView('register')} className="w-full mt-4 text-blue-600 text-sm italic text-center block">¿No tienes cuenta? Regístrate</button>
-        </div>
-    </div>
-);
-
-           // VISTA ADMIN
-            if (currentUser.role === 'admin' || view === 'admin') {
-                return (
-                    <div className="min-h-screen bg-gray-50">
-                        <nav className="bg-blue-800 p-4 text-white flex justify-between">
-                            <span className="font-bold">ADMIN: {currentUser.name}</span>
-                            <button onClick={handleLogout} className="text-xs">Salir</button>
-                        </nav>
-                        <div className="p-4 max-w-xl mx-auto">
-                            <div className="bg-white p-6 rounded-xl shadow">
-                                <select className="w-full p-3 border rounded mb-4" onChange={e => setSelectedClient(e.target.value)}>
-                                    <option value="">Selecciona cliente...</option>
-                                    {users.filter(u => u.role === 'client').map(c => (
-                                        <option key={c.id} value={c.id}>{c.name}</option>
-                                    ))}
-                                </select>
-                                <input className="w-full p-3 border rounded mb-4" placeholder="Título" value={workoutData.title} onChange={e => setWorkoutData({...workoutData, title: e.target.value})} />
-                                <textarea className="w-full p-3 border rounded mb-4" placeholder="Ejercicios..." value={workoutData.description} onChange={e => setWorkoutData({...workoutData, description: e.target.value})}></textarea>
-                                <input type="file" accept="image/*,video/mp4" onChange={handleImageChange} className="w-full text-sm mb-4" />
-                                <button onClick={handleSendWorkout} className="w-full bg-blue-600 text-white p-4 rounded font-bold">ENVIAR RUTINA</button>
-                                
-                                {/* LISTA DE GESTIÓN DE CLIENTES */}
-                                <div className="mt-8 border-t pt-6">
-                                    <h3 className="font-bold text-gray-700 mb-4 uppercase text-sm">Gestionar Clientes</h3>
-                                    <div className="space-y-2">
-                                        {users.filter(u => u.role === 'client').map(u => (
-                                            <div key={u.id} className="flex justify-between items-center bg-gray-100 p-3 rounded-lg">
-                                                <div>
-                                                    <p className="font-bold text-blue-900">{u.name}</p>
-                                                    <p className="text-xs text-gray-500">{u.email}</p>
-                                                </div>
-                                                <button 
-                                                    onClick={() => handleDeleteUser(u.id, u.name)}
-                                                    className="text-red-500 hover:bg-red-100 p-2 rounded-full transition-colors"
-                                                >
-                                                    <i className="fa-solid fa-user-minus"></i>
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            if (view === 'register') return (
+                <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+                    <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
+                        <h2 className="text-xl font-bold mb-4">Nuevo Cliente</h2>
+                        <input className="w-full p-3 border rounded mb-3" placeholder="Nombre" onChange={e => setFormData({...formData, name: e.target.value})} />
+                        <input className="w-full p-3 border rounded mb-3" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
+                        <input className="w-full p-3 border rounded mb-3" type="password" placeholder="Contraseña" onChange={e => setFormData({...formData, password: e.target.value})} />
+                        <button onClick={handleRegister} className="w-full bg-green-600 text-white p-3 rounded-lg font-bold">REGISTRARSE</button>
+                        <button onClick={() => setView('login')} className="w-full mt-2 text-gray-500 text-xs text-center block">Volver</button>
                     </div>
-                );
-            }
+                </div>
+            );
 
-            // VISTA CLIENTE
-            if (currentUser.role === 'client' || view === 'client') {
-                return (
-                    <div className="min-h-screen bg-gray-100">
-                        {zoomImage && (
-                            <div className="fixed inset-0 z-50 bg-black bg-opacity-95 flex flex-col items-center justify-center p-4" onClick={() => setZoomImage(null)}>
-                                <button className="absolute top-4 right-4 text-white text-xl bg-gray-800 rounded-full w-10 h-10 flex items-center justify-center">
-                                    <i className="fa-solid fa-xmark"></i>
-                                </button>
-                                <img src={zoomImage} className="max-w-full max-h-[70vh] rounded shadow-2xl mb-6 object-contain" />
-                                <p className="text-gray-400 mt-4 text-sm">Toca fuera para cerrar</p>
-                            </div>
-                        )}
+            if (!currentUser) return (
+                <div className="min-h-screen bg-blue-600 flex items-center justify-center p-4">
+                    <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
+                        <h1 className="text-2xl font-bold text-center mb-6 text-blue-800 italic">ACTIVA-T GYM</h1>
+                        <input className="w-full p-3 border rounded mb-3" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
+                        <input className="w-full p-3 border rounded mb-3" type="password" placeholder="Contraseña" onChange={e => setFormData({...formData, password: e.target.value})} />
+                        <button onClick={handleLogin} className="w-full bg-blue-600 text-white p-3 rounded-lg font-bold">ENTRAR</button>
+                        <button onClick={() => setView('register')} className="w-full mt-4 text-blue-600 text-sm italic text-center block">¿No tienes cuenta? Regístrate</button>
+                    </div>
+                </div>
+            );
 
-                        <nav className="bg-indigo-700 p-4 text-white shadow-md flex justify-between items-center">
-                            <span className="font-bold italic">MIS RUTINAS</span>
-                            <button onClick={handleLogout} className="text-xs bg-indigo-800 px-3 py-1 rounded">Salir</button>
-                        </nav>
-                        
-                        <div className="p-4 max-w-lg mx-auto">
-                            <h2 className="text-xl font-bold mb-6 text-indigo-900 text-center">¡Vamos {currentUser?.name}! 💪</h2>
+            if (currentUser.role === 'admin') return (
+                <div className="min-h-screen bg-gray-50">
+                    <nav className="bg-blue-800 p-4 text-white flex justify-between">
+                        <span className="font-bold uppercase tracking-widest text-sm">ADMIN: {currentUser.name}</span>
+                        <button onClick={handleLogout} className="text-xs">Salir</button>
+                    </nav>
+                    <div className="p-4 max-w-xl mx-auto">
+                        <div className="bg-white p-6 rounded-xl shadow">
+                            <select className="w-full p-3 border rounded mb-4" onChange={e => setSelectedClient(e.target.value)}>
+                                <option value="">Selecciona cliente...</option>
+                                {users.filter(u => u.role === 'client').map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                            </select>
+                            <input className="w-full p-3 border rounded mb-4" placeholder="Título" value={workoutData.title} onChange={e => setWorkoutData({...workoutData, title: e.target.value})} />
+                            <textarea className="w-full p-3 border rounded mb-4 h-32" placeholder="Ejercicios..." value={workoutData.description} onChange={e => setWorkoutData({...workoutData, description: e.target.value})}></textarea>
+                            <input type="file" accept="image/*,video/mp4" onChange={handleImageChange} className="w-full text-sm mb-4" />
+                            <button onClick={handleSendWorkout} className="w-full bg-blue-600 text-white p-4 rounded font-bold">ENVIAR RUTINA</button>
                             
-                            {workouts.filter(w => w.clientId === currentUser?.id).map(w => (
-                                <div key={w.id} className="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-b-4 border-indigo-500 relative">
-                                    <button 
-                                        onClick={() => handleDeleteWorkout(w.id)}
-                                        className="absolute top-2 right-2 z-20 bg-white/90 text-red-500 w-10 h-10 rounded-full shadow-lg flex items-center justify-center"
-                                    >
-                                        <i className="fa-solid fa-trash-can text-sm"></i>
-                                    </button>
-
-                                    {w.image && (
-                                        <div className="relative">
-                                            {w.image.includes('video/mp4') || w.image.startsWith('data:video/mp4') ? (
-                                                <video src={w.image} controls className="w-full h-64 object-cover" />
-                                            ) : (
-                                                <img src={w.image} className="w-full h-64 object-cover" onClick={() => setZoomImage(w.image)} />
-                                            )}
+                            <div className="mt-8 border-t pt-6">
+                                <h3 className="font-bold text-gray-700 mb-4 uppercase text-xs">Gestionar Clientes</h3>
+                                <div className="space-y-2">
+                                    {users.filter(u => u.role === 'client').map(u => (
+                                        <div key={u.id} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg border">
+                                            <div>
+                                                <p className="font-bold text-sm">{u.name}</p>
+                                                <p className="text-[10px] text-gray-500">{u.email}</p>
+                                            </div>
+                                            <button onClick={() => handleDeleteUser(u.id, u.name)} className="text-red-500 p-2"><Icon name="user-minus" /></button>
                                         </div>
-                                    )}
-
-                                    <div className="p-5">
-                                        <div className="flex justify-between items-center mb-3">
-                                            <h3 className="font-bold text-xl text-gray-800 uppercase">{w.title}</h3>
-                                            <span className="text-[10px] bg-gray-100 px-2 py-1 rounded text-gray-400">{w.date}</span>
-                                        </div>
-                                        <p className="text-gray-600 text-sm leading-relaxed border-t pt-3 whitespace-pre-line">{w.description}</p>
-                                    </div>
+                                    ))}
                                 </div>
-                            ))}
-
-                            {workouts.filter(w => w.clientId === currentUser?.id).length === 0 && (
-                                <div className="text-center p-10 bg-white rounded-2xl text-gray-400 italic shadow-sm">
-                                    No tienes rutinas todavía.
-                                </div>
-                            )}
+                            </div>
                         </div>
                     </div>
-                );
-            }
+                </div>
+            );
 
+            if (currentUser.role === 'client') return (
+                <div className="min-h-screen bg-gray-100 pb-20">
+                    {zoomImage && (
+                        <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4" onClick={() => setZoomImage(null)}>
+                            <img src={zoomImage} className="max-w-full max-h-[80vh] rounded shadow-2xl" />
+                        </div>
+                    )}
+                    <nav className="bg-indigo-700 p-4 text-white flex justify-between items-center">
+                        <span className="font-bold italic">MIS RUTINAS</span>
+                        <button onClick={handleLogout} className="text-xs bg-indigo-800 px-3 py-1 rounded">Salir</button>
+                    </nav>
+                    <div className="p-4 max-w-lg mx-auto">
+                        <h2 className="text-xl font-bold mb-6 text-indigo-900 text-center uppercase tracking-tighter italic">¡DALE CAÑA {currentUser.name}! 💪</h2>
+                        {workouts.filter(w => w.clientId === currentUser.id).map(w => (
+                            <div key={w.id} className="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-b-4 border-indigo-500 relative">
+                                <button onClick={() => handleDeleteWorkout(w.id)} className="absolute top-2 right-2 bg-white/80 text-red-500 w-8 h-8 rounded-full shadow flex items-center justify-center"><Icon name="trash-can" /></button>
+                                {w.image && (
+                                    <div className="relative">
+                                        {w.image.startsWith('data:video') ? <video src={w.image} controls className="w-full h-64 object-cover" /> : <img src={w.image} className="w-full h-64 object-cover" onClick={() => setZoomImage(w.image)} />}
+                                    </div>
+                                )}
+                                <div className="p-5">
+                                    <h3 className="font-bold text-lg text-gray-800 mb-2">{w.title}</h3>
+                                    <p className="text-gray-600 text-sm whitespace-pre-line border-t pt-2">{w.description}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
             return null;
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<GymApp />);
-    </script>
-</body>
-</html>
