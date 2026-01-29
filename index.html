@@ -329,7 +329,7 @@
                         <button onClick={handleLogout} className="text-xs bg-indigo-800 px-3 py-1 rounded">Salir</button>
                     </nav>
                     <div className="p-4 max-w-lg mx-auto">
-                        <h2 className="text-xl font-bold mb-6 text-indigo-900 text-center uppercase tracking-tighter italic">¡DALE CAÑA {currentUser.name}! 💪</h2>
+                        <h2 className="text-xl font-bold mb-6 text-indigo-900 text-center uppercase tracking-tighter italic">¡VAMOS {currentUser.name}! 💪</h2>
                         
                         {workouts.filter(w => w.clientId === currentUser.id).map(w => (
                             <div key={w.id} className="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-b-4 border-indigo-500 relative">
