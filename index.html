@@ -319,24 +319,23 @@
                     <div className="p-4 max-w-lg mx-auto">
                         <h2 className="text-xl font-bold mb-6 text-indigo-900 text-center uppercase tracking-tighter italic">¡DALE CAÑA {currentUser.name}! 💪</h2>
                         {w.image && (
-                                    <div className="relative bg-black w-full flex justify-center items-center">
-                                        {/* SI ES VIDEO */}
-                                        {w.image.startsWith('data:video') ? (
-                                            <video 
-                                                src={w.image} 
-                                                controls 
-                                                className="w-full h-80 object-contain" 
-                                            />
-                                        ) : (
-                                            /* SI ES FOTO */
-                                            <img 
-                                                src={w.image} 
-                                                className="w-full h-80 object-cover" 
-                                                onClick={() => setZoomImage(w.image)} 
-                                            />
-                                        )}
-                                    </div>
-                                )}
+                                   {w.image && (
+                    <div className="relative bg-black w-full flex justify-center items-center h-80">
+                        {w.image.startsWith('data:video') ? (
+                            <video 
+                                src={w.image} 
+                                controls 
+                                className="w-full h-full object-contain" 
+                            />
+                        ) : (
+                            <img 
+                                src={w.image} 
+                                className="w-full h-full object-cover shadow-inner" 
+                                onClick={() => setZoomImage(w.image)} 
+                            />
+                        )}
+                    </div>
+                )}
                                     <div className="relative">
                                         {w.image.startsWith('data:video') ? <video src={w.image} controls className="w-full h-64 object-cover" /> : <img src={w.image} className="w-full h-64 object-cover" onClick={() => setZoomImage(w.image)} />}
                                     </div>
