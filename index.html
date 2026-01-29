@@ -305,6 +305,7 @@
     </div>
 );
 
+            {/* VISTA CLIENTE */}
             if (currentUser.role === 'client') return (
                 <div className="min-h-screen bg-gray-100 pb-20">
                     {zoomImage && (
@@ -318,28 +319,21 @@
                     </nav>
                     <div className="p-4 max-w-lg mx-auto">
                         <h2 className="text-xl font-bold mb-6 text-indigo-900 text-center uppercase tracking-tighter italic">¡DALE CAÑA {currentUser.name}! 💪</h2>
-                        {w.image && (
-                                   {w.image && (
-                    <div className="relative bg-black w-full flex justify-center items-center h-80">
-                        {w.image.startsWith('data:video') ? (
-                            <video 
-                                src={w.image} 
-                                controls 
-                                className="w-full h-full object-contain" 
-                            />
-                        ) : (
-                            <img 
-                                src={w.image} 
-                                className="w-full h-full object-cover shadow-inner" 
-                                onClick={() => setZoomImage(w.image)} 
-                            />
-                        )}
-                    </div>
-                )}
-                                    <div className="relative">
-                                        {w.image.startsWith('data:video') ? <video src={w.image} controls className="w-full h-64 object-cover" /> : <img src={w.image} className="w-full h-64 object-cover" onClick={() => setZoomImage(w.image)} />}
+                        
+                        {workouts.filter(w => w.clientId === currentUser.id).map(w => (
+                            <div key={w.id} className="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-b-4 border-indigo-500 relative">
+                                <button onClick={() => handleDeleteWorkout(w.id)} className="absolute top-2 right-2 z-30 bg-white/80 text-red-500 w-8 h-8 rounded-full shadow flex items-center justify-center"><Icon name="trash-can" /></button>
+                                
+                                {w.image && (
+                                    <div className="relative bg-black w-full flex justify-center items-center h-80">
+                                        {w.image.startsWith('data:video') ? (
+                                            <video src={w.image} controls className="w-full h-full object-contain" />
+                                        ) : (
+                                            <img src={w.image} className="w-full h-full object-cover" onClick={() => setZoomImage(w.image)} />
+                                        )}
                                     </div>
                                 )}
+
                                 <div className="p-5">
                                     <h3 className="font-bold text-lg text-gray-800 mb-2">{w.title}</h3>
                                     <p className="text-gray-600 text-sm whitespace-pre-line border-t pt-2">{w.description}</p>
