@@ -231,84 +231,79 @@
             );
 
             if (currentUser.role === 'admin') return (
-                <div className="min-h-screen bg-gray-50">
-                    <nav className="bg-blue-800 p-4 text-white flex justify-between">
-                        <span className="font-bold uppercase tracking-widest text-sm">ADMIN: {currentUser.name}</span>
-                        <button onClick={handleLogout} className="text-xs">Salir</button>
-                    </nav>
-                    <div className="p-4 max-w-xl mx-auto">
-                        <div className="bg-white p-6 rounded-xl shadow">
-                            <select className="w-full p-3 border rounded mb-4" onChange={e => setSelectedClient(e.target.value)}>
-                                <option value="">Selecciona cliente...</option>
-                                {users.filter(u => u.role === 'client').map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                            </select>
-                            <input className="w-full p-3 border rounded mb-4" placeholder="Título" value={workoutData.title} onChange={e => setWorkoutData({...workoutData, title: e.target.value})} />
-                            <textarea className="w-full p-3 border rounded mb-4 h-32" placeholder="Ejercicios..." value={workoutData.description} onChange={e => setWorkoutData({...workoutData, description: e.target.value})}></textarea>
-                            <input type="file" accept="image/*,video/mp4" onChange={handleImageChange} className="w-full text-sm mb-4" />
-                            <button onClick={handleSendWorkout} className="w-full bg-blue-600 text-white p-4 rounded font-bold">ENVIAR RUTINA</button>
-                            {/* HISTORIAL DE RUTINAS DEL CLIENTE SELECCIONADO */}
-{selectedClient && (
-    <div className="mt-8 border-t pt-6">
-        <h3 className="font-bold text-gray-700 mb-4 uppercase text-xs flex items-center gap-2">
-            <Icon name="clock-rotate-left" /> Historial de {users.find(u => u.id === selectedClient)?.name}
-        </h3>
-        <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
-            {workouts.filter(w => w.clientId === selectedClient).length === 0 ? (
-                <p className="text-gray-400 text-xs italic">Este cliente aún no tiene rutinas.</p>
-            ) : (
-                workouts.filter(w => w.clientId === selectedClient).map(w => (
-                    <div key={w.id} className="bg-gray-50 border rounded-lg p-3 relative group">
-                        <button 
-                            onClick={() => handleDeleteWorkout(w.id)}
-                            className="absolute top-2 right-2 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                            <Icon name="trash-can" className="text-xs" />
-                        </button>
-                        <div className="flex gap-3">
-                            {w.image && (
-                                <div className="w-16 h-16 flex-shrink-0">
-                                    {w.image.startsWith('data:video') ? (
-                                        <div className="w-full h-full bg-black rounded flex items-center justify-center">
-                                            <Icon name="video" className="text-white text-xs" />
+    <div className="min-h-screen bg-gray-50">
+        <nav className="bg-blue-800 p-4 text-white flex justify-between">
+            <span className="font-bold uppercase tracking-widest text-sm">ADMIN: {currentUser.name}</span>
+            <button onClick={handleLogout} className="text-xs">Salir</button>
+        </nav>
+        <div className="p-4 max-w-xl mx-auto">
+            <div className="bg-white p-6 rounded-xl shadow">
+                <select className="w-full p-3 border rounded mb-4" value={selectedClient} onChange={e => setSelectedClient(e.target.value)}>
+                    <option value="">Selecciona cliente...</option>
+                    {users.filter(u => u.role === 'client').map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+                <input className="w-full p-3 border rounded mb-4" placeholder="Título" value={workoutData.title} onChange={e => setWorkoutData({...workoutData, title: e.target.value})} />
+                <textarea className="w-full p-3 border rounded mb-4 h-32" placeholder="Ejercicios..." value={workoutData.description} onChange={e => setWorkoutData({...workoutData, description: e.target.value})}></textarea>
+                <input type="file" accept="image/*,video/mp4" onChange={handleImageChange} className="w-full text-sm mb-4" />
+                <button onClick={handleSendWorkout} className="w-full bg-blue-600 text-white p-4 rounded font-bold">ENVIAR RUTINA</button>
+                
+                {/* --- NUEVA SECCIÓN: HISTORIAL DE RUTINAS --- */}
+                {selectedClient && (
+                    <div className="mt-8 border-t pt-6">
+                        <h3 className="font-bold text-gray-700 mb-4 uppercase text-[10px] tracking-widest flex items-center gap-2">
+                            <Icon name="clock-rotate-left" /> Historial de Rutinas Enviadas
+                        </h3>
+                        <div className="space-y-3">
+                            {workouts.filter(w => w.clientId === selectedClient).length === 0 ? (
+                                <p className="text-gray-400 text-xs italic text-center py-4">Este cliente aún no tiene rutinas.</p>
+                            ) : (
+                                workouts.filter(w => w.clientId === selectedClient).map(w => (
+                                    <div key={w.id} className="flex gap-3 bg-gray-50 p-3 rounded-lg border border-gray-100 relative group">
+                                        {w.image && (
+                                            <div className="w-12 h-12 flex-shrink-0 bg-gray-200 rounded overflow-hidden">
+                                                {w.image.startsWith('data:video') ? (
+                                                    <div className="w-full h-full flex items-center justify-center bg-black"><Icon name="video" className="text-white text-[10px]" /></div>
+                                                ) : (
+                                                    <img src={w.image} className="w-full h-full object-cover" />
+                                                )}
+                                            </div>
+                                        )}
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-bold text-sm text-gray-800 truncate">{w.title}</p>
+                                            <p className="text-[10px] text-gray-400">{w.date}</p>
                                         </div>
-                                    ) : (
-                                        <img src={w.image} className="w-full h-full object-cover rounded shadow-sm" />
-                                    )}
-                                </div>
+                                        <button 
+                                            onClick={() => handleDeleteWorkout(w.id)}
+                                            className="text-gray-300 hover:text-red-500 transition-colors self-center px-2"
+                                        >
+                                            <Icon name="trash-can" className="text-xs" />
+                                        </button>
+                                    </div>
+                                ))
                             )}
-                            <div className="flex-1">
-                                <p className="font-bold text-sm text-blue-900 leading-tight">{w.title}</p>
-                                <p className="text-[10px] text-gray-400 mb-1">{w.date}</p>
-                                <p className="text-xs text-gray-600 line-clamp-2 italic">
-                                    {w.description}
-                                </p>
-                            </div>
                         </div>
                     </div>
-                ))
-            )}
-        </div>
-    </div>
-)}
-                            
-                            <div className="mt-8 border-t pt-6">
-                                <h3 className="font-bold text-gray-700 mb-4 uppercase text-xs">Gestionar Clientes</h3>
-                                <div className="space-y-2">
-                                    {users.filter(u => u.role === 'client').map(u => (
-                                        <div key={u.id} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg border">
-                                            <div>
-                                                <p className="font-bold text-sm">{u.name}</p>
-                                                <p className="text-[10px] text-gray-500">{u.email}</p>
-                                            </div>
-                                            <button onClick={() => handleDeleteUser(u.id, u.name)} className="text-red-500 p-2"><Icon name="user-minus" /></button>
-                                        </div>
-                                    ))}
+                )}
+                {/* --- FIN HISTORIAL --- */}
+
+                <div className="mt-8 border-t pt-6">
+                    <h3 className="font-bold text-gray-700 mb-4 uppercase text-xs">Gestionar Clientes</h3>
+                    <div className="space-y-2">
+                        {users.filter(u => u.role === 'client').map(u => (
+                            <div key={u.id} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg border">
+                                <div>
+                                    <p className="font-bold text-sm">{u.name}</p>
+                                    <p className="text-[10px] text-gray-500">{u.email}</p>
                                 </div>
+                                <button onClick={() => handleDeleteUser(u.id, u.name)} className="text-red-500 p-2"><Icon name="user-minus" /></button>
                             </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
-            );
+            </div>
+        </div>
+    </div>
+);
 
             if (currentUser.role === 'client') return (
                 <div className="min-h-screen bg-gray-100 pb-20">
