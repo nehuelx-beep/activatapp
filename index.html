@@ -318,10 +318,25 @@
                     </nav>
                     <div className="p-4 max-w-lg mx-auto">
                         <h2 className="text-xl font-bold mb-6 text-indigo-900 text-center uppercase tracking-tighter italic">¡DALE CAÑA {currentUser.name}! 💪</h2>
-                        {workouts.filter(w => w.clientId === currentUser.id).map(w => (
-                            <div key={w.id} className="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-b-4 border-indigo-500 relative">
-                                <button onClick={() => handleDeleteWorkout(w.id)} className="absolute top-2 right-2 bg-white/80 text-red-500 w-8 h-8 rounded-full shadow flex items-center justify-center"><Icon name="trash-can" /></button>
-                                {w.image && (
+                        {w.image && (
+                                    <div className="relative bg-black w-full flex justify-center items-center">
+                                        {/* SI ES VIDEO */}
+                                        {w.image.startsWith('data:video') ? (
+                                            <video 
+                                                src={w.image} 
+                                                controls 
+                                                className="w-full h-80 object-contain" 
+                                            />
+                                        ) : (
+                                            /* SI ES FOTO */
+                                            <img 
+                                                src={w.image} 
+                                                className="w-full h-80 object-cover" 
+                                                onClick={() => setZoomImage(w.image)} 
+                                            />
+                                        )}
+                                    </div>
+                                )}
                                     <div className="relative">
                                         {w.image.startsWith('data:video') ? <video src={w.image} controls className="w-full h-64 object-cover" /> : <img src={w.image} className="w-full h-64 object-cover" onClick={() => setZoomImage(w.image)} />}
                                     </div>
