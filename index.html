@@ -246,6 +246,50 @@
                             <textarea className="w-full p-3 border rounded mb-4 h-32" placeholder="Ejercicios..." value={workoutData.description} onChange={e => setWorkoutData({...workoutData, description: e.target.value})}></textarea>
                             <input type="file" accept="image/*,video/mp4" onChange={handleImageChange} className="w-full text-sm mb-4" />
                             <button onClick={handleSendWorkout} className="w-full bg-blue-600 text-white p-4 rounded font-bold">ENVIAR RUTINA</button>
+                            {/* HISTORIAL DE RUTINAS DEL CLIENTE SELECCIONADO */}
+{selectedClient && (
+    <div className="mt-8 border-t pt-6">
+        <h3 className="font-bold text-gray-700 mb-4 uppercase text-xs flex items-center gap-2">
+            <Icon name="clock-rotate-left" /> Historial de {users.find(u => u.id === selectedClient)?.name}
+        </h3>
+        <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+            {workouts.filter(w => w.clientId === selectedClient).length === 0 ? (
+                <p className="text-gray-400 text-xs italic">Este cliente aún no tiene rutinas.</p>
+            ) : (
+                workouts.filter(w => w.clientId === selectedClient).map(w => (
+                    <div key={w.id} className="bg-gray-50 border rounded-lg p-3 relative group">
+                        <button 
+                            onClick={() => handleDeleteWorkout(w.id)}
+                            className="absolute top-2 right-2 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                            <Icon name="trash-can" className="text-xs" />
+                        </button>
+                        <div className="flex gap-3">
+                            {w.image && (
+                                <div className="w-16 h-16 flex-shrink-0">
+                                    {w.image.startsWith('data:video') ? (
+                                        <div className="w-full h-full bg-black rounded flex items-center justify-center">
+                                            <Icon name="video" className="text-white text-xs" />
+                                        </div>
+                                    ) : (
+                                        <img src={w.image} className="w-full h-full object-cover rounded shadow-sm" />
+                                    )}
+                                </div>
+                            )}
+                            <div className="flex-1">
+                                <p className="font-bold text-sm text-blue-900 leading-tight">{w.title}</p>
+                                <p className="text-[10px] text-gray-400 mb-1">{w.date}</p>
+                                <p className="text-xs text-gray-600 line-clamp-2 italic">
+                                    {w.description}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                ))
+            )}
+        </div>
+    </div>
+)}
                             
                             <div className="mt-8 border-t pt-6">
                                 <h3 className="font-bold text-gray-700 mb-4 uppercase text-xs">Gestionar Clientes</h3>
