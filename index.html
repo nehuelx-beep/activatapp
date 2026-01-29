@@ -99,19 +99,12 @@
             useEffect(() => {
                 if (!window.db) return;
 
-                const unsubAuth = window.firebaseAuth.onAuthStateChanged(window.auth, (user) => {
-                    if (user) {
-                        setCurrentUser(user);
-                    } else {
-                        setCurrentUser(null);
-                        setView('login');
-                    }
-                    setLoading(false);
-                });
-
+                // 1. ESCUCHAR USUARIOS Y RECUPERAR SESIÓN
                 const qUsers = window.firestore.query(window.firestore.collection(window.db, "usuarios"));
                 const unsubUsers = window.firestore.onSnapshot(qUsers, (snapshot) => {
                     const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    
+                    // Admin de seguridad por si no existe
                     const adminExist = docs.find(u => u.role === 'admin');
                     if (!adminExist) {
                         docs.push({ 
@@ -122,8 +115,22 @@
                         });
                     }
                     setUsers(docs);
+
+                    // --- AQUÍ ESTÁ LA MAGIA DE RECORDAR LA SESIÓN ---
+                    const storedUser = localStorage.getItem('gymUser');
+                    if (storedUser) {
+                        const parsedUser = JSON.parse(storedUser);
+                        // Comprobamos que el usuario guardado sigue existiendo en la base de datos
+                        const found = docs.find(u => u.id === parsedUser.id);
+                        if (found) {
+                            setCurrentUser(found);
+                            setView(found.role === 'admin' ? 'admin' : 'client');
+                        }
+                    }
+                    setLoading(false); // Quitamos la pantalla de carga aquí
                 });
 
+                // 2. ESCUCHAR RUTINAS
                 const qWorkouts = window.firestore.query(window.firestore.collection(window.db, "rutinas"));
                 const unsubWorkouts = window.firestore.onSnapshot(qWorkouts, (snapshot) => {
                     const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -135,18 +142,22 @@
                     setWorkouts(list);
                 });
 
-                return () => { unsubAuth(); unsubUsers(); unsubWorkouts(); };
+                return () => { unsubUsers(); unsubWorkouts(); };
             }, []);
 
             const handleLogin = () => {
                 const user = users.find(u => u.email === formData.email && u.password === formData.password);
                 if (user) {
+                    // GUADARMOS LA SESIÓN EN EL MÓVIL
+                    localStorage.setItem('gymUser', JSON.stringify(user));
+                    
                     setCurrentUser(user);
                     setView(user.role === 'admin' ? 'admin' : 'client');
                 } else alert("Datos incorrectos");
             };
 
             const handleLogout = () => {
+                localStorage.removeItem('gymUser'); // BORRAMOS LA SESIÓN
                 setCurrentUser(null);
                 setView('login');
             };
