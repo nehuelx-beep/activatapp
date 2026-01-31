@@ -128,6 +128,25 @@
     ) : null;
 
             useEffect(() => {
+    let interval = null;
+    if (isActive) {
+        interval = setInterval(() => {
+            setSeconds(s => s + 1);
+        }, 1000);
+    } else {
+        clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+}, [isActive]);
+
+// Función para poner bonita la hora (00:00)
+const formatTime = (s) => {
+    const mins = Math.floor(s / 60);
+    const secs = s % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+};
+
+            useEffect(() => {
                 if (!window.db) return;
 
                 // 1. ESCUCHAR USUARIOS Y RECUPERAR SESIÓN
@@ -351,37 +370,49 @@
             if (currentUser.role === 'client') {
         return (
             <div className="min-h-screen bg-gray-100 pb-20">
-                {/* MODAL DE HERRAMIENTAS */}
-                {showTools && (
-                    <div className="fixed inset-0 z-[100] bg-black/80 flex items-end sm:items-center justify-center p-4">
-                        <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl">
-                            <div className="p-6">
-                                <div className="flex justify-between items-center mb-6">
-                                    <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                                        <Icon name="stopwatch" /> Cronómetro
-                                    </h2>
-                                    <button onClick={() => setShowTools(false)} className="text-gray-400 p-2 text-2xl">
-                                        <Icon name="xmark" />
-                                    </button>
-                                </div>
-                                
-                                <div className="bg-gray-50 rounded-3xl p-8 text-center mb-6 border border-gray-100">
-                                    <p className="text-blue-600 font-bold uppercase tracking-widest text-xs mb-2">Tiempo de entrenamiento</p>
-                                    <div className="text-6xl font-mono font-black text-gray-800 tabular-nums">
-                                        00:00
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <button className="bg-gray-200 text-gray-700 py-4 rounded-2xl font-bold">REINICIAR</button>
-                                    <button className="bg-green-500 text-white py-4 rounded-2xl font-bold shadow-lg shadow-green-100">EMPEZAR</button>
-                                </div>
-                                
-                                <button onClick={() => setShowTools(false)} className="w-full mt-6 text-gray-400 text-sm font-bold uppercase tracking-widest">Cerrar Herramientas</button>
-                            </div>
-                        </div>
+                {/* MODAL DE HERRAMIENTAS ACTUALIZADO */}
+{showTools && (
+    <div className="fixed inset-0 z-[100] bg-black/80 flex items-end sm:items-center justify-center p-4">
+        <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl">
+            <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                        <Icon name="stopwatch" /> Cronómetro
+                    </h2>
+                    <button onClick={() => { setIsActive(false); setShowTools(false); }} className="text-gray-400 p-2 text-2xl">
+                        <Icon name="xmark" />
+                    </button>
+                </div>
+                
+                <div className="bg-gray-50 rounded-3xl p-8 text-center mb-6 border border-gray-100">
+                    <p className="text-blue-600 font-bold uppercase tracking-widest text-[10px] mb-2">Tiempo de entrenamiento</p>
+                    <div className="text-6xl font-mono font-black text-gray-800 tabular-nums">
+                        {formatTime(seconds)}
                     </div>
-                )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <button 
+                        onClick={() => { setSeconds(0); setIsActive(false); }}
+                        className="bg-gray-200 text-gray-700 py-4 rounded-2xl font-bold active:bg-gray-300 transition-colors"
+                    >
+                        REINICIAR
+                    </button>
+                    <button 
+                        onClick={() => setIsActive(!isActive)}
+                        className={`${isActive ? 'bg-orange-500' : 'bg-green-500'} text-white py-4 rounded-2xl font-bold shadow-lg transition-colors`}
+                    >
+                        {isActive ? 'PAUSAR' : 'EMPEZAR'}
+                    </button>
+                </div>
+                
+                <button onClick={() => { setIsActive(false); setShowTools(false); }} className="w-full mt-6 text-gray-400 text-[10px] font-bold uppercase tracking-[0.2em]">
+                    Cerrar Herramientas
+                </button>
+            </div>
+        </div>
+    </div>
+)}
 
                 {/* VISTA NORMAL DEL CLIENTE */}
                 {zoomImage && (
