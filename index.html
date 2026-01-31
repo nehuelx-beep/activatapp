@@ -70,7 +70,7 @@
             const [zoomImage, setZoomImage] = useState(null);
             const [loading, setLoading] = useState(true);
             const [file, setFile] = useState(null);
-            const [showTools, setShowTools] = useState(false);
+            
 
             // FUNCIÓN BORRAR RUTINA
             const handleDeleteWorkout = async (workoutId) => {
@@ -96,6 +96,33 @@
                     }
                 }
             };
+            // Definimos el contenido de las herramientas como una variable
+    const toolsContent = showTools ? (
+        <div className="fixed inset-0 z-[100] bg-black/80 flex items-end sm:items-center justify-center p-4">
+            <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-300">
+                <div className="p-6">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                            <Icon name="screwdriver-wrench" /> Herramientas
+                        </h2>
+                        <button onClick={() => setShowTools(false)} className="text-gray-400 hover:text-red-500 text-2xl p-2">
+                            <Icon name="xmark" />
+                        </button>
+                    </div>
+                    
+                    {/* Aquí puedes meter el cronómetro que te pasé antes o empezar con un texto simple para probar */}
+                    <div className="bg-blue-50 p-8 rounded-2xl text-center mb-6">
+                        <p className="text-blue-600 font-bold">Próximamente: Cronómetro y Temporizador</p>
+                        <p className="text-xs text-blue-400 mt-2">Estamos ajustando los relojes...</p>
+                    </div>
+
+                    <button onClick={() => setShowTools(false)} className="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold">
+                        CERRAR
+                    </button>
+                </div>
+            </div>
+        </div>
+    ) : null;
 
             useEffect(() => {
                 if (!window.db) return;
@@ -320,7 +347,9 @@
             {/* VISTA CLIENTE */}
             if (currentUser.role === 'client') return (
                 <>
-             {showTools && <ToolsModal />}
+            {toolsContent}
+            <div className="min-h-screen bg-gray-100 pb-20">
+                
                 <div className="min-h-screen bg-gray-100 pb-20">
                     {zoomImage && (
                         <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4" onClick={() => setZoomImage(null)}>
@@ -333,13 +362,14 @@
                     </nav>
                     <div className="p-4 max-w-lg mx-auto">
                         <h2 className="text-xl font-bold mb-6 text-indigo-900 text-center uppercase tracking-tighter italic">¡VAMOS {currentUser.name}! 💪</h2>
-                        <button 
-    onClick={() => setShowTools(true)}
-    className="w-full mb-6 bg-white border-2 border-indigo-100 text-indigo-600 p-3 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-transform"
->
-    <Icon name="stopwatch" /> ABRIR HERRAMIENTAS
-</button>
-                        
+                        {/* BOTÓN PARA ABRIR */}
+                    <button 
+                        onClick={() => setShowTools(true)}
+                        className="w-full mb-6 bg-indigo-600 text-white p-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform"
+                    >
+                        <Icon name="stopwatch" /> ABRIR CRONÓMETRO
+                    </button>
+  
                         {workouts.filter(w => w.clientId === currentUser.id).map(w => (
                             <div key={w.id} className="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-b-4 border-indigo-500 relative">
                                 <button onClick={() => handleDeleteWorkout(w.id)} className="absolute top-2 right-2 z-30 bg-white/80 text-red-500 w-8 h-8 rounded-full shadow flex items-center justify-center"><Icon name="trash-can" /></button>
