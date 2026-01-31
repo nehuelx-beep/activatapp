@@ -71,10 +71,16 @@
             const [loading, setLoading] = useState(true);
             const [file, setFile] = useState(null);
             const [showTools, setShowTools] = useState(false);
+            const [showTools, setShowTools] = useState(false);
             const [seconds, setSeconds] = useState(0);
+            // Función para formatear el tiempo (00:00)
+     const formatTime = (s) => {
+        const mins = Math.floor(s / 60);
+        const secs = s % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
             const [isActive, setIsActive] = useState(false);
             const [toolMode, setToolMode] = useState('chrono'); 
-            const [timerSeconds, setTimerSeconds] = useState(60); 
             
 
             // FUNCIÓN BORRAR RUTINA
@@ -89,6 +95,7 @@
                     }
                 }
             };
+            
 
             // FUNCIÓN BORRAR USUARIO
             const handleDeleteUser = async (userId, userName) => {
@@ -130,24 +137,23 @@
     ) : null;
 
             useEffect(() => {
-    let interval = null;
-    if (isActive) {
-        interval = setInterval(() => {
-            setSeconds(s => {
-                if (toolMode === 'chrono') return s + 1;
-                if (s > 0) return s - 1;
-                
-                // Si llega a cero en modo temporizador
-                setIsActive(false);
-                if (window.navigator.vibrate) window.navigator.vibrate([200, 100, 200]);
-                return 0;
-            });
-        }, 1000);
-    } else {
-        clearInterval(interval);
-    }
-    return () => clearInterval(interval);
-}, [isActive, toolMode]);
+        let interval = null;
+        if (isActive) {
+            interval = setInterval(() => {
+                setSeconds(s => {
+                    if (toolMode === 'chrono') return s + 1;
+                    if (s > 0) return s - 1;
+                    
+                    // Fin del temporizador
+                    setIsActive(false);
+                    return 0;
+                });
+            }, 1000);
+        } else {
+            clearInterval(interval);
+        }
+        return () => clearInterval(interval);
+    }, [isActive, toolMode]);
 
             useEffect(() => {
                 if (!window.db) return;
