@@ -225,17 +225,6 @@
                     setView(user.role === 'admin' ? 'admin' : 'client');
                 } else alert("Datos incorrectos");
             };
-            
-            const requestNotificationPermission = async () => {
-    if (!("Notification" in window)) {
-        alert("Tu navegador no soporta notificaciones.");
-        return;
-    }
-    const permission = await Notification.requestPermission();
-    if (permission === "granted") {
-        alert("¡Permiso concedido! Ahora recibirás avisos.");
-    }
-};
 
             const handleLogout = () => {
                 localStorage.removeItem('gymUser'); // BORRAMOS LA SESIÓN
@@ -294,29 +283,6 @@
                     saveToFirestore("");
                 }
             };
-            useEffect(() => {
-    // Solo si el usuario es cliente y ha dado permiso
-    if (currentUser?.role === 'client' && Notification.permission === "granted" && workouts.length > 0) {
-        
-        // Filtramos las rutinas de este cliente específico
-        const myWorkouts = workouts.filter(w => w.clientId === currentUser.id);
-        
-        if (myWorkouts.length > 0) {
-            const latest = myWorkouts[0]; // La primera es la más reciente por tu sort
-            
-            // Calculamos si se creó hace menos de 15 segundos
-            const created = latest.createdAt ? new Date(latest.createdAt).getTime() : 0;
-            const now = new Date().getTime();
-            
-            if (true) {
-                new Notification("Activa-T Gym: ¡Nueva Rutina!", {
-                    body: `Gabi te ha asignado: ${latest.title}`,
-                    icon: "https://cdn-icons-png.flaticon.com/512/1099/1099672.png"
-                });
-            }
-        }
-    }
-}, [workouts.length]); // Solo se dispara si cambia el número de rutinas
 
             if (loading) return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
 
@@ -479,7 +445,7 @@
                         <Icon name="xmark" />
                     </button>
                 </div>
-                
+
                 {/* SELECTOR DE MODO */}
                 <div className="flex bg-gray-100 rounded-xl p-1 mb-6">
                     <button 
@@ -559,15 +525,6 @@
                     <h2 className="text-xl font-bold mb-6 text-indigo-900 text-center uppercase tracking-tighter italic">
                         ¡VAMOS {currentUser.name}! 💪
                     </h2>
-                    
-                    {Notification.permission !== "granted" && (
-    <button 
-        onClick={requestNotificationPermission}
-        className="w-full mb-4 bg-orange-100 text-orange-700 p-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 border border-orange-200"
-    >
-        <Icon name="bell" /> ACTIVAR NOTIFICACIONES
-    </button>
-)}
 
                     {/* BOTÓN PARA ABRIR HERRAMIENTAS */}
                     <button 
@@ -618,4 +575,3 @@
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<GymApp />);
-</script>
