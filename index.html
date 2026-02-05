@@ -198,23 +198,22 @@
                         });
                     }
                     useEffect(() => {
-        if (currentUser && currentUser.role === 'client' && Notification.permission === "granted") {
-            // Buscamos la última rutina enviada a este cliente
-            const lastWorkout = workouts.filter(w => w.clientId === currentUser.id)[0];
-            
-            if (lastWorkout) {
-                // Si la rutina es de hace menos de 10 segundos (es nueva)
-                const isNew = (new Date() - new Date(lastWorkout.createdAt)) < 10000;
+        if (currentUser?.role === 'client' && Notification.permission === "granted" && workouts.length > 0) {
+            const clientWorkouts = workouts.filter(w => w.clientId === currentUser.id);
+            if (clientWorkouts.length > 0) {
+                const lastWorkout = clientWorkouts[0];
+                const createdTime = lastWorkout.createdAt ? new Date(lastWorkout.createdAt).getTime() : 0;
+                const isRecent = (new Date().getTime() - createdTime) < 10000;
                 
-                if (isNew) {
+                if (isRecent) {
                     new Notification("¡Nueva Rutina en Activa-T Gym!", {
                         body: `Gabi te ha mandado: ${lastWorkout.title}`,
-                        icon: "https://cdn-icons-png.flaticon.com/512/1099/1099672.png" // O el logo de tu gym
+                        icon: "https://cdn-icons-png.flaticon.com/512/1099/1099672.png"
                     });
                 }
             }
         }
-    }, [workouts]); // Se activa cada vez que la lista de rutinas cambia
+    }, [workouts, currentUser]);
                     setUsers(docs);
 
                     // --- AQUÍ ESTÁ LA MAGIA DE RECORDAR LA SESIÓN ---
