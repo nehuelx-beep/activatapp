@@ -479,15 +479,7 @@
                         <Icon name="xmark" />
                     </button>
                 </div>
-                {Notification.permission !== "granted" && (
-    <button 
-        onClick={requestNotificationPermission}
-        className="w-full mb-4 bg-orange-100 text-orange-700 p-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 border border-orange-200"
-    >
-        <Icon name="bell" /> ACTIVAR NOTIFICACIONES
-    </button>
-)}
-
+                
                 {/* SELECTOR DE MODO */}
                 <div className="flex bg-gray-100 rounded-xl p-1 mb-6">
                     <button 
@@ -567,6 +559,15 @@
                     <h2 className="text-xl font-bold mb-6 text-indigo-900 text-center uppercase tracking-tighter italic">
                         ¡VAMOS {currentUser.name}! 💪
                     </h2>
+                    
+                    {Notification.permission !== "granted" && (
+    <button 
+        onClick={requestNotificationPermission}
+        className="w-full mb-4 bg-orange-100 text-orange-700 p-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 border border-orange-200"
+    >
+        <Icon name="bell" /> ACTIVAR NOTIFICACIONES
+    </button>
+)}
 
                     {/* BOTÓN PARA ABRIR HERRAMIENTAS */}
                     <button 
