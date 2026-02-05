@@ -80,6 +80,19 @@
     };
             const [isActive, setIsActive] = useState(false);
             const [toolMode, setToolMode] = useState('chrono'); 
+            
+            //funcion mandar noti
+        const requestNotificationPermission = async () => {
+        if (!("Notification" in window)) {
+            alert("Este navegador no soporta notificaciones");
+            return;
+        }
+        
+        const permission = await Notification.requestPermission();
+        if (permission === "granted") {
+            alert("¡Notificaciones activadas con éxito!");
+        }
+    };    
 
             // FUNCIÓN PARA MARCAR RUTINA COMO COMPLETADA
     const handleToggleComplete = async (workoutId, currentStatus) => {
@@ -184,6 +197,24 @@
                             role: 'admin' 
                         });
                     }
+                    useEffect(() => {
+        if (currentUser && currentUser.role === 'client' && Notification.permission === "granted") {
+            // Buscamos la última rutina enviada a este cliente
+            const lastWorkout = workouts.filter(w => w.clientId === currentUser.id)[0];
+            
+            if (lastWorkout) {
+                // Si la rutina es de hace menos de 10 segundos (es nueva)
+                const isNew = (new Date() - new Date(lastWorkout.createdAt)) < 10000;
+                
+                if (isNew) {
+                    new Notification("¡Nueva Rutina en Activa-T Gym!", {
+                        body: `Gabi te ha mandado: ${lastWorkout.title}`,
+                        icon: "https://cdn-icons-png.flaticon.com/512/1099/1099672.png" // O el logo de tu gym
+                    });
+                }
+            }
+        }
+    }, [workouts]); // Se activa cada vez que la lista de rutinas cambia
                     setUsers(docs);
 
                     // --- AQUÍ ESTÁ LA MAGIA DE RECORDAR LA SESIÓN ---
@@ -485,6 +516,14 @@
                         ))}
                     </div>
                 )}
+                {Notification.permission !== "granted" && (
+        <button 
+            onClick={requestNotificationPermission}
+            className="w-full mb-2 bg-yellow-50 text-yellow-700 p-2 rounded-lg text-xs font-bold border border-yellow-200 flex items-center justify-center gap-2"
+        >
+            <Icon name="bell" /> ACTIVAR AVISOS DE RUTINAS
+        </button>
+    )}
 
                 <div className="grid grid-cols-2 gap-4">
                     <button 
