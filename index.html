@@ -308,7 +308,7 @@
             const created = latest.createdAt ? new Date(latest.createdAt).getTime() : 0;
             const now = new Date().getTime();
             
-            if (now - created < 15000) {
+            if (true) {
                 new Notification("Activa-T Gym: ¡Nueva Rutina!", {
                     body: `Gabi te ha asignado: ${latest.title}`,
                     icon: "https://cdn-icons-png.flaticon.com/512/1099/1099672.png"
