@@ -656,61 +656,62 @@ const handleShareAchievement = async () => {
                 <Icon name="xmark" />
             </button>
 
-            {/* LA TARJETA */}
-<div 
-    id="achievement-card" 
-    className="aspect-[9/16] w-full overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-blue-600 via-blue-800 to-indigo-950 p-8 shadow-2xl flex flex-col items-center justify-between text-center border-[6px] border-white/20"
->
-    {/* Logo y Header (Solo una vez) */}
-    <div className="mt-8">
-        <div className="inline-block rounded-full bg-white/20 px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-white backdrop-blur-md mb-4">
-            Activa-T Gym
-        </div>
-        <h2 className="text-4xl font-black italic text-white leading-tight drop-shadow-2xl">
-            ENTRENO<br/>LOGRADO
-        </h2>
-    </div>
+          {showAchievement && (
+    /* ESTE DIV QUE AÑADO AQUÍ ES EL QUE LO ARREGLA TODO */
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm animate-in fade-in duration-300">
+        
+        {/* Un contenedor para centrar la tarjeta y el botón juntos */}
+        <div className="relative w-full max-w-sm flex flex-col items-center">
+            
+            {/* Botón X para cerrar arriba a la derecha */}
+            <button 
+                onClick={() => setShowAchievement(false)}
+                className="self-end text-white text-2xl p-2 mb-2"
+            >
+                <Icon name="xmark" />
+            </button>
 
-    {/* Info Central */}
-    <div className="relative w-full py-10">
-        <div className="absolute inset-0 bg-white/5 blur-3xl rounded-full"></div>
-        <div className="relative">
-            <p className="text-blue-200 text-sm font-medium mb-1 uppercase tracking-widest">Bravo, {currentUser?.name}</p>
-            <div className="h-px w-12 bg-blue-400 mx-auto mb-4"></div>
-            <p className="text-2xl font-bold text-white leading-tight px-4">
-                {completedWorkoutTitle}
-            </p>
-        </div>
-    </div>
+            {/* 1. LA TARJETA */}
+            <div 
+                id="achievement-card" 
+                className="aspect-[9/16] w-full overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-blue-600 via-blue-800 to-indigo-950 p-8 shadow-2xl flex flex-col items-center justify-between text-center border-[6px] border-white/20"
+            >
+                <div className="mt-8">
+                    <div className="inline-block rounded-full bg-white/20 px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-white backdrop-blur-md mb-4">
+                        Activa-T Gym
+                    </div>
+                    <h2 className="text-4xl font-black italic text-white leading-tight">
+                        ENTRENO<br/>LOGRADO
+                    </h2>
+                </div>
 
-    {/* Footer Tarjeta */}
-    <div className="mb-8 w-full">
-        <p className="text-blue-200/70 text-xs italic mb-6 px-6">
-            "La disciplina es el puente entre tus metas y tus logros"
-        </p>
-        <div className="flex flex-col items-center gap-2">
-            <span className="text-[10px] font-bold text-white/50 uppercase tracking-[0.3em]">Sigue mi progreso en</span>
-            <span className="rounded-lg bg-white px-4 py-2 text-sm font-black text-blue-900 shadow-xl">
-                @activat_gymdance
-            </span>
-        </div>
-    </div>
-</div>
+                <div className="relative w-full py-10">
+                    <p className="text-blue-200 text-sm font-medium mb-1 uppercase tracking-widest">Bravo, {currentUser?.name}</p>
+                    <p className="text-2xl font-bold text-white leading-tight px-4">{completedWorkoutTitle}</p>
+                </div>
 
-{/* BOTÓN Y AYUDA (Fuera de la tarjeta) */}
-<div className="mt-6 flex flex-col gap-3 w-full px-4">
-    <button 
-        onClick={handleShareAchievement}
-        className="w-full bg-white text-blue-900 py-4 rounded-2xl font-black flex items-center justify-center gap-3 shadow-xl active:scale-95 transition-all"
-    >
-        <Icon name="share-nodes" /> COMPARTIR LOGRO
-    </button>
-    
-    <p className="text-white/40 text-[10px] text-center uppercase tracking-widest animate-pulse">
-        📸 O haz una captura de pantalla
-    </p>
-               </div>
+                <div className="mb-8 w-full text-center">
+                    <span className="text-[10px] font-bold text-white/50 uppercase tracking-[0.3em]">Sigue mi progreso en</span>
+                    <br/>
+                    <span className="inline-block mt-2 rounded-lg bg-white px-4 py-2 text-sm font-black text-blue-900 shadow-xl">
+                        @activat_gymdance
+                    </span>
+                </div>
             </div>
+
+            {/* 2. EL BOTÓN (Ahora dentro del mismo contenedor padre) */}
+            <div className="mt-6 flex flex-col gap-3 w-full">
+                <button 
+                    onClick={handleShareAchievement}
+                    className="w-full bg-white text-blue-900 py-4 rounded-2xl font-black flex items-center justify-center gap-3 shadow-xl active:scale-95 transition-all"
+                >
+                    <Icon name="share-nodes" /> COMPARTIR LOGRO
+                </button>
+                <p className="text-white/40 text-[10px] text-center uppercase tracking-widest animate-pulse">
+                    📸 O haz una captura de pantalla
+                </p>
+            </div>
+
         </div>
     </div>
 )}
