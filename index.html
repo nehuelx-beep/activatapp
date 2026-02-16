@@ -333,8 +333,44 @@ const handleShareAchievement = async () => {
                 }
             };
 
-            if (loading) return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
+            if (loading) return (
+        <div className="min-h-screen bg-white flex items-center justify-center p-12">
+            <div className="w-full max-w-xs text-center">
+                <div className="flex justify-center mb-6">
+                    {/* Icono con rebote suave */}
+                    <div className="bg-blue-50 p-4 rounded-full animate-bounce">
+                        <Icon name="bolt" className="text-blue-600 text-3xl" />
+                    </div>
+                </div>
+                
+                {/* Contenedor de la barra */}
+                <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden relative">
+                    {/* La barra que se mueve */}
+                    <div 
+                        className="h-full bg-blue-600 rounded-full"
+                        style={{
+                            width: '40%',
+                            position: 'absolute',
+                            animation: 'loading-bar 1.5s infinite ease-in-out'
+                        }}
+                    ></div>
+                </div>
 
+                <p className="mt-6 text-gray-400 text-[10px] font-black uppercase tracking-[0.3em]">
+                    Activa-T Gym <span className="animate-pulse">...</span>
+                </p>
+
+                {/* Estilos para la animación de la barra */}
+                <style>{`
+                    @keyframes loading-bar {
+                        0% { left: -40%; }
+                        50% { left: 40%; }
+                        100% { left: 100%; }
+                    }
+                `}</style>
+            </div>
+        </div>
+    );
             if (view === 'register') return (
                 <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
                     <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
