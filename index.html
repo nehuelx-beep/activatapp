@@ -75,6 +75,7 @@
             const [seconds, setSeconds] = useState(0);
             const [showAchievement, setShowAchievement] = useState(false);
             const [completedWorkoutTitle, setCompletedWorkoutTitle] = useState('');
+            const [activitiesLimit, setActivitiesLimit] = React.useState(3);
             // Función para formatear el tiempo (00:00)
      const formatTime = (s) => {
         const mins = Math.floor(s / 60);
@@ -442,44 +443,65 @@ const handleShareAchievement = async () => {
                 <button onClick={handleSendWorkout} className="w-full bg-blue-600 text-white p-4 rounded font-bold">ENVIAR RUTINA</button>
                 {/* --- PANEL DE ACTIVIDAD RECIENTE (ADMIN) --- */}
                 <div className="mt-8 mb-8">
-                    <h3 className="font-bold text-gray-700 mb-4 uppercase text-[10px] tracking-widest flex items-center gap-2">
-                        <Icon name="bell" /> Actividad Reciente de Clientes
+                    <h3 className="font-bold text-gray-700 mb-4 uppercase text-[10px] tracking-widest flex items-center justify-between">
+                        <span className="flex items-center gap-2"><Icon name="bell" /> Actividad Reciente de Clientes</span>
+                        {workouts.filter(w => w.completed).length > 0 && (
+                            <span className="text-gray-400 font-normal lowercase tracking-normal">
+                                Mostrando {Math.min(activitiesLimit, workouts.filter(w => w.completed).length)} de {workouts.filter(w => w.completed).length}
+                            </span>
+                        )}
                     </h3>
+                    
                     <div className="bg-white rounded-xl shadow border border-gray-100 overflow-hidden">
                         {workouts.filter(w => w.completed).length === 0 ? (
                             <p className="p-6 text-center text-gray-400 text-sm italic">Nadie ha entrenado... todavía 👀</p>
                         ) : (
                             <div className="divide-y divide-gray-100">
-                                {workouts.filter(w => w.completed).map(w => {
-                                    const clientName = users.find(u => u.id === w.clientId)?.name || "Cliente borrado";
-                                    const date = w.completedAt ? new Date(w.completedAt).toLocaleDateString() : 'Hoy';
-                                    const time = w.completedAt ? new Date(w.completedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
-                                    
-                                    return (
-                                        <div key={w.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                                            <div className="flex items-center gap-3">
-                                                <div className="bg-green-100 text-green-600 w-10 h-10 rounded-full flex items-center justify-center font-bold">
-                                                    <Icon name="check" />
+                                {workouts
+                                    .filter(w => w.completed)
+                                    // Ordenamos por fecha (más reciente primero)
+                                    .sort((a, b) => (b.completedAt || 0) - (a.completedAt || 0))
+                                    // Cortamos la lista según el límite del estado
+                                    .slice(0, activitiesLimit)
+                                    .map(w => {
+                                        const clientName = users.find(u => u.id === w.clientId)?.name || "Cliente borrado";
+                                        const date = w.completedAt ? new Date(w.completedAt).toLocaleDateString() : 'Hoy';
+                                        const time = w.completedAt ? new Date(w.completedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+                                        
+                                        return (
+                                            <div key={w.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors animate-in fade-in slide-in-from-bottom-2">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="bg-green-100 text-green-600 w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-sm">
+                                                        <Icon name="check" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-bold text-gray-800 text-sm">{clientName}</p>
+                                                        <p className="text-xs text-gray-500">Completó: <span className="font-medium text-indigo-600">{w.title}</span></p>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <p className="font-bold text-gray-800 text-sm">{clientName}</p>
-                                                    <p className="text-xs text-gray-500">Completó: <span className="font-medium text-indigo-600">{w.title}</span></p>
+                                                <div className="text-right">
+                                                    <p className="text-[10px] text-gray-400 font-bold">{date}</p>
+                                                    <p className="text-xs text-gray-500">{time}</p>
+                                                    <button onClick={() => handleToggleComplete(w.id, true)} className="text-[10px] text-red-400 hover:text-red-600 underline mt-1">
+                                                        Resetear
+                                                    </button>
                                                 </div>
                                             </div>
-                                            <div className="text-right">
-                                                <p className="text-[10px] text-gray-400 font-bold">{date}</p>
-                                                <p className="text-xs text-gray-500">{time}</p>
-                                                {/* Botón para que el Admin pueda "resetear" si quiere */}
-                                                <button onClick={() => handleToggleComplete(w.id, true)} className="text-[10px] text-red-400 hover:text-red-600 underline mt-1">
-                                                    Resetear
-                                                </button>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+                                        );
+                                    })}
                             </div>
                         )}
                     </div>
+
+                    {/* BOTÓN MOSTRAR MÁS */}
+                    {workouts.filter(w => w.completed).length > activitiesLimit && (
+                        <button 
+                            onClick={() => setActivitiesLimit(prev => prev + 5)}
+                            className="w-full mt-3 py-3 text-xs font-bold text-indigo-600 bg-white border border-indigo-100 rounded-xl hover:bg-indigo-50 transition-all flex items-center justify-center gap-2 shadow-sm"
+                        >
+                            <Icon name="chevron-down" /> MOSTRAR MÁS ACTIVIDAD
+                        </button>
+                    )}
                 </div>
                 {/* --- FIN PANEL ACTIVIDAD --- */}
                 
