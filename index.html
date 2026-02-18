@@ -169,6 +169,17 @@ const handleShareAchievement = async () => {
                     }
                 }
             };
+            const handleUpdateNote = async (workoutId, noteText) => {
+    try {
+        const workoutRef = doc(db, 'workouts', workoutId);
+        await updateDoc(workoutRef, {
+            clientNote: noteText
+        });
+        // Opcional: una pequeña notificación de "Guardado"
+    } catch (error) {
+        console.error("Error al guardar la nota:", error);
+    }
+};
             // Definimos el contenido de las herramientas como una variable
     const toolsContent = showTools ? (
         <div className="fixed inset-0 z-[100] bg-black/80 flex items-end sm:items-center justify-center p-4">
@@ -478,6 +489,12 @@ const handleShareAchievement = async () => {
                                                         <p className="font-bold text-gray-800 text-sm">{clientName}</p>
                                                         <p className="text-xs text-gray-500">Completó: <span className="font-medium text-indigo-600">{w.title}</span></p>
                                                     </div>
+                                                 
+                                           {w.clientNote && (
+                                          <p className="mt-2 text-[11px] bg-indigo-50 text-indigo-700 p-2 rounded-lg italic">
+                                             " {w.clientNote} "
+                                             </p>
+                                           )}
                                                 </div>
                                                 <div className="text-right">
                                                     <p className="text-[10px] text-gray-400 font-bold">{date}</p>
@@ -683,6 +700,19 @@ const handleShareAchievement = async () => {
                             <div className="p-5">
                                 <h3 className="font-bold text-lg text-gray-800 mb-2">{w.title}</h3>
                                 <p className="text-gray-600 text-sm whitespace-pre-line border-t pt-2">{w.description}</p>
+                                {/* SECCIÓN DE NOTAS PERSONALES */}
+<div className="mt-4 mb-4">
+    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-2">
+        <Icon name="pen-to-square" /> Mis anotaciones (pesos, sensaciones...)
+    </label>
+    <textarea
+        defaultValue={w.clientNote || ""}
+        onBlur={(e) => handleUpdateNote(w.id, e.target.value)}
+        placeholder="Ej: He usado mancuernas de 5kg..."
+        className="w-full bg-gray-50 border border-gray-100 rounded-xl p-3 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none resize-none"
+        rows="2"
+    />
+</div>
                                 {/* BOTÓN DE COMPLETADO */}
                                 <div className="mt-4 border-t pt-4">
                                     {w.completed ? (
