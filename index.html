@@ -75,22 +75,20 @@
             const [seconds, setSeconds] = useState(0);
             const [showAchievement, setShowAchievement] = useState(false);
             const [completedWorkoutTitle, setCompletedWorkoutTitle] = useState('');
-            const [activitiesLimit, setActivitiesLimit] = React.useState(const handleUpdateNote = async (workoutId, noteText) => {
-    try {
-        // Usamos el nombre largo (FirebaseFirestore) para que no diga "undefined"
-        const workoutRef = FirebaseFirestore.doc(db, 'workouts', workoutId);
-        
-        await FirebaseFirestore.setDoc(workoutRef, {
-            clientNote: noteText
-        }, { merge: true });
-        
-        console.log("¡Nota guardada con éxito!");
-        return true;
-    } catch (error) {
-        console.error("Error al guardar:", error);
-        return false;
-    }
-};
+            const [activitiesLimit, setActivitiesLimit] = React.useState(const handleUpdateNote = async (workoutId, const handleUpdateNote = async (workoutId, noteText) =>
+        try {
+            // Usamos window.FirebaseFirestore para asegurar que lo encuentre
+            const dbRef = window.FirebaseFirestore.doc(db, 'workouts', workoutId);
+            await window.FirebaseFirestore.setDoc(dbRef, {
+                clientNote: noteText
+            }, { merge: true });
+            console.log("Guardado OK");
+            return true;
+        } catch (error) {
+            console.error("Error:", error);
+            return false;
+        }
+    };
             // Función para formatear el tiempo (00:00)
      const formatTime = (s) => {
         const mins = Math.floor(s / 60);
