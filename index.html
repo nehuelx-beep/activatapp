@@ -75,20 +75,24 @@
             const [seconds, setSeconds] = useState(0);
             const [showAchievement, setShowAchievement] = useState(false);
             const [completedWorkoutTitle, setCompletedWorkoutTitle] = useState('');
-            const [activitiesLimit, setActivitiesLimit] = React.useState(const handleUpdateNote = async (workoutId, const handleUpdateNote = async (workoutId, noteText) =>
-        try {
-            // Usamos window.FirebaseFirestore para asegurar que lo encuentre
-            const dbRef = window.FirebaseFirestore.doc(db, 'workouts', workoutId);
-            await window.FirebaseFirestore.setDoc(dbRef, {
-                clientNote: noteText
-            }, { merge: true });
-            console.log("Guardado OK");
-            return true;
-        } catch (error) {
-            console.error("Error:", error);
-            return false;
-        }
-    };
+            const [activitiesLimit, setActivitiesLimit] = useState(5); // Lo dejamos limpio
+
+            // LA FUNCIÓN VA AQUÍ SOLA, NO DENTRO DE UN STATE
+            const handleUpdateNote = async (workoutId, noteText) => {
+                try {
+                    const dbRef = window.FirebaseFirestore.doc(db, 'workouts', workoutId);
+                    await window.FirebaseFirestore.setDoc(dbRef, {
+                        clientNote: noteText
+                    }, { merge: true });
+                    console.log("Guardado OK");
+                    return true;
+                } catch (error) {
+                    console.error("Error:", error);
+                    return false;
+                }
+            };
+            
+            // Aquí seguiría el resto de tu código (useEffect, etc.)
             // Función para formatear el tiempo (00:00)
      const formatTime = (s) => {
         const mins = Math.floor(s / 60);
