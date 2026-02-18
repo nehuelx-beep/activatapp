@@ -103,7 +103,21 @@
         return false;
     }
 };
- 
+            
+const handleToggleComplete = async (workoutId, currentStatus) => {
+    try {
+        const workoutRef = window.firestore.doc(window.db, 'rutinas', workoutId);
+        
+        // Si el status es true, lo pone en false y viceversa
+        await window.firestore.updateDoc(workoutRef, { 
+            completed: !currentStatus 
+        });
+        
+        console.log("Estado de rutina actualizado");
+    } catch (error) {
+        alert("Error al resetear/completar: " + error.message);
+    }
+}; 
             
 const handleShareAchievement = async () => {
     const card = document.getElementById('achievement-card');
