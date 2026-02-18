@@ -80,21 +80,19 @@
             // LA FUNCIÓN VA AQUÍ SOLA, NO DENTRO DE UN STATE
             const handleUpdateNote = async (workoutId, noteText) => {
     try {
-        // Alerta 1: ¿Tenemos la librería?
-        if (!window.FirebaseFirestore) {
-            alert("Error: No encuentro la librería FirebaseFirestore");
-            return false;
-        }
-
-        const firestore = window.FirebaseFirestore;
+        // Buscamos la librería en todos los sitios posibles donde Firebase se esconde
+        const firestore = window.FirebaseFirestore || (window.firebase && window.firebase.firestore());
         
-        // Alerta 2: ¿Existe db?
-        if (typeof db === 'undefined') {
-            alert("Error: La variable 'db' no está definida");
+        if (!firestore) {
+            alert("Error: La librería de Firebase no ha cargado. Refresca la página.");
             return false;
         }
 
-        const workoutRef = firestore.doc(db, 'workouts', workoutId);
+        // Si db no existe, intentamos crearla en el momento
+        let database = (typeof db !== 'undefined') ? db : firestore.getFirestore();
+
+        // Usamos la sintaxis que no falla en móviles
+        const workoutRef = firestore.doc(database, 'workouts', workoutId);
         
         await firestore.setDoc(workoutRef, {
             clientNote: noteText
@@ -102,48 +100,8 @@
         
         return true;
     } catch (error) {
-        // Alerta 3: Si hay un fallo de Firebase, dinos cuál es
-        alert("ERROR REAL: " + error.message);
-        console.error(error);
+        alert("Fallo al conectar: " + error.message);
         return false;
-    }
-};
-            
-            // Aquí seguiría el resto de tu código (useEffect, etc.)
-            // Función para formatear el tiempo (00:00)
-     const formatTime = (s) => {
-        const mins = Math.floor(s / 60);
-        const secs = s % 60;
-        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    };
-            const [isActive, setIsActive] = useState(false);
-            const [toolMode, setToolMode] = useState('chrono'); 
-
-            // FUNCIÓN PARA MARCAR RUTINA COMO COMPLETADA
-    const handleToggleComplete = async (workoutId, currentStatus, title) => {
-    if (!window.db) return;
-    try {
-        await window.firestore.updateDoc(window.firestore.doc(window.db, "rutinas", workoutId), {
-            completed: !currentStatus,
-            completedAt: !currentStatus ? new Date().toISOString() : null
-        });
-
-        // Si la está marcando como completada ahora:
-        if (!currentStatus) {
-            setCompletedWorkoutTitle(title);
-            setShowAchievement(true);
-            // Lanzar confeti (asegúrate de tener el script en el HTML)
-            if (typeof confetti === 'function') {
-                confetti({
-                    particleCount: 150,
-                    spread: 70,
-                    origin: { y: 0.6 },
-                    colors: ['#2563eb', '#ffffff', '#1e40af'] // Azules de Activa-T
-                });
-            }
-        }
-    } catch (error) {
-        console.error("Error:", error);
     }
 };
  
