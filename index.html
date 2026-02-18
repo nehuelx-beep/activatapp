@@ -31,6 +31,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        window.doc = doc;
+        window.setDoc = setDoc;
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -77,30 +79,19 @@
             const [completedWorkoutTitle, setCompletedWorkoutTitle] = useState('');
             const [activitiesLimit, setActivitiesLimit] = useState(5); // Lo dejamos limpio
 
-            // LA FUNCIÓN VA AQUÍ SOLA, NO DENTRO DE UN STATE
             const handleUpdateNote = async (workoutId, noteText) => {
     try {
-        // Buscamos la librería en todos los sitios posibles donde Firebase se esconde
-        const firestore = window.FirebaseFirestore || (window.firebase && window.firebase.firestore());
+        // Ahora usamos las funciones que registramos arriba
+        const workoutRef = window.doc(db, 'workouts', workoutId);
         
-        if (!firestore) {
-            alert("Error: La librería de Firebase no ha cargado. Refresca la página.");
-            return false;
-        }
-
-        // Si db no existe, intentamos crearla en el momento
-        let database = (typeof db !== 'undefined') ? db : firestore.getFirestore();
-
-        // Usamos la sintaxis que no falla en móviles
-        const workoutRef = firestore.doc(database, 'workouts', workoutId);
-        
-        await firestore.setDoc(workoutRef, {
+        await window.setDoc(workoutRef, {
             clientNote: noteText
         }, { merge: true });
         
+        console.log("Guardado con éxito");
         return true;
     } catch (error) {
-        alert("Fallo al conectar: " + error.message);
+        alert("Error al guardar: " + error.message);
         return false;
     }
 };
