@@ -81,14 +81,14 @@
 
             const handleUpdateNote = async (workoutId, noteText) => {
     try {
-        // Ahora usamos las funciones que registramos arriba
-        const workoutRef = window.doc(db, 'workouts', workoutId);
+        // IMPORTANTE: Cambiamos "workouts" por "rutinas" para que coincida con tu useEffect
+        const workoutRef = window.firestore.doc(window.db, 'rutinas', workoutId);
         
-        await window.setDoc(workoutRef, {
+        await window.firestore.setDoc(workoutRef, {
             clientNote: noteText
         }, { merge: true });
         
-        console.log("Guardado con éxito");
+        console.log("Nota guardada en 'rutinas'");
         return true;
     } catch (error) {
         alert("Error al guardar: " + error.message);
