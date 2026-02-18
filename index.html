@@ -112,6 +112,26 @@
         console.error("Error:", error);
     }
 };
+
+            // DENTRO de GymApp, antes del return...
+const handleUpdateNote = async (workoutId, noteText) => {
+    try {
+        // Usamos la referencia a la base de datos 'db' que ya tienes definida en tu app
+        // Asegúrate de que 'doc' y 'setDoc' estén disponibles. 
+        // Si fallan, probaremos con window.doc y window.setDoc
+        const workoutRef = doc(db, 'workouts', workoutId);
+        
+        await setDoc(workoutRef, {
+            clientNote: noteText
+        }, { merge: true });
+        
+        console.log("Nota guardada correctamente");
+        return true;
+    } catch (error) {
+        console.error("Error dentro de handleUpdateNote:", error);
+        return false;
+    }
+};
             
 const handleShareAchievement = async () => {
     const card = document.getElementById('achievement-card');
@@ -169,29 +189,6 @@ const handleShareAchievement = async () => {
                     }
                 }
             };
-
-
-            const handleUpdateNote = async (workoutId, noteText) => {
-    if (!workoutId) {
-        console.error("No hay ID de workout");
-        return;
-    }
-
-    try {
-        const workoutRef = doc(db, 'workouts', workoutId);
-        
-        // Usamos setDoc con merge: true. 
-        // Esto crea el campo si no existe o lo actualiza si ya está.
-        await setDoc(workoutRef, {
-            clientNote: noteText
-        }, { merge: true });
-        
-        console.log("Nota guardada con éxito en Firebase");
-    } catch (e) {
-        console.error("Error al guardar:", e);
-        alert("No se pudo guardar la nota. Asegúrate de que las Reglas de Firebase estén publicadas.");
-    }
-};
 
             useEffect(() => {
                 if (!window.db) return;
