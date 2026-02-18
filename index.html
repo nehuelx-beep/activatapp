@@ -79,18 +79,31 @@
 
             // LA FUNCIÓN VA AQUÍ SOLA, NO DENTRO DE UN STATE
             const handleUpdateNote = async (workoutId, noteText) => {
-                try {
-                    const dbRef = window.FirebaseFirestore.doc(db, 'workouts', workoutId);
-                    await window.FirebaseFirestore.setDoc(dbRef, {
-                        clientNote: noteText
-                    }, { merge: true });
-                    console.log("Guardado OK");
-                    return true;
-                } catch (error) {
-                    console.error("Error:", error);
-                    return false;
-                }
-            };
+    console.log("Iniciando guardado...", workoutId);
+    
+    // Si db no existe, intentamos pillarla del objeto global
+    const firestore = window.FirebaseFirestore;
+    if (!firestore) {
+        console.error("Librería Firestore no encontrada");
+        return false;
+    }
+
+    try {
+        // Aseguramos que usamos la db que ya tienes definida
+        const workoutRef = firestore.doc(db, 'workouts', workoutId);
+        
+        await firestore.setDoc(workoutRef, {
+            clientNote: noteText
+        }, { merge: true });
+        
+        console.log("¡Guardado con éxito!");
+        return true;
+    } catch (error) {
+        console.error("Error detallado:", error);
+        alert("Error al conectar con Firebase: " + error.message);
+        return false;
+    }
+};
             
             // Aquí seguiría el resto de tu código (useEffect, etc.)
             // Función para formatear el tiempo (00:00)
