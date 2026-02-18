@@ -81,17 +81,25 @@
 
             const handleUpdateNote = async (workoutId, noteText) => {
     try {
-        // IMPORTANTE: Cambiamos "workouts" por "rutinas" para que coincida con tu useEffect
+        // Apuntamos a la caja correcta: 'rutinas'
         const workoutRef = window.firestore.doc(window.db, 'rutinas', workoutId);
         
-        await window.firestore.setDoc(workoutRef, {
-            clientNote: noteText
-        }, { merge: true });
+        // Usamos updateDoc en lugar de setDoc. 
+        // Si existe dentro de window.firestore, usa esa. Si no, usa la del import.
+        if (window.firestore.updateDoc) {
+            await window.firestore.updateDoc(workoutRef, { 
+                clientNote: noteText 
+            });
+        } else {
+            await updateDoc(workoutRef, { 
+                clientNote: noteText 
+            });
+        }
         
-        console.log("Nota guardada en 'rutinas'");
+        console.log("¡Nota guardada para siempre!");
         return true;
     } catch (error) {
-        alert("Error al guardar: " + error.message);
+        alert("Sigue fallando: " + error.message);
         return false;
     }
 };
