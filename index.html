@@ -171,19 +171,25 @@ const handleShareAchievement = async () => {
             };
 
 
-const handleUpdateNote = async (workoutId, noteText) => {
+            const handleUpdateNote = async (workoutId, noteText) => {
+    if (!workoutId) {
+        console.error("No hay ID de workout");
+        return;
+    }
+
     try {
         const workoutRef = doc(db, 'workouts', workoutId);
         
-        // Usamos setDoc con merge: true para evitar errores de permisos de update
+        // Usamos setDoc con merge: true. 
+        // Esto crea el campo si no existe o lo actualiza si ya está.
         await setDoc(workoutRef, {
             clientNote: noteText
         }, { merge: true });
         
-        console.log("¡Guardado correctamente!");
-    } catch (error) {
-        console.error("Error completo:", error);
-        alert("Sigue fallando. Error: " + error.code);
+        console.log("Nota guardada con éxito en Firebase");
+    } catch (e) {
+        console.error("Error al guardar:", e);
+        alert("No se pudo guardar la nota. Asegúrate de que las Reglas de Firebase estén publicadas.");
     }
 };
 
