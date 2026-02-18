@@ -79,28 +79,32 @@
 
             // LA FUNCIÓN VA AQUÍ SOLA, NO DENTRO DE UN STATE
             const handleUpdateNote = async (workoutId, noteText) => {
-    console.log("Iniciando guardado...", workoutId);
-    
-    // Si db no existe, intentamos pillarla del objeto global
-    const firestore = window.FirebaseFirestore;
-    if (!firestore) {
-        console.error("Librería Firestore no encontrada");
-        return false;
-    }
-
     try {
-        // Aseguramos que usamos la db que ya tienes definida
+        // Alerta 1: ¿Tenemos la librería?
+        if (!window.FirebaseFirestore) {
+            alert("Error: No encuentro la librería FirebaseFirestore");
+            return false;
+        }
+
+        const firestore = window.FirebaseFirestore;
+        
+        // Alerta 2: ¿Existe db?
+        if (typeof db === 'undefined') {
+            alert("Error: La variable 'db' no está definida");
+            return false;
+        }
+
         const workoutRef = firestore.doc(db, 'workouts', workoutId);
         
         await firestore.setDoc(workoutRef, {
             clientNote: noteText
         }, { merge: true });
         
-        console.log("¡Guardado con éxito!");
         return true;
     } catch (error) {
-        console.error("Error detallado:", error);
-        alert("Error al conectar con Firebase: " + error.message);
+        // Alerta 3: Si hay un fallo de Firebase, dinos cuál es
+        alert("ERROR REAL: " + error.message);
+        console.error(error);
         return false;
     }
 };
