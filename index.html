@@ -169,18 +169,23 @@ const handleShareAchievement = async () => {
                     }
                 }
             };
+
             const handleUpdateNote = async (workoutId, noteText) => {
-    if (!workoutId) return; // Seguridad por si el ID llega vacío
+    console.log("Intentando guardar en ID:", workoutId); // Mira esto en la consola
+    if (!workoutId) {
+        alert("Error: No se encontró el ID de la rutina");
+        return;
+    }
 
     try {
         const workoutRef = doc(db, 'workouts', workoutId);
         await updateDoc(workoutRef, {
             clientNote: noteText
         });
-        console.log("Nota guardada en Firebase");
+        console.log("¡Guardado con éxito!");
     } catch (error) {
-        console.error("Error detallado:", error);
-        alert("Fallo al guardar: Revisa tu conexión o los permisos de Firebase");
+        console.error("Error completo de Firebase:", error);
+        alert("Fallo al guardar: Revisa los permisos en la consola de Firebase");
     }
 };
 
