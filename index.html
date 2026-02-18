@@ -170,43 +170,23 @@ const handleShareAchievement = async () => {
                 }
             };
 
-            const handleUpdateNote = async (workoutId, noteText) => {
-    console.log("Intentando guardar en ID:", workoutId); // Mira esto en la consola
-    if (!workoutId) {
-        alert("Error: No se encontró el ID de la rutina");
-        return;
-    }
+            import { doc, setDoc } from "firebase/firestore"; // Asegúrate de añadir setDoc arriba
 
+const handleUpdateNote = async (workoutId, noteText) => {
     try {
         const workoutRef = doc(db, 'workouts', workoutId);
-        await updateDoc(workoutRef, {
+        
+        // Usamos setDoc con merge: true para evitar errores de permisos de update
+        await setDoc(workoutRef, {
             clientNote: noteText
-        });
-        console.log("¡Guardado con éxito!");
+        }, { merge: true });
+        
+        console.log("¡Guardado correctamente!");
     } catch (error) {
-        console.error("Error completo de Firebase:", error);
-        alert("Fallo al guardar: Revisa los permisos en la consola de Firebase");
+        console.error("Error completo:", error);
+        alert("Sigue fallando. Error: " + error.code);
     }
 };
-
-            useEffect(() => {
-        let interval = null;
-        if (isActive) {
-            interval = setInterval(() => {
-                setSeconds(s => {
-                    if (toolMode === 'chrono') return s + 1;
-                    if (s > 0) return s - 1;
-                    
-                    // Fin del temporizador
-                    setIsActive(false);
-                    return 0;
-                });
-            }, 1000);
-        } else {
-            clearInterval(interval);
-        }
-        return () => clearInterval(interval);
-    }, [isActive, toolMode]);
 
             useEffect(() => {
                 if (!window.db) return;
