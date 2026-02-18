@@ -469,6 +469,17 @@ const handleShareAchievement = async () => {
                             ) : (
                                 workouts.filter(w => w.clientId === selectedClient).map(w => (
                                     <div key={w.id} className="flex gap-3 bg-gray-50 p-3 rounded-lg border border-gray-100 relative group">
+                                        {/* Pon esto debajo de la descripción o título de la rutina en la vista del ADMIN */}
+{w.clientNote && (
+    <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <p className="text-[10px] font-bold text-yellow-800 uppercase tracking-wider mb-1">
+            📝 Nota del cliente:
+        </p>
+        <p className="text-sm text-gray-700 italic">
+            "{w.clientNote}"
+        </p>
+    </div>
+)}
                                         {w.image && (
                                             <div className="w-12 h-12 flex-shrink-0 bg-gray-200 rounded overflow-hidden">
                                                 {w.image.startsWith('data:video') ? (
