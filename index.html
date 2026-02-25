@@ -3,7 +3,7 @@
 <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="#0a0a0f">
     <link rel="apple-touch-icon" href="icon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,19 +13,336 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0a0a0f;
+            --ink2: #13131a;
+            --surface: #1a1a24;
+            --border: rgba(255,255,255,0.07);
+            --accent: #22c55e;
+            --accent2: #16a34a;
+            --muted: rgba(255,255,255,0.35);
+            --text: #f0f0f5;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background: var(--ink);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .font-display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.04em; }
+
+        /* ---- NOISE OVERLAY ---- */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.4;
+        }
+
+        /* ---- GLOW ORB ---- */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .orb-1 { width: 400px; height: 400px; background: rgba(232,255,62,0.06); top: -100px; right: -100px; }
+        .orb-2 { width: 300px; height: 300px; background: rgba(255,107,53,0.05); bottom: 100px; left: -80px; }
+
+        /* ---- ANIMATIONS ---- */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; } to { opacity: 1; }
+        }
+        @keyframes slideInBottom {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 0.4; }
+            100% { transform: scale(1.8); opacity: 0; }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        @keyframes loading-bar {
+            0% { left: -40%; }
+            50% { left: 40%; }
+            100% { left: 110%; }
+        }
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes bounce-subtle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        @keyframes card-enter {
+            from { opacity: 0; transform: translateY(30px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes success-pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            60% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .anim-fadeUp { animation: fadeUp 0.5s ease forwards; }
+        .anim-fadeIn { animation: fadeIn 0.4s ease forwards; }
+        .anim-slideIn { animation: slideInBottom 0.45s cubic-bezier(0.16,1,0.3,1) forwards; }
+        .anim-cardEnter { animation: card-enter 0.5s cubic-bezier(0.16,1,0.3,1) forwards; }
+        .anim-successPop { animation: success-pop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+
+        /* ---- CARDS ---- */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+        }
+        .card-glass {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+        }
+
+        /* ---- ACCENT BUTTON ---- */
+        .btn-accent {
+            background: var(--accent);
+            color: var(--ink);
+            font-weight: 700;
+            border-radius: 14px;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-accent::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .btn-accent:active { transform: scale(0.97); }
+        .btn-accent:hover::after { opacity: 1; }
+
+        .btn-ghost {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text);
+            border-radius: 14px;
+            transition: all 0.2s;
+        }
+        .btn-ghost:hover { background: rgba(255,255,255,0.1); }
+        .btn-ghost:active { transform: scale(0.97); }
+
+        /* ---- INPUT ---- */
+        .input-dark {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text);
+            border-radius: 12px;
+            padding: 14px 16px;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .input-dark::placeholder { color: rgba(255,255,255,0.25); }
+        .input-dark:focus {
+            border-color: var(--accent);
+            background: rgba(232,255,62,0.04);
+        }
+
+        /* ---- NAV ---- */
+        .nav-bar {
+            background: rgba(10,10,15,0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        /* ---- TAG ---- */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(232,255,62,0.1);
+            color: var(--accent);
+            border: 1px solid rgba(232,255,62,0.2);
+            border-radius: 50px;
+            padding: 4px 12px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* ---- WORKOUT CARD ---- */
+        .workout-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .workout-card:hover { transform: translateY(-2px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+
+        /* ---- TICKER ---- */
+        .ticker-wrap {
+            overflow: hidden;
+            background: var(--accent);
+            padding: 8px 0;
+        }
+        .ticker-inner {
+            display: flex;
+            white-space: nowrap;
+            animation: ticker 18s linear infinite;
+        }
+        .ticker-item {
+            color: var(--ink);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 13px;
+            letter-spacing: 0.1em;
+            padding: 0 24px;
+        }
+
+        /* ---- ACTIVITY ROW ---- */
+        .activity-row {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+        .activity-row:last-child { border-bottom: none; }
+        .activity-row:hover { background: rgba(255,255,255,0.02); }
+
+        /* ---- PULSE DOT ---- */
+        .pulse-dot {
+            width: 8px; height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            position: relative;
+        }
+        .pulse-dot::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: pulse-ring 1.5s ease-out infinite;
+        }
+
+        /* ---- SELECT ---- */
+        select.input-dark option {
+            background: #1a1a24;
+            color: #f0f0f5;
+        }
+
+        /* ---- SCROLLBAR ---- */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+        /* ---- COMPLETED BADGE ---- */
+        .completed-badge {
+            background: linear-gradient(135deg, rgba(74,222,128,0.15), rgba(74,222,128,0.05));
+            border: 1px solid rgba(74,222,128,0.3);
+            color: #4ade80;
+            border-radius: 14px;
+        }
+
+        /* ---- MODAL OVERLAY ---- */
+        .modal-overlay {
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(12px);
+        }
+
+        /* ---- SEGMENT CONTROL ---- */
+        .segment {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 4px;
+            display: flex;
+        }
+        .segment-btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 9px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            color: rgba(255,255,255,0.4);
+        }
+        .segment-btn.active {
+            background: var(--accent);
+            color: var(--ink);
+        }
+
+        /* ---- TIMER DISPLAY ---- */
+        .timer-display {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 80px;
+            letter-spacing: 0.04em;
+            line-height: 1;
+            color: var(--text);
+        }
+        .timer-display.danger { color: #ff6b35; }
+
+        /* ---- STAGGER DELAYS ---- */
+        .delay-1 { animation-delay: 0.05s; animation-fill-mode: both; }
+        .delay-2 { animation-delay: 0.1s; animation-fill-mode: both; }
+        .delay-3 { animation-delay: 0.15s; animation-fill-mode: both; }
+        .delay-4 { animation-delay: 0.2s; animation-fill-mode: both; }
+        .delay-5 { animation-delay: 0.25s; animation-fill-mode: both; }
+
+        /* ---- LOGIN BG ---- */
+        .login-bg {
+            background: radial-gradient(ellipse at 80% 0%, rgba(232,255,62,0.08) 0%, transparent 60%),
+                        radial-gradient(ellipse at 0% 100%, rgba(255,107,53,0.07) 0%, transparent 50%),
+                        var(--ink);
+        }
+    </style>
 </head>
-<body class="bg-gray-50">
+<body>
     <div id="root"></div>
-    
-    <div id="install-banner" style="display: none;" class="fixed bottom-4 left-4 right-4 bg-blue-700 text-white p-4 rounded-2xl shadow-2xl z-50 flex justify-between items-center border-2 border-white">
-        <div class="flex items-center gap-3">
-            <i class="fa-solid fa-mobile-screen-button text-2xl"></i>
-            <div>
-                <p class="font-bold text-sm">Instalar Activa-T Gym</p>
-                <p class="text-xs opacity-80">Acceso rápido desde tu menú</p>
+
+    <div id="install-banner" style="display: none;" class="fixed bottom-4 left-4 right-4 z-50">
+        <div class="card-glass p-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-accent rounded-xl flex items-center justify-center" style="background:var(--accent)">
+                    <i class="fa-solid fa-mobile-screen-button text-black"></i>
+                </div>
+                <div>
+                    <p class="font-bold text-sm text-white">Instalar Activa-T Gym</p>
+                    <p class="text-xs" style="color:var(--muted)">Acceso rápido desde tu menú</p>
+                </div>
             </div>
+            <button id="install-button" class="btn-accent px-4 py-2 text-xs">INSTALAR</button>
         </div>
-        <button id="install-button" class="bg-white text-blue-700 px-4 py-2 rounded-lg font-bold text-sm">INSTALAR</button>
     </div>
 
     <script type="module">
@@ -48,7 +365,6 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // Compartir con React
         window.db = db;
         window.auth = auth;
         window.firestore = { collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc };
@@ -56,7 +372,7 @@
     </script>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
 
         const Icon = ({ name, className = "" }) => (
             <i className={`fa-solid fa-${name} ${className}`}></i>
@@ -75,142 +391,119 @@
             const [file, setFile] = useState(null);
             const [showTools, setShowTools] = useState(false);
             const [seconds, setSeconds] = useState(0);
+            const [isActive, setIsActive] = useState(false);
+            const [toolMode, setToolMode] = useState('chrono');
             const [showAchievement, setShowAchievement] = useState(false);
             const [completedWorkoutTitle, setCompletedWorkoutTitle] = useState('');
-            const [activitiesLimit, setActivitiesLimit] = useState(5); // Lo dejamos limpio
+            const [activitiesLimit, setActivitiesLimit] = useState(5);
+            const intervalRef = useRef(null);
+
+            // Timer logic
+            useEffect(() => {
+                if (isActive) {
+                    intervalRef.current = setInterval(() => {
+                        setSeconds(s => {
+                            if (toolMode === 'timer') {
+                                if (s <= 1) { setIsActive(false); return 0; }
+                                return s - 1;
+                            }
+                            return s + 1;
+                        });
+                    }, 1000);
+                } else {
+                    clearInterval(intervalRef.current);
+                }
+                return () => clearInterval(intervalRef.current);
+            }, [isActive, toolMode]);
+
+            const formatTime = (s) => {
+                const m = Math.floor(s / 60);
+                const sec = s % 60;
+                return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+            };
 
             const handleUpdateNote = async (workoutId, noteText) => {
-    try {
-        // Apuntamos a la caja correcta: 'rutinas'
-        const workoutRef = window.firestore.doc(window.db, 'rutinas', workoutId);
-        
-        // Usamos updateDoc en lugar de setDoc. 
-        // Si existe dentro de window.firestore, usa esa. Si no, usa la del import.
-        if (window.firestore.updateDoc) {
-            await window.firestore.updateDoc(workoutRef, { 
-                clientNote: noteText 
-            });
-        } else {
-            await updateDoc(workoutRef, { 
-                clientNote: noteText 
-            });
-        }
-        
-        console.log("¡Nota guardada para siempre!");
-        return true;
-    } catch (error) {
-        alert("Sigue fallando: " + error.message);
-        return false;
-    }
-};
-            
-const handleToggleComplete = async (workoutId, currentStatus) => {
-    try {
-        const workoutRef = window.firestore.doc(window.db, 'rutinas', workoutId);
-        
-        // Si el status es true, lo pone en false y viceversa
-        await window.firestore.updateDoc(workoutRef, { 
-            completed: !currentStatus 
-        });
-        
-        console.log("Estado de rutina actualizado");
-    } catch (error) {
-        alert("Error al resetear/completar: " + error.message);
-    }
-}; 
-            
-const handleShareAchievement = async () => {
-    const card = document.getElementById('achievement-card');
-    if (!card) return;
+                try {
+                    const workoutRef = window.firestore.doc(window.db, 'rutinas', workoutId);
+                    if (window.firestore.updateDoc) {
+                        await window.firestore.updateDoc(workoutRef, { clientNote: noteText });
+                    } else {
+                        await updateDoc(workoutRef, { clientNote: noteText });
+                    }
+                    return true;
+                } catch (error) {
+                    alert("Sigue fallando: " + error.message);
+                    return false;
+                }
+            };
 
-    try {
-        // 1. Convertimos el HTML de la tarjeta en una imagen (blob)
-        const canvas = await html2canvas(card, {
-            scale: 2, // Para que se vea nítida (HD)
-            useCORS: true,
-            backgroundColor: null
-        });
-        
-        canvas.toBlob(async (blob) => {
-            const file = new File([blob], 'mi-logro-gym.png', { type: 'image/png' });
-            
-            // 2. Comprobamos si el móvil permite compartir archivos
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                await navigator.share({
-                    files: [file],
-                    title: '¡Entreno completado!',
-                    text: 'Mira mi entrenamiento de hoy en Activa-T Gym 💪'
-                });
-            } else {
-                // Si el navegador no deja compartir archivos (PC o navegadores viejos)
-                alert("Tu navegador no permite compartir imágenes directamente. ¡Haz una captura!");
-            }
-        }, 'image/png');
-    } catch (err) {
-        console.error("Error al compartir:", err);
-    }
-};
-            // FUNCIÓN BORRAR RUTINA
+            const handleToggleComplete = async (workoutId, currentStatus) => {
+                try {
+                    const workoutRef = window.firestore.doc(window.db, 'rutinas', workoutId);
+                    await window.firestore.updateDoc(workoutRef, {
+                        completed: !currentStatus,
+                        completedAt: !currentStatus ? Date.now() : null
+                    });
+                } catch (error) {
+                    alert("Error al resetear/completar: " + error.message);
+                }
+            };
+
+            const handleShareAchievement = async () => {
+                const card = document.getElementById('achievement-card');
+                if (!card) return;
+                try {
+                    const canvas = await html2canvas(card, { scale: 2, useCORS: true, backgroundColor: null });
+                    canvas.toBlob(async (blob) => {
+                        const file = new File([blob], 'mi-logro-gym.png', { type: 'image/png' });
+                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                            await navigator.share({ files: [file], title: '¡Entreno completado!', text: 'Mira mi entrenamiento de hoy en Activa-T Gym 💪' });
+                        } else {
+                            alert("Tu navegador no permite compartir imágenes directamente. ¡Haz una captura!");
+                        }
+                    }, 'image/png');
+                } catch (err) { console.error("Error al compartir:", err); }
+            };
+
             const handleDeleteWorkout = async (workoutId) => {
                 if (window.confirm("¿Quieres eliminar esta rutina?")) {
                     try {
                         const docRef = window.firestore.doc(window.db, "rutinas", workoutId);
                         await window.firestore.deleteDoc(docRef);
-                    } catch (e) {
-                        console.error("Error al borrar:", e);
-                        alert("No se pudo borrar");
-                    }
+                    } catch (e) { alert("No se pudo borrar"); }
                 }
             };
-            
 
-            // FUNCIÓN BORRAR USUARIO
             const handleDeleteUser = async (userId, userName) => {
                 if (window.confirm(`¿Borrar a ${userName}?`)) {
                     try {
                         const docRef = window.firestore.doc(window.db, "usuarios", userId);
                         await window.firestore.deleteDoc(docRef);
-                    } catch (e) {
-                        alert("Error al borrar usuario");
-                    }
+                    } catch (e) { alert("Error al borrar usuario"); }
                 }
             };
 
             useEffect(() => {
                 if (!window.db) return;
-
-                // 1. ESCUCHAR USUARIOS Y RECUPERAR SESIÓN
                 const qUsers = window.firestore.query(window.firestore.collection(window.db, "usuarios"));
                 const unsubUsers = window.firestore.onSnapshot(qUsers, (snapshot) => {
                     const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    
-                    // Admin de seguridad por si no existe
                     const adminExist = docs.find(u => u.role === 'admin');
                     if (!adminExist) {
-                        docs.push({ 
-                            email: 'ggcaparra38@gmail.com', 
-                            password: 'templerenovatio', 
-                            name: 'Gabi', 
-                            role: 'admin' 
-                        });
+                        docs.push({ email: 'ggcaparra38@gmail.com', password: 'templerenovatio', name: 'Gabi', role: 'admin' });
                     }
                     setUsers(docs);
-
-                    // --- AQUÍ ESTÁ LA MAGIA DE RECORDAR LA SESIÓN ---
                     const storedUser = localStorage.getItem('gymUser');
                     if (storedUser) {
                         const parsedUser = JSON.parse(storedUser);
-                        // Comprobamos que el usuario guardado sigue existiendo en la base de datos
                         const found = docs.find(u => u.id === parsedUser.id);
                         if (found) {
                             setCurrentUser(found);
                             setView(found.role === 'admin' ? 'admin' : 'client');
                         }
                     }
-                    setLoading(false); // Quitamos la pantalla de carga aquí
+                    setLoading(false);
                 });
-
-                // 2. ESCUCHAR RUTINAS
                 const qWorkouts = window.firestore.query(window.firestore.collection(window.db, "rutinas"));
                 const unsubWorkouts = window.firestore.onSnapshot(qWorkouts, (snapshot) => {
                     const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -221,23 +514,20 @@ const handleShareAchievement = async () => {
                     });
                     setWorkouts(list);
                 });
-
                 return () => { unsubUsers(); unsubWorkouts(); };
             }, []);
 
             const handleLogin = () => {
                 const user = users.find(u => u.email === formData.email && u.password === formData.password);
                 if (user) {
-                    // GUADARMOS LA SESIÓN EN EL MÓVIL
                     localStorage.setItem('gymUser', JSON.stringify(user));
-                    
                     setCurrentUser(user);
                     setView(user.role === 'admin' ? 'admin' : 'client');
                 } else alert("Datos incorrectos");
             };
 
             const handleLogout = () => {
-                localStorage.removeItem('gymUser'); // BORRAMOS LA SESIÓN
+                localStorage.removeItem('gymUser');
                 setCurrentUser(null);
                 setView('login');
             };
@@ -246,7 +536,7 @@ const handleShareAchievement = async () => {
                 const selectedFile = e.target.files[0];
                 if (selectedFile) {
                     if (selectedFile.size > 20 * 1024 * 1024) return alert("Máximo 20MB");
-                    setFile(selectedFile); 
+                    setFile(selectedFile);
                     const reader = new FileReader();
                     reader.onloadend = () => setWorkoutData({ ...workoutData, image: reader.result });
                     reader.readAsDataURL(selectedFile);
@@ -266,7 +556,6 @@ const handleShareAchievement = async () => {
             const handleSendWorkout = async () => {
                 if (!selectedClient) return alert("Selecciona cliente");
                 if (!workoutData.title) return alert("Título obligatorio");
-
                 const saveToFirestore = async (finalImage) => {
                     try {
                         await window.firestore.addDoc(window.firestore.collection(window.db, "rutinas"), {
@@ -280,11 +569,8 @@ const handleShareAchievement = async () => {
                         alert("✅ Rutina enviada");
                         setWorkoutData({ title: '', description: '', image: null });
                         setFile(null);
-                    } catch (error) {
-                        alert("Error: " + error.message);
-                    }
+                    } catch (error) { alert("Error: " + error.message); }
                 };
-
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = (e) => saveToFirestore(e.target.result);
@@ -294,482 +580,801 @@ const handleShareAchievement = async () => {
                 }
             };
 
+            // ========================
+            // LOADING SCREEN
+            // ========================
             if (loading) return (
-        <div className="min-h-screen bg-white flex items-center justify-center p-12">
-            <div className="w-full max-w-xs text-center">
-                <div className="flex justify-center mb-6">
-                    {/* Icono con rebote suave */}
-                    <div className="bg-blue-50 p-4 rounded-full animate-bounce">
-                        <Icon name="bolt" className="text-blue-600 text-3xl" />
-                    </div>
-                </div>
-                
-                {/* Contenedor de la barra */}
-                <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden relative">
-                    {/* La barra que se mueve */}
-                    <div 
-                        className="h-full bg-blue-600 rounded-full"
-                        style={{
-                            width: '40%',
-                            position: 'absolute',
-                            animation: 'loading-bar 1.5s infinite ease-in-out'
-                        }}
-                    ></div>
-                </div>
-
-                <p className="mt-6 text-gray-400 text-[10px] font-black uppercase tracking-[0.3em]">
-                    Activa-T Gym <span className="animate-pulse">...</span>
-                </p>
-
-                {/* Estilos para la animación de la barra */}
-                <style>{`
-                    @keyframes loading-bar {
-                        0% { left: -40%; }
-                        50% { left: 40%; }
-                        100% { left: 100%; }
-                    }
-                `}</style>
-            </div>
-        </div>
-    );
-            if (view === 'register') return (
-                <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-                    <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
-                        <h2 className="text-xl font-bold mb-4">Nuevo Cliente</h2>
-                        <input className="w-full p-3 border rounded mb-3" placeholder="Nombre" onChange={e => setFormData({...formData, name: e.target.value})} />
-                        <input className="w-full p-3 border rounded mb-3" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
-                        <input className="w-full p-3 border rounded mb-3" type="password" placeholder="Contraseña" onChange={e => setFormData({...formData, password: e.target.value})} />
-                        <button onClick={handleRegister} className="w-full bg-green-600 text-white p-3 rounded-lg font-bold">REGISTRARSE</button>
-                        <button onClick={() => setView('login')} className="w-full mt-2 text-gray-500 text-xs text-center block">Volver</button>
+                <div className="min-h-screen login-bg flex items-center justify-center">
+                    <div className="orb orb-1"></div>
+                    <div className="orb orb-2"></div>
+                    <div className="text-center relative z-10">
+                        <div className="flex items-center justify-center mb-8">
+                            <div style={{animation:'bounce-subtle 1.5s ease-in-out infinite'}}>
+                                <div style={{
+                                    width: 64, height: 64,
+                                    background: 'var(--accent)',
+                                    borderRadius: 18,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    boxShadow: '0 0 40px rgba(232,255,62,0.4)'
+                                }}>
+                                    <Icon name="bolt" className="text-black text-2xl" />
+                                </div>
+                            </div>
+                        </div>
+                        <p className="font-display text-4xl text-white mb-8">ACTIVA-T GYM</p>
+                        <div style={{width: 180, height: 2, background: 'rgba(255,255,255,0.07)', borderRadius: 4, overflow: 'hidden', margin: '0 auto', position: 'relative'}}>
+                            <div style={{
+                                height: '100%', width: '40%',
+                                background: 'var(--accent)',
+                                borderRadius: 4,
+                                position: 'absolute',
+                                animation: 'loading-bar 1.5s infinite ease-in-out'
+                            }}></div>
+                        </div>
                     </div>
                 </div>
             );
 
-            if (!currentUser) return (
-    <div className="min-h-screen bg-blue-600 flex items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
-            <h1 className="text-2xl font-bold text-center mb-6 text-blue-800 italic">ACTIVA-T GYM</h1>
-            
-            {/* BLOQUE DE AYUDA DE INSTALACIÓN */}
-            <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200 text-[10px] text-blue-800 leading-tight">
-                <p className="font-bold mb-1 uppercase tracking-wider">📲 Cómo instalar la App:</p>
-                <div className="block">
-                    {/iPhone|iPad|iPod/.test(navigator.userAgent) ? (
-                        <p>Pulsa el botón de <strong>Compartir</strong> (cuadrado con flecha), baja y dale a <strong>"Añadir a pantalla de inicio"</strong>.</p>
-                    ) : (
-                        <p>Dale a los 3 puntos arriba a la derecha <strong>y pulsa añadir  pantalla de inicio</strong> </p>
-                    )}
-                </div>
-            </div>
-
-         {/* FORMULARIO DE LOGIN */}
-            <input 
-                className="w-full p-3 border rounded mb-3" 
-                placeholder="Email" 
-                onChange={e => setFormData({...formData, email: e.target.value})} 
-            />
-            <input 
-                className="w-full p-3 border rounded mb-3" 
-                type="password" 
-                placeholder="Contraseña" 
-                onChange={e => setFormData({...formData, password: e.target.value})} 
-            />
-            <button onClick={handleLogin} className="w-full bg-blue-600 text-white p-3 rounded-lg font-bold">
-                ENTRAR
-            </button>
-            
-            <button onClick={() => setView('register')} className="w-full mt-4 text-blue-600 text-sm italic text-center block">
-                ¿No tienes cuenta? Regístrate
-            </button>
-        </div>
-    </div>
-);
-
-            if (currentUser.role === 'admin') return (
-    <div className="min-h-screen bg-gray-50">
-        <nav className="bg-blue-800 p-4 text-white flex justify-between">
-            <span className="font-bold uppercase tracking-widest text-sm">ADMIN: {currentUser.name}</span>
-            <button onClick={handleLogout} className="text-xs">Salir</button>
-        </nav>
-        <div className="p-4 max-w-xl mx-auto">
-            <div className="bg-white p-6 rounded-xl shadow">
-                <select className="w-full p-3 border rounded mb-4" value={selectedClient} onChange={e => setSelectedClient(e.target.value)}>
-                    <option value="">Selecciona cliente...</option>
-                    {users.filter(u => u.role === 'client').map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
-                <input className="w-full p-3 border rounded mb-4" placeholder="Título" value={workoutData.title} onChange={e => setWorkoutData({...workoutData, title: e.target.value})} />
-                <textarea className="w-full p-3 border rounded mb-4 h-32" placeholder="Ejercicios..." value={workoutData.description} onChange={e => setWorkoutData({...workoutData, description: e.target.value})}></textarea>
-                <input type="file" accept="image/*,video/mp4" onChange={handleImageChange} className="w-full text-sm mb-4" />
-                <button onClick={handleSendWorkout} className="w-full bg-blue-600 text-white p-4 rounded font-bold">ENVIAR RUTINA</button>
-                {/* --- PANEL DE ACTIVIDAD RECIENTE (ADMIN) --- */}
-                <div className="mt-8 mb-8">
-                    <h3 className="font-bold text-gray-700 mb-4 uppercase text-[10px] tracking-widest flex items-center justify-between">
-                        <span className="flex items-center gap-2"><Icon name="bell" /> Actividad Reciente de Clientes</span>
-                        {workouts.filter(w => w.completed).length > 0 && (
-                            <span className="text-gray-400 font-normal lowercase tracking-normal">
-                                Mostrando {Math.min(activitiesLimit, workouts.filter(w => w.completed).length)} de {workouts.filter(w => w.completed).length}
-                            </span>
-                        )}
-                    </h3>
-                    
-                    <div className="bg-white rounded-xl shadow border border-gray-100 overflow-hidden">
-                        {workouts.filter(w => w.completed).length === 0 ? (
-                            <p className="p-6 text-center text-gray-400 text-sm italic">Nadie ha entrenado... todavía 👀</p>
-                        ) : (
-                            <div className="divide-y divide-gray-100">
-                                {workouts
-                                    .filter(w => w.completed)
-                                    // Ordenamos por fecha (más reciente primero)
-                                    .sort((a, b) => (b.completedAt || 0) - (a.completedAt || 0))
-                                    // Cortamos la lista según el límite del estado
-                                    .slice(0, activitiesLimit)
-                                    .map(w => {
-                                        const clientName = users.find(u => u.id === w.clientId)?.name || "Cliente borrado";
-                                        const date = w.completedAt ? new Date(w.completedAt).toLocaleDateString() : 'Hoy';
-                                        const time = w.completedAt ? new Date(w.completedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
-                                        
-                                        return (
-                                            <div key={w.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors animate-in fade-in slide-in-from-bottom-2">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="bg-green-100 text-green-600 w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-sm">
-                                                        <Icon name="check" />
-                                                    </div>
-                                                    <div>
-                                                        <p className="font-bold text-gray-800 text-sm">{clientName}</p>
-                                                        <p className="text-xs text-gray-500">Completó: <span className="font-medium text-indigo-600">{w.title}</span></p>
-                                                    </div>
-                                                 
-                                           {w.clientNote && (
-                                          <p className="mt-2 text-[11px] bg-indigo-50 text-indigo-700 p-2 rounded-lg italic">
-                                             " {w.clientNote} "
-                                             </p>
-                                           )}
-                                                </div>
-                                                <div className="text-right">
-                                                    <p className="text-[10px] text-gray-400 font-bold">{date}</p>
-                                                    <p className="text-xs text-gray-500">{time}</p>
-                                                    <button onClick={() => handleToggleComplete(w.id, true)} className="text-[10px] text-red-400 hover:text-red-600 underline mt-1">
-                                                        Resetear
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
+            // ========================
+            // REGISTER VIEW
+            // ========================
+            if (view === 'register') return (
+                <div className="min-h-screen login-bg flex items-center justify-center p-6">
+                    <div className="orb orb-1"></div>
+                    <div className="orb orb-2"></div>
+                    <div className="w-full max-w-sm relative z-10 anim-fadeUp">
+                        <div className="text-center mb-8">
+                            <div style={{
+                                width: 56, height: 56,
+                                background: 'var(--accent)',
+                                borderRadius: 16,
+                                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                                boxShadow: '0 0 30px rgba(232,255,62,0.3)',
+                                marginBottom: 16
+                            }}>
+                                <Icon name="user-plus" className="text-black text-xl" />
                             </div>
-                        )}
+                            <h1 className="font-display text-4xl text-white">NUEVO CLIENTE</h1>
+                            <p style={{color:'var(--muted)', fontSize: 13, marginTop: 4}}>Crea tu acceso a la app</p>
+                        </div>
+                        <div className="card p-6 space-y-3">
+                            <input className="input-dark" placeholder="Tu nombre" onChange={e => setFormData({...formData, name: e.target.value})} />
+                            <input className="input-dark" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
+                            <input className="input-dark" type="password" placeholder="Contraseña" onChange={e => setFormData({...formData, password: e.target.value})} />
+                            <button onClick={handleRegister} className="btn-accent w-full py-4 font-display text-lg tracking-wider" style={{borderRadius: 14}}>
+                                REGISTRARSE
+                            </button>
+                        </div>
+                        <button onClick={() => setView('login')} style={{color:'var(--muted)', fontSize:13}} className="w-full mt-4 text-center block hover:opacity-80 transition-opacity">
+                            ← Volver al inicio
+                        </button>
+                    </div>
+                </div>
+            );
+
+            // ========================
+            // LOGIN VIEW
+            // ========================
+            if (!currentUser) return (
+                <div className="min-h-screen login-bg flex items-center justify-center p-6">
+                    <div className="orb orb-1"></div>
+                    <div className="orb orb-2"></div>
+                    <div className="w-full max-w-sm relative z-10">
+                        {/* Logo */}
+                        <div className="text-center mb-10 anim-fadeUp">
+                            <div style={{
+                                width: 72, height: 72,
+                                background: 'var(--accent)',
+                                borderRadius: 22,
+                                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                                boxShadow: '0 0 50px rgba(232,255,62,0.35)',
+                                marginBottom: 20
+                            }}>
+                                <Icon name="bolt" className="text-black text-3xl" />
+                            </div>
+                            <h1 className="font-display text-5xl text-white" style={{lineHeight:1}}>ACTIVA-T</h1>
+                            <h1 className="font-display text-5xl" style={{color:'var(--accent)', lineHeight:1}}>GYM</h1>
+                        </div>
+
+                        {/* Install hint */}
+                        <div className="card-glass p-4 mb-6 anim-fadeUp delay-1" style={{fontSize:11}}>
+                            <p className="font-bold mb-1 uppercase" style={{color:'var(--accent)', letterSpacing:'0.1em', fontSize:10}}>📲 Instalar App</p>
+                            <p style={{color:'var(--muted)'}}>
+                                {/iPhone|iPad|iPod/.test(navigator.userAgent)
+                                    ? 'Pulsa Compartir → "Añadir a pantalla de inicio"'
+                                    : 'Menú (3 puntos) → "Añadir a pantalla de inicio"'}
+                            </p>
+                        </div>
+
+                        {/* Form */}
+                        <div className="card p-6 space-y-3 anim-fadeUp delay-2">
+                            <input className="input-dark" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
+                            <input className="input-dark" type="password" placeholder="Contraseña" onChange={e => setFormData({...formData, password: e.target.value})} />
+                            <button onClick={handleLogin} className="btn-accent w-full py-4 font-display text-xl tracking-wider" style={{borderRadius: 14}}>
+                                ENTRAR
+                            </button>
+                        </div>
+
+                        <button onClick={() => setView('register')} style={{color:'var(--accent)', fontSize:13}} className="w-full mt-5 text-center block hover:opacity-80 transition-opacity anim-fadeUp delay-3">
+                            ¿Sin cuenta? Regístrate →
+                        </button>
+                    </div>
+                </div>
+            );
+
+            // ========================
+            // ADMIN VIEW
+            // ========================
+            if (currentUser.role === 'admin') return (
+                <div className="min-h-screen" style={{background:'var(--ink)'}}>
+                    <div className="orb orb-1"></div>
+                    <div className="orb orb-2"></div>
+
+                    {/* NAV */}
+                    <nav className="nav-bar px-5 py-4 flex justify-between items-center relative z-10">
+                        <div className="flex items-center gap-3">
+                            <div style={{
+                                width: 36, height: 36, background: 'var(--accent)',
+                                borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                            }}>
+                                <Icon name="bolt" className="text-black text-sm" />
+                            </div>
+                            <div>
+                                <p className="font-display text-white text-lg" style={{lineHeight:1}}>ACTIVA-T GYM</p>
+                                <p style={{color:'var(--muted)', fontSize:10}}>Panel Admin · {currentUser.name}</p>
+                            </div>
+                        </div>
+                        <button onClick={handleLogout} className="btn-ghost px-4 py-2 text-xs font-bold">
+                            <Icon name="right-from-bracket" className="mr-2" />SALIR
+                        </button>
+                    </nav>
+
+                    {/* Ticker */}
+                    <div className="ticker-wrap relative z-10">
+                        <div className="ticker-inner">
+                            {['ENVIAR RUTINA', 'GESTIONAR CLIENTES', 'VER ACTIVIDAD', 'ACTIVA-T GYM', 'ENVIAR RUTINA', 'GESTIONAR CLIENTES', 'VER ACTIVIDAD', 'ACTIVA-T GYM'].map((t, i) => (
+                                <span key={i} className="ticker-item">★ {t}</span>
+                            ))}
+                        </div>
                     </div>
 
-                    {/* BOTÓN MOSTRAR MÁS */}
-                    {workouts.filter(w => w.completed).length > activitiesLimit && (
-                        <button 
-                            onClick={() => setActivitiesLimit(prev => prev + 5)}
-                            className="w-full mt-3 py-3 text-xs font-bold text-indigo-600 bg-white border border-indigo-100 rounded-xl hover:bg-indigo-50 transition-all flex items-center justify-center gap-2 shadow-sm"
-                        >
-                            <Icon name="chevron-down" /> MOSTRAR MÁS ACTIVIDAD
-                        </button>
-                    )}
-                </div>
-                {/* --- FIN PANEL ACTIVIDAD --- */}
-                
-                {/* --- NUEVA SECCIÓN: HISTORIAL DE RUTINAS --- */}
-                {selectedClient && (
-                    <div className="mt-8 border-t pt-6">
-                        <h3 className="font-bold text-gray-700 mb-4 uppercase text-[10px] tracking-widest flex items-center gap-2">
-                            <Icon name="clock-rotate-left" /> Historial de Rutinas Enviadas
-                        </h3>
-                        <div className="space-y-3">
-                            {workouts.filter(w => w.clientId === selectedClient).length === 0 ? (
-                                <p className="text-gray-400 text-xs italic text-center py-4">Este cliente aún no tiene rutinas.</p>
-                            ) : (
-                                workouts.filter(w => w.clientId === selectedClient).map(w => (
-                                    <div key={w.id} className="flex gap-3 bg-gray-50 p-3 rounded-lg border border-gray-100 relative group">
-                                        {/* Pon esto debajo de la descripción o título de la rutina en la vista del ADMIN */}
+                    <div className="p-5 max-w-xl mx-auto relative z-10 space-y-6 pb-16">
 
+                        {/* SEND WORKOUT CARD */}
+                        <div className="card p-6 anim-fadeUp delay-1">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div style={{width:40,height:40,background:'rgba(232,255,62,0.1)',borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                    <Icon name="paper-plane" style={{color:'var(--accent)'}} />
+                                </div>
+                                <div>
+                                    <h2 className="font-display text-2xl text-white">NUEVA RUTINA</h2>
+                                    <p style={{color:'var(--muted)',fontSize:12}}>Envía a un cliente</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <select className="input-dark" value={selectedClient} onChange={e => setSelectedClient(e.target.value)}>
+                                    <option value="">Selecciona cliente...</option>
+                                    {users.filter(u => u.role === 'client').map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                </select>
+                                <input className="input-dark" placeholder="Título de la rutina" value={workoutData.title} onChange={e => setWorkoutData({...workoutData, title: e.target.value})} />
+                                <textarea
+                                    className="input-dark"
+                                    placeholder="Describe los ejercicios..."
+                                    value={workoutData.description}
+                                    onChange={e => setWorkoutData({...workoutData, description: e.target.value})}
+                                    rows="4"
+                                    style={{resize:'none'}}
+                                ></textarea>
+
+                                {/* File upload styled */}
+                                <label style={{
+                                    display:'block',
+                                    background:'rgba(255,255,255,0.04)',
+                                    border:'1px dashed rgba(255,255,255,0.15)',
+                                    borderRadius:12,
+                                    padding: '16px',
+                                    cursor:'pointer',
+                                    textAlign:'center',
+                                    transition:'border-color 0.2s'
+                                }}>
+                                    <Icon name="image" style={{color:'var(--muted)',fontSize:22}} />
+                                    <p style={{color:'var(--muted)',fontSize:12,marginTop:6}}>
+                                        {file ? file.name : 'Añadir imagen o vídeo (máx. 20MB)'}
+                                    </p>
+                                    <input type="file" accept="image/*,video/mp4" onChange={handleImageChange} style={{display:'none'}} />
+                                </label>
+
+                                <button onClick={handleSendWorkout} className="btn-accent w-full py-4 font-display text-xl tracking-wider" style={{borderRadius:14}}>
+                                    <Icon name="paper-plane" className="mr-2" />ENVIAR RUTINA
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* ACTIVITY FEED */}
+                        <div className="anim-fadeUp delay-2">
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-2">
+                                    <div className="pulse-dot"></div>
+                                    <h3 className="font-display text-xl text-white">ACTIVIDAD RECIENTE</h3>
+                                </div>
+                                {workouts.filter(w => w.completed).length > 0 && (
+                                    <span style={{color:'var(--muted)',fontSize:11}}>
+                                        {Math.min(activitiesLimit, workouts.filter(w => w.completed).length)} / {workouts.filter(w => w.completed).length}
+                                    </span>
+                                )}
+                            </div>
+
+                            <div className="card overflow-hidden">
+                                {workouts.filter(w => w.completed).length === 0 ? (
+                                    <div className="p-10 text-center">
+                                        <Icon name="moon" style={{color:'var(--muted)',fontSize:28,marginBottom:12}} />
+                                        <p style={{color:'var(--muted)',fontSize:13}}>Nadie ha entrenado... todavía</p>
+                                    </div>
+                                ) : (
+                                    workouts.filter(w => w.completed)
+                                        .sort((a, b) => (b.completedAt || 0) - (a.completedAt || 0))
+                                        .slice(0, activitiesLimit)
+                                        .map((w, i) => {
+                                            const clientName = users.find(u => u.id === w.clientId)?.name || "Cliente borrado";
+                                            const date = w.completedAt ? new Date(w.completedAt).toLocaleDateString() : 'Hoy';
+                                            const time = w.completedAt ? new Date(w.completedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '';
+                                            return (
+                                                <div key={w.id} className="activity-row p-4 flex items-start justify-between gap-3">
+                                                    <div style={{
+                                                        width:40,height:40,flexShrink:0,
+                                                        background:'rgba(74,222,128,0.1)',
+                                                        border:'1px solid rgba(74,222,128,0.2)',
+                                                        borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center'
+                                                    }}>
+                                                        <Icon name="check" style={{color:'#4ade80',fontSize:14}} />
+                                                    </div>
+                                                    <div style={{flex:1,minWidth:0}}>
+                                                        <p className="font-bold text-white text-sm">{clientName}</p>
+                                                        <p style={{fontSize:12,color:'var(--muted)'}}>Completó: <span style={{color:'var(--accent)'}}>{w.title}</span></p>
+                                                        {w.clientNote && (
+                                                            <p style={{
+                                                                marginTop:6,fontSize:11,
+                                                                background:'rgba(232,255,62,0.06)',
+                                                                border:'1px solid rgba(232,255,62,0.1)',
+                                                                color:'rgba(232,255,62,0.8)',
+                                                                padding:'6px 10px',borderRadius:8,
+                                                                fontStyle:'italic'
+                                                            }}>"{w.clientNote}"</p>
+                                                        )}
+                                                    </div>
+                                                    <div className="text-right" style={{flexShrink:0}}>
+                                                        <p style={{fontSize:10,color:'var(--muted)',fontWeight:700}}>{date}</p>
+                                                        <p style={{fontSize:11,color:'var(--muted)'}}>{time}</p>
+                                                        <button onClick={() => handleToggleComplete(w.id, true)} style={{fontSize:10,color:'#f87171',marginTop:4}} className="underline">
+                                                            Resetear
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+                                )}
+                            </div>
+                            {workouts.filter(w => w.completed).length > activitiesLimit && (
+                                <button
+                                    onClick={() => setActivitiesLimit(prev => prev + 5)}
+                                    className="btn-ghost w-full py-3 mt-3 text-xs font-bold"
+                                >
+                                    <Icon name="chevron-down" className="mr-2" />MOSTRAR MÁS
+                                </button>
+                            )}
+                        </div>
+
+                        {/* WORKOUT HISTORY */}
+                        {selectedClient && (
+                            <div className="anim-fadeUp delay-3">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <Icon name="clock-rotate-left" style={{color:'var(--accent)'}} />
+                                    <h3 className="font-display text-xl text-white">HISTORIAL DE RUTINAS</h3>
+                                </div>
+                                <div className="space-y-2">
+                                    {workouts.filter(w => w.clientId === selectedClient).length === 0 ? (
+                                        <div className="card p-8 text-center">
+                                            <p style={{color:'var(--muted)',fontSize:13}}>Este cliente aún no tiene rutinas.</p>
+                                        </div>
+                                    ) : (
+                                        workouts.filter(w => w.clientId === selectedClient).map(w => (
+                                            <div key={w.id} className="card p-4 flex gap-3">
+                                                {w.image && (
+                                                    <div style={{width:52,height:52,flexShrink:0,borderRadius:12,overflow:'hidden',background:'rgba(255,255,255,0.05)'}}>
+                                                        {w.image.startsWith('data:video') ? (
+                                                            <div style={{width:'100%',height:'100%',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                                                <Icon name="video" style={{color:'var(--muted)',fontSize:16}} />
+                                                            </div>
+                                                        ) : (
+                                                            <img src={w.image} style={{width:'100%',height:'100%',objectFit:'cover'}} />
+                                                        )}
+                                                    </div>
+                                                )}
+                                                <div style={{flex:1,minWidth:0}}>
+                                                    <p className="font-bold text-white text-sm truncate">{w.title}</p>
+                                                    <p style={{fontSize:11,color:'var(--muted)'}}>{w.date}</p>
+                                                    {w.clientNote && (
+                                                        <div style={{
+                                                            marginTop:8,padding:'8px 12px',
+                                                            background:'rgba(232,255,62,0.05)',
+                                                            border:'1px solid rgba(232,255,62,0.1)',
+                                                            borderRadius:10
+                                                        }}>
+                                                            <p style={{fontSize:10,fontWeight:700,color:'rgba(232,255,62,0.6)',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:3}}>
+                                                                📝 Nota del cliente:
+                                                            </p>
+                                                            <p style={{fontSize:12,color:'rgba(255,255,255,0.7)',fontStyle:'italic'}}>"{w.clientNote}"</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <button onClick={() => handleDeleteWorkout(w.id)} style={{color:'rgba(255,255,255,0.15)',alignSelf:'center',padding:8}} className="hover:text-red-400 transition-colors">
+                                                    <Icon name="trash-can" className="text-xs" />
+                                                </button>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* MANAGE CLIENTS */}
+                        <div className="anim-fadeUp delay-4">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Icon name="users" style={{color:'var(--accent)'}} />
+                                <h3 className="font-display text-xl text-white">GESTIONAR CLIENTES</h3>
+                            </div>
+                            <div className="space-y-2">
+                                {users.filter(u => u.role === 'client').map(u => (
+                                    <div key={u.id} className="card p-4 flex justify-between items-center">
+                                        <div className="flex items-center gap-3">
+                                            <div style={{
+                                                width:40,height:40,
+                                                background:'rgba(255,255,255,0.06)',
+                                                borderRadius:12,
+                                                display:'flex',alignItems:'center',justifyContent:'center',
+                                                fontFamily:"'Bebas Neue',sans-serif",
+                                                fontSize:18,color:'var(--text)'
+                                            }}>
+                                                {u.name.charAt(0).toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-white text-sm">{u.name}</p>
+                                                <p style={{fontSize:11,color:'var(--muted)'}}>{u.email}</p>
+                                            </div>
+                                        </div>
+                                        <button onClick={() => handleDeleteUser(u.id, u.name)} style={{color:'rgba(255,255,255,0.15)',padding:8}} className="hover:text-red-400 transition-colors">
+                                            <Icon name="user-minus" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            // ========================
+            // CLIENT VIEW
+            // ========================
+            if (currentUser.role === 'client') {
+                const myWorkouts = workouts.filter(w => w.clientId === currentUser.id);
+                const completedCount = myWorkouts.filter(w => w.completed).length;
+
+                return (
+                    <div className="min-h-screen pb-20" style={{background:'var(--ink)'}}>
+                        <div className="orb orb-1"></div>
+                        <div className="orb orb-2"></div>
+
+                        {/* ZOOM IMAGE MODAL */}
+                        {zoomImage && (
+                            <div className="fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4 anim-fadeIn" onClick={() => setZoomImage(null)}>
+                                <img src={zoomImage} className="max-w-full max-h-[85vh] rounded-2xl shadow-2xl" />
+                            </div>
+                        )}
+
+                        {/* NAV */}
+                        <nav className="nav-bar px-5 py-4 flex justify-between items-center relative z-10">
+                            <div className="flex items-center gap-3">
+                                <div style={{width:36,height:36,background:'var(--accent)',borderRadius:10,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                    <Icon name="bolt" className="text-black text-sm" />
+                                </div>
+                                <div>
+                                    <p className="font-display text-white text-lg" style={{lineHeight:1}}>MIS RUTINAS</p>
+                                    <p style={{color:'var(--muted)',fontSize:10}}>{completedCount} completadas</p>
+                                </div>
+                            </div>
+                            <button onClick={handleLogout} className="btn-ghost px-4 py-2 text-xs font-bold">
+                                SALIR
+                            </button>
+                        </nav>
+
+                        {/* HERO HEADER */}
+                        <div className="px-5 pt-6 pb-2 relative z-10">
+                            <p style={{color:'var(--muted)',fontSize:12,textTransform:'uppercase',letterSpacing:'0.15em',marginBottom:4}}>Bienvenido de vuelta</p>
+                            <h1 className="font-display text-white" style={{fontSize:48,lineHeight:1}}>¡VAMOS</h1>
+                            <h1 className="font-display" style={{fontSize:48,lineHeight:1,color:'var(--accent)'}}>{currentUser.name.toUpperCase()}!</h1>
+                        </div>
+
+                        <div className="px-5 pb-5 relative z-10">
+                            {/* TOOLS BUTTON */}
+                            <button
+                                onClick={() => setShowTools(true)}
+                                className="btn-ghost w-full py-4 font-bold flex items-center justify-center gap-3 mb-6 mt-4"
+                                style={{borderRadius:16, fontSize:13, letterSpacing:'0.05em'}}
+                            >
+                                <Icon name="stopwatch" style={{color:'var(--accent)',fontSize:18}} />
+                                <span>ABRIR HERRAMIENTAS</span>
+                                <Icon name="chevron-right" style={{color:'var(--muted)',fontSize:12,marginLeft:'auto'}} />
+                            </button>
+
+                            {/* WORKOUT CARDS */}
+                            <div className="space-y-5">
+                                {myWorkouts.map((w, i) => (
+                                    <div key={w.id} className={`workout-card anim-cardEnter delay-${Math.min(i+1,5)}`}>
+
+                                        {/* Media */}
                                         {w.image && (
-                                            <div className="w-12 h-12 flex-shrink-0 bg-gray-200 rounded overflow-hidden">
+                                            <div style={{position:'relative',background:'#000',width:'100%',aspectRatio:'16/9',overflow:'hidden'}}>
                                                 {w.image.startsWith('data:video') ? (
-                                                    <div className="w-full h-full flex items-center justify-center bg-black"><Icon name="video" className="text-white text-[10px]" /></div>
+                                                    <video src={w.image} controls style={{width:'100%',height:'100%',objectFit:'contain'}} />
                                                 ) : (
-                                                    <img src={w.image} className="w-full h-full object-cover" />
+                                                    <img
+                                                        src={w.image}
+                                                        style={{width:'100%',height:'100%',objectFit:'cover',cursor:'zoom-in'}}
+                                                        onClick={() => setZoomImage(w.image)}
+                                                    />
                                                 )}
                                             </div>
                                         )}
-                                        <div className="flex-1 min-w-0">
-                                            <p className="font-bold text-sm text-gray-800 truncate">{w.title}</p>
-                                            <p className="text-[10px] text-gray-400">{w.date}</p>
-                                            {w.clientNote && (
-    <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-        <p className="text-[10px] font-bold text-yellow-800 uppercase tracking-wider mb-1">
-            📝 Nota del cliente:
-        </p>
-        <p className="text-sm text-gray-700 italic">
-            "{w.clientNote}"
-        </p>
-    </div>
-)}
+
+                                        <div className="p-5">
+                                            {/* Title row */}
+                                            <div className="flex items-start justify-between gap-3 mb-1">
+                                                <h3 className="font-display text-white" style={{fontSize:26,lineHeight:1.1}}>{w.title.toUpperCase()}</h3>
+                                                {w.completed && (
+                                                    <div style={{
+                                                        flexShrink:0,
+                                                        background:'rgba(74,222,128,0.1)',
+                                                        border:'1px solid rgba(74,222,128,0.25)',
+                                                        borderRadius:8,padding:'4px 8px',
+                                                        display:'flex',alignItems:'center',gap:4
+                                                    }}>
+                                                        <Icon name="check" style={{color:'#4ade80',fontSize:10}} />
+                                                        <span style={{color:'#4ade80',fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.05em'}}>Hecho</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <p style={{color:'var(--muted)',fontSize:11,marginBottom:14}}>{w.date}</p>
+
+                                            {/* Description */}
+                                            {w.description && (
+                                                <p style={{
+                                                    color:'rgba(255,255,255,0.65)',
+                                                    fontSize:13,
+                                                    whiteSpace:'pre-line',
+                                                    lineHeight:1.7,
+                                                    borderTop:'1px solid var(--border)',
+                                                    paddingTop:14,
+                                                    marginBottom:16
+                                                }}>{w.description}</p>
+                                            )}
+
+                                            {/* NOTES */}
+                                            <div style={{
+                                                background:'rgba(255,255,255,0.03)',
+                                                border:'1px solid var(--border)',
+                                                borderRadius:14,
+                                                padding:14,
+                                                marginBottom:14
+                                            }}>
+                                                <p style={{color:'var(--muted)',fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',marginBottom:8}}>
+                                                    <Icon name="pen-to-square" className="mr-1" /> Mis notas
+                                                </p>
+                                                <textarea
+                                                    id={`note-input-${w.id}`}
+                                                    defaultValue={w.clientNote || ""}
+                                                    placeholder="Anota tus pesos, sensaciones..."
+                                                    style={{
+                                                        width:'100%',
+                                                        background:'rgba(255,255,255,0.05)',
+                                                        border:'1px solid rgba(255,255,255,0.08)',
+                                                        borderRadius:10,padding:'10px 12px',
+                                                        fontSize:13,color:'var(--text)',
+                                                        outline:'none',resize:'none',
+                                                        fontFamily:"'DM Sans',sans-serif",
+                                                        lineHeight:1.5
+                                                    }}
+                                                    rows="2"
+                                                />
+                                                <button
+                                                    onClick={async (e) => {
+                                                        const btn = e.currentTarget;
+                                                        const text = document.getElementById(`note-input-${w.id}`).value;
+                                                        btn.disabled = true;
+                                                        btn.innerText = "GUARDANDO...";
+                                                        const ok = await handleUpdateNote(w.id, text);
+                                                        if (ok) {
+                                                            btn.innerText = "✓ GUARDADO";
+                                                            btn.style.background = 'rgba(74,222,128,0.15)';
+                                                            btn.style.borderColor = 'rgba(74,222,128,0.3)';
+                                                            btn.style.color = '#4ade80';
+                                                            setTimeout(() => {
+                                                                btn.disabled = false;
+                                                                btn.innerText = "GUARDAR NOTA";
+                                                                btn.style.background = '';
+                                                                btn.style.borderColor = '';
+                                                                btn.style.color = '';
+                                                            }, 2000);
+                                                        }
+                                                    }}
+                                                    style={{
+                                                        width:'100%',marginTop:8,
+                                                        background:'rgba(255,255,255,0.06)',
+                                                        border:'1px solid rgba(255,255,255,0.1)',
+                                                        color:'var(--text)',
+                                                        borderRadius:10,padding:'10px',
+                                                        fontSize:11,fontWeight:700,
+                                                        letterSpacing:'0.08em',textTransform:'uppercase',
+                                                        cursor:'pointer',transition:'all 0.2s'
+                                                    }}
+                                                >
+                                                    GUARDAR NOTA
+                                                </button>
+                                            </div>
+
+                                            {/* COMPLETE BUTTON */}
+                                            <div>
+                                                {w.completed ? (
+                                                    <div className="anim-successPop completed-badge p-4 flex items-center justify-center gap-3 font-bold" style={{fontSize:14}}>
+                                                        <Icon name="trophy" style={{color:'#4ade80'}} />
+                                                        ¡RUTINA COMPLETADA!
+                                                    </div>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => {
+                                                            handleToggleComplete(w.id, false);
+                                                            setCompletedWorkoutTitle(w.title);
+                                                            setTimeout(() => setShowAchievement(true), 400);
+                                                        }}
+                                                        className="btn-accent w-full py-4 font-display text-xl tracking-wider flex items-center justify-center gap-3"
+                                                        style={{borderRadius:14}}
+                                                    >
+                                                        <Icon name="dumbbell" />
+                                                        MARCAR COMO TERMINADA
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
-                                        <button 
-                                            onClick={() => handleDeleteWorkout(w.id)}
-                                            className="text-gray-300 hover:text-red-500 transition-colors self-center px-2"
-                                        >
-                                            <Icon name="trash-can" className="text-xs" />
+                                    </div>
+                                ))}
+
+                                {myWorkouts.length === 0 && (
+                                    <div className="card p-12 text-center anim-fadeUp">
+                                        <Icon name="dumbbell" style={{color:'var(--muted)',fontSize:36,marginBottom:16}} />
+                                        <p className="font-display text-2xl text-white mb-2">SIN RUTINAS AÚN</p>
+                                        <p style={{color:'var(--muted)',fontSize:13}}>Tu entrenador te enviará rutinas pronto.</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* ---- TOOLS MODAL ---- */}
+                        {showTools && (
+                            <div className="fixed inset-0 z-[100] modal-overlay flex items-end sm:items-center justify-center anim-fadeIn">
+                                <div className="w-full max-w-md bg-surface anim-slideIn" style={{
+                                    background:'var(--surface)',
+                                    borderTopLeftRadius:28,borderTopRightRadius:28,
+                                    borderBottom:'none',
+                                    border:'1px solid var(--border)'
+                                }}>
+                                    {/* Handle bar */}
+                                    <div style={{display:'flex',justifyContent:'center',paddingTop:12,paddingBottom:4}}>
+                                        <div style={{width:40,height:4,background:'rgba(255,255,255,0.15)',borderRadius:4}}></div>
+                                    </div>
+                                    <div className="p-6">
+                                        <div className="flex justify-between items-center mb-5">
+                                            <h2 className="font-display text-3xl text-white">HERRAMIENTAS</h2>
+                                            <button onClick={() => { setIsActive(false); setShowTools(false); }} style={{
+                                                width:36,height:36,
+                                                background:'rgba(255,255,255,0.08)',
+                                                borderRadius:10,display:'flex',alignItems:'center',justifyContent:'center',
+                                                color:'var(--muted)'
+                                            }}>
+                                                <Icon name="xmark" />
+                                            </button>
+                                        </div>
+
+                                        {/* Segment */}
+                                        <div className="segment mb-6">
+                                            <button
+                                                className={`segment-btn ${toolMode==='chrono'?'active':''}`}
+                                                onClick={() => { setToolMode('chrono'); setSeconds(0); setIsActive(false); }}
+                                            >CRONÓMETRO</button>
+                                            <button
+                                                className={`segment-btn ${toolMode==='timer'?'active':''}`}
+                                                onClick={() => { setToolMode('timer'); setSeconds(60); setIsActive(false); }}
+                                            >TEMPORIZADOR</button>
+                                        </div>
+
+                                        {/* Timer display */}
+                                        <div style={{
+                                            background:'rgba(255,255,255,0.03)',
+                                            border:'1px solid var(--border)',
+                                            borderRadius:20,
+                                            padding:'32px 24px',
+                                            textAlign:'center',
+                                            marginBottom:20,
+                                            transition:'border-color 0.3s'
+                                        }}>
+                                            <p style={{color:'var(--muted)',fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.15em',marginBottom:8}}>
+                                                {toolMode==='chrono' ? 'Tiempo transcurrido' : 'Tiempo de descanso'}
+                                            </p>
+                                            <div className={`timer-display ${toolMode==='timer' && seconds < 10 ? 'danger' : ''}`}>
+                                                {formatTime(seconds)}
+                                            </div>
+                                        </div>
+
+                                        {/* Quick time buttons (timer mode) */}
+                                        {toolMode === 'timer' && !isActive && (
+                                            <div style={{display:'flex',gap:8,marginBottom:16,justifyContent:'center'}}>
+                                                {[30, 60, 90, 120].map(t => (
+                                                    <button
+                                                        key={t}
+                                                        onClick={() => setSeconds(t)}
+                                                        style={{
+                                                            background: seconds===t ? 'rgba(232,255,62,0.15)' : 'rgba(255,255,255,0.05)',
+                                                            border: seconds===t ? '1px solid rgba(232,255,62,0.3)' : '1px solid rgba(255,255,255,0.08)',
+                                                            color: seconds===t ? 'var(--accent)' : 'var(--muted)',
+                                                            borderRadius:10,padding:'8px 14px',
+                                                            fontSize:12,fontWeight:700,
+                                                            cursor:'pointer',transition:'all 0.2s'
+                                                        }}
+                                                    >{t}s</button>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+                                            <button
+                                                onClick={() => { setSeconds(toolMode==='chrono' ? 0 : 60); setIsActive(false); }}
+                                                className="btn-ghost py-4 font-bold text-sm"
+                                            >
+                                                <Icon name="rotate-left" className="mr-2" />REINICIAR
+                                            </button>
+                                            <button
+                                                onClick={() => setIsActive(!isActive)}
+                                                style={{
+                                                    background: isActive ? 'var(--accent2)' : 'var(--accent)',
+                                                    color: 'var(--ink)',
+                                                    borderRadius:14,
+                                                    padding:'16px',
+                                                    fontFamily:"'Bebas Neue',sans-serif",
+                                                    fontSize:20,
+                                                    letterSpacing:'0.04em',
+                                                    cursor:'pointer',
+                                                    transition:'all 0.2s',
+                                                    border:'none'
+                                                }}
+                                            >
+                                                {isActive ? 'PAUSAR' : 'EMPEZAR'}
+                                            </button>
+                                        </div>
+
+                                        <button onClick={() => { setIsActive(false); setShowTools(false); }} style={{
+                                            width:'100%',marginTop:16,
+                                            color:'var(--muted)',fontSize:11,
+                                            fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',
+                                            background:'none',border:'none',cursor:'pointer'
+                                        }}>
+                                            Volver a la rutina
                                         </button>
                                     </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-                )}
-                {/* --- FIN HISTORIAL --- */}
-
-                <div className="mt-8 border-t pt-6">
-                    <h3 className="font-bold text-gray-700 mb-4 uppercase text-xs">Gestionar Clientes</h3>
-                    <div className="space-y-2">
-                        {users.filter(u => u.role === 'client').map(u => (
-                            <div key={u.id} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg border">
-                                <div>
-                                    <p className="font-bold text-sm">{u.name}</p>
-                                    <p className="text-[10px] text-gray-500">{u.email}</p>
                                 </div>
-                                <button onClick={() => handleDeleteUser(u.id, u.name)} className="text-red-500 p-2"><Icon name="user-minus" /></button>
                             </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-);
+                        )}
 
-            {/* VISTA CLIENTE */}
-            if (currentUser.role === 'client') {
-        return (
-            <div className="min-h-screen bg-gray-100 pb-20">
-                {/* MODAL DE HERRAMIENTAS ACTUALIZADO */}
-                {showTools && (
-    <div className="fixed inset-0 z-[100] bg-black/80 flex items-end sm:items-center justify-center p-4">
-        <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl">
-            <div className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                        <Icon name="screwdriver-wrench" /> Herramientas
-                    </h2>
-                    <button onClick={() => { setIsActive(false); setShowTools(false); }} className="text-gray-400 p-2 text-2xl">
-                        <Icon name="xmark" />
-                    </button>
-                </div>
+                        {/* ---- ACHIEVEMENT MODAL ---- */}
+                        {showAchievement && (
+                            <div className="fixed inset-0 z-[200] flex items-center justify-center modal-overlay p-4 anim-fadeIn">
+                                <div className="relative w-full max-w-sm flex flex-col items-center">
+                                    <button
+                                        onClick={() => setShowAchievement(false)}
+                                        style={{alignSelf:'flex-end',color:'rgba(255,255,255,0.5)',fontSize:24,padding:8,marginBottom:8,background:'none',border:'none',cursor:'pointer'}}
+                                    >
+                                        <Icon name="xmark" />
+                                    </button>
 
-                {/* SELECTOR DE MODO */}
-                <div className="flex bg-gray-100 rounded-xl p-1 mb-6">
-                    <button 
-                        onClick={() => { setToolMode('chrono'); setSeconds(0); setIsActive(false); }}
-                        className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${toolMode === 'chrono' ? 'bg-white shadow text-indigo-600' : 'text-gray-500'}`}
-                    >
-                        CRONÓMETRO
-                    </button>
-                    <button 
-                        onClick={() => { setToolMode('timer'); setSeconds(60); setIsActive(false); }}
-                        className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${toolMode === 'timer' ? 'bg-white shadow text-indigo-600' : 'text-gray-500'}`}
-                    >
-                        TEMPORIZADOR
-                    </button>
-                </div>
-                
-                <div className={`rounded-3xl p-8 text-center mb-6 border transition-colors ${toolMode === 'timer' && seconds === 0 && !isActive ? 'bg-red-50 border-red-100 animate-pulse' : 'bg-gray-50 border-gray-100'}`}>
-                    <p className="text-indigo-600 font-bold uppercase tracking-widest text-[10px] mb-2">
-                        {toolMode === 'chrono' ? 'Tiempo transcurrido' : 'Tiempo de descanso'}
-                    </p>
-                    <div className={`text-6xl font-mono font-black tabular-nums ${toolMode === 'timer' && seconds < 10 ? 'text-red-600' : 'text-gray-800'}`}>
-                        {formatTime(seconds)}
-                    </div>
-                </div>
+                                    <div id="achievement-card" style={{
+                                        aspectRatio:'9/16',
+                                        width:'100%',
+                                        overflow:'hidden',
+                                        borderRadius:40,
+                                        background:'linear-gradient(135deg, #0a0a0f 0%, #13131a 40%, #1a1a30 100%)',
+                                        padding:32,
+                                        display:'flex',flexDirection:'column',
+                                        alignItems:'center',justifyContent:'space-between',
+                                        textAlign:'center',
+                                        border:'3px solid rgba(232,255,62,0.2)',
+                                        position:'relative',
+                                        overflow:'hidden'
+                                    }}>
+                                        {/* BG accent */}
+                                        <div style={{position:'absolute',top:-60,right:-60,width:200,height:200,background:'rgba(232,255,62,0.06)',borderRadius:'50%',filter:'blur(40px)'}}></div>
 
-                {/* BOTONES RÁPIDOS (Solo en modo Temporizador) */}
-                {toolMode === 'timer' && !isActive && (
-                    <div className="flex justify-center gap-3 mb-6">
-                        {[30, 60, 90, 120].map(t => (
-                            <button 
-                                key={t} 
-                                onClick={() => setSeconds(t)}
-                                className="bg-indigo-50 text-indigo-600 px-4 py-2 rounded-full text-xs font-bold border border-indigo-100 active:bg-indigo-100"
-                            >
-                                {t}s
-                            </button>
-                        ))}
-                    </div>
-                )}
+                                        <div style={{marginTop:32,position:'relative',zIndex:1}}>
+                                            <div style={{
+                                                display:'inline-block',
+                                                background:'rgba(232,255,62,0.1)',
+                                                border:'1px solid rgba(232,255,62,0.2)',
+                                                borderRadius:50,padding:'4px 16px',
+                                                fontSize:10,fontWeight:700,
+                                                color:'var(--accent)',
+                                                letterSpacing:'0.15em',textTransform:'uppercase',
+                                                marginBottom:16
+                                            }}>Activa-T Gym</div>
+                                            <h2 style={{
+                                                fontFamily:"'Bebas Neue',sans-serif",
+                                                fontSize:52,color:'white',
+                                                lineHeight:0.95
+                                            }}>ENTRENO<br/>COMPLETADO</h2>
+                                        </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                    <button 
-                        onClick={() => { setSeconds(toolMode === 'chrono' ? 0 : 60); setIsActive(false); }}
-                        className="bg-gray-200 text-gray-700 py-4 rounded-2xl font-bold active:bg-gray-300"
-                    >
-                        REINICIAR
-                    </button>
-                    <button 
-                        onClick={() => setIsActive(!isActive)}
-                        className={`${isActive ? 'bg-orange-500' : 'bg-indigo-600'} text-white py-4 rounded-2xl font-bold shadow-lg transition-all active:scale-95`}
-                    >
-                        {isActive ? 'PAUSAR' : 'EMPEZAR'}
-                    </button>
-                </div>
-                
-                <button onClick={() => { setIsActive(false); setShowTools(false); }} className="w-full mt-6 text-gray-400 text-[10px] font-bold uppercase tracking-widest">
-                    Volver a la rutina
-                </button>
-            </div>
-        </div>
-    </div>
-)}
+                                        <div style={{position:'relative',zIndex:1,padding:'24px 0'}}>
+                                            <div style={{
+                                                width:72,height:72,
+                                                background:'var(--accent)',
+                                                borderRadius:20,
+                                                display:'flex',alignItems:'center',justifyContent:'center',
+                                                margin:'0 auto 16px',
+                                                boxShadow:'0 0 40px rgba(232,255,62,0.5)'
+                                            }}>
+                                                <Icon name="dumbbell" style={{color:'black',fontSize:28}} />
+                                            </div>
+                                            <p style={{color:'rgba(255,255,255,0.5)',fontSize:12,textTransform:'uppercase',letterSpacing:'0.15em',marginBottom:6}}>
+                                                Bravo, {currentUser?.name}
+                                            </p>
+                                            <p style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:28,color:'white',lineHeight:1.1,padding:'0 16px'}}>
+                                                {completedWorkoutTitle}
+                                            </p>
+                                        </div>
 
-                {/* VISTA NORMAL DEL CLIENTE */}
-                {zoomImage && (
-                    <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4" onClick={() => setZoomImage(null)}>
-                        <img src={zoomImage} className="max-w-full max-h-[80vh] rounded shadow-2xl" />
-                    </div>
-                )}
+                                        <div style={{marginBottom:32,position:'relative',zIndex:1}}>
+                                            <div style={{
+                                                background:'var(--accent)',
+                                                borderRadius:12,padding:'8px 20px',
+                                                display:'inline-block'
+                                            }}>
+                                                <span style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:16,color:'black',letterSpacing:'0.05em'}}>
+                                                    @activat_gymdance
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                <nav className="bg-indigo-700 p-4 text-white flex justify-between items-center">
-                    <span className="font-bold italic">MIS RUTINAS</span>
-                    <button onClick={handleLogout} className="text-xs bg-indigo-800 px-3 py-1 rounded font-bold">SALIR</button>
-                </nav>
-
-                <div className="p-4 max-w-lg mx-auto">
-                    <h2 className="text-xl font-bold mb-6 text-indigo-900 text-center uppercase tracking-tighter italic">
-                        ¡VAMOS {currentUser.name}! 💪
-                    </h2>
-
-                    {/* BOTÓN PARA ABRIR HERRAMIENTAS */}
-                    <button 
-                        onClick={() => setShowTools(true)}
-                        className="w-full mb-8 bg-white border-2 border-indigo-500 text-indigo-600 p-4 rounded-2xl font-black flex items-center justify-center gap-3 shadow-md active:scale-95 transition-transform"
-                    >
-                        <Icon name="stopwatch" className="text-xl" /> ABRIR HERRAMIENTAS
-                    </button>
-
-                    {workouts.filter(w => w.clientId === currentUser.id).map(w => (
-                        <div key={w.id} className="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-b-4 border-indigo-500 relative">
-                            {w.image && (
-                                <div className="relative bg-black w-full h-80 flex items-center justify-center">
-                                    {w.image.startsWith('data:video') ? (
-                                        <video src={w.image} controls className="w-full h-full object-contain" />
-                                    ) : (
-                                        <img src={w.image} className="w-full h-full object-cover shadow-inner" onClick={() => setZoomImage(w.image)} />
-                                    )}
+                                    <div style={{marginTop:16,display:'flex',flexDirection:'column',gap:10,width:'100%'}}>
+                                        <button
+                                            onClick={handleShareAchievement}
+                                            className="btn-accent w-full py-4 font-display text-xl tracking-wider flex items-center justify-center gap-3"
+                                            style={{borderRadius:16}}
+                                        >
+                                            <Icon name="share-nodes" />COMPARTIR LOGRO
+                                        </button>
+                                        <p style={{color:'rgba(255,255,255,0.25)',fontSize:10,textAlign:'center',textTransform:'uppercase',letterSpacing:'0.1em'}}>
+                                            📸 O haz una captura de pantalla
+                                        </p>
+                                    </div>
                                 </div>
-                            )}
-                            <div className="p-5">
-                                <h3 className="font-bold text-lg text-gray-800 mb-2">{w.title}</h3>
-                                <p className="text-gray-600 text-sm whitespace-pre-line border-t pt-2">{w.description}</p>
-                            {/* SECCIÓN DE NOTAS PERSONALES */}
-                                <div className="mt-4 mb-4 bg-gray-50 p-3 rounded-xl border border-gray-100">
-    <textarea
-        id={`note-input-${w.id}`}
-        defaultValue={w.clientNote || ""}
-        placeholder="Anota tus pesos o sensaciones..."
-        className="w-full bg-white border border-gray-200 rounded-lg p-2 text-sm text-gray-700 outline-none focus:border-blue-500 resize-none"
-        rows="2"
-    />
-    <button 
-        onClick={async (e) => {
-            const btn = e.currentTarget;
-            const text = document.getElementById(`note-input-${w.id}`).value;
-            
-            btn.disabled = true;
-            btn.innerText = "GUARDANDO...";
-            
-            const ok = await handleUpdateNote(w.id, text);
-            
-            if(ok) {
-                btn.innerText = "¡GUARDADO!";
-                btn.className = "w-full mt-2 py-2 bg-green-500 text-white text-[10px] font-bold rounded-lg uppercase";
-                setTimeout(() => {
-                    btn.disabled = false;
-                    btn.innerText = "GUARDAR NOTA";
-                    btn.className = "w-full mt-2 py-2 bg-blue-600 text-white text-[10px] font-bold rounded-lg uppercase";
-                }, 2000);
+                            </div>
+                        )}
+                    </div>
+                );
             }
-        }}
-        className="w-full mt-2 py-2 bg-blue-600 text-white text-[10px] font-bold rounded-lg uppercase tracking-widest"
-    >
-        GUARDAR NOTA
-    </button>
-</div>
+            return null;
+        }
 
-                                {/* BOTÓN DE COMPLETADO */}
-                                <div className="mt-4 border-t pt-4">
-                                    {w.completed ? (
-                                        <div className="bg-green-100 text-green-700 p-3 rounded-xl font-bold text-center flex items-center justify-center gap-2 animate-in fade-in">
-                                            <Icon name="check" /> ¡RUTINA COMPLETADA!
-                                        </div>
-                                    ) : (
-                                        <button 
-                                            onClick={() => handleToggleComplete(w.id, false)}
-                                            className="w-full bg-gray-900 text-white p-3 rounded-xl font-bold hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
-                                        >
-                                            <Icon name="dumbbell" /> MARCAR COMO TERMINADA
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div> 
-
-                {/* --- MODAL DE LOGRO --- */}
-                {showAchievement && (
-                    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm animate-in fade-in duration-300">
-                        <div className="relative w-full max-w-sm flex flex-col items-center">
-                            
-                            <button 
-                                onClick={() => setShowAchievement(false)}
-                                className="self-end text-white text-2xl p-2 mb-2"
-                            >
-                                <Icon name="xmark" />
-                            </button>
-
-                            <div id="achievement-card" className="aspect-[9/16] w-full overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-blue-600 via-blue-800 to-indigo-950 p-8 shadow-2xl flex flex-col items-center justify-between text-center border-[6px] border-white/20">
-                                <div className="mt-8">
-                                    <div className="inline-block rounded-full bg-white/20 px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-white mb-4">
-                                        Activa-T Gym
-                                    </div>
-                                    <h2 className="text-4xl font-black italic text-white leading-tight">ENTRENO DE HOY<br/>LOGRADO</h2>
-                                </div>
-
-                                <div className="relative w-full py-10">
-                                    <p className="text-blue-200 text-sm font-medium mb-1 uppercase tracking-widest text-blue-200">Bravo, {currentUser?.name}</p>
-                                    <p className="text-2xl font-bold text-white leading-tight px-4 text-white">{completedWorkoutTitle}</p>
-                                </div>
-
-                                <div className="mb-8 w-full text-center text-white">
-                                    
-                                    <span className="inline-block mt-2 rounded-lg bg-white px-4 py-2 text-sm font-black text-blue-900 shadow-xl">
-                                        @activat_gymdance
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="mt-6 flex flex-col gap-3 w-full">
-                                <button 
-                                    onClick={handleShareAchievement}
-                                    className="w-full bg-white text-blue-900 py-4 rounded-2xl font-black flex items-center justify-center gap-3 shadow-xl active:scale-95 transition-all"
-                                >
-                                    <Icon name="share-nodes" /> COMPARTIR LOGRO
-                                </button>
-                                <p className="text-white/40 text-[10px] text-center uppercase tracking-widest text-white/40">
-                                    📸 O haz una captura de pantalla
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
-        );
-    }
-    return null;
-};
-
-// --- RENDERIZADO FINAL ---
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<GymApp />);
-</script>
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<GymApp />);
+    </script>
+</body>
+</html>
