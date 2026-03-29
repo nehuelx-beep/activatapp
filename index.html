@@ -385,37 +385,53 @@
         function ClientPicker({ users, selectedClient, onSelect }) {
             const [search, setSearch] = React.useState('');
             const [open, setOpen] = React.useState(false);
+            const wrapperRef = React.useRef(null);
+
+            // Cierra el dropdown al hacer clic fuera
+            React.useEffect(() => {
+                const handleClickOutside = (e) => {
+                    if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+                        setOpen(false);
+                        setSearch('');
+                    }
+                };
+                document.addEventListener('mousedown', handleClickOutside);
+                return () => document.removeEventListener('mousedown', handleClickOutside);
+            }, []);
 
             const clients = users
                 .filter(u => u.role === 'client')
-                .sort((a, b) => a.name.localeCompare(b, 'es', { sensitivity: 'base' }));
+                .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
 
             const filtered = clients.filter(c =>
-                c.name.toLowerCase().includes(search.toLowerCase())
+                c.name.toLowerCase().includes(search.toLowerCase()) ||
+                c.email.toLowerCase().includes(search.toLowerCase())
             );
 
             const selected = clients.find(c => c.id === selectedClient);
 
             return (
-                <div style={{position:'relative'}}>
+                <div ref={wrapperRef} style={{position:'relative'}}>
+                    {/* Trigger */}
                     <div
-                        onClick={() => setOpen(!open)}
+                        onClick={() => { setOpen(!open); setSearch(''); }}
                         style={{
                             background:'rgba(255,255,255,0.05)',
                             border: open ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
-                            borderRadius:12, padding:'14px 16px',
+                            borderRadius:12, padding:'13px 16px',
                             cursor:'pointer', display:'flex',
                             alignItems:'center', justifyContent:'space-between',
-                            transition:'border-color 0.2s'
+                            transition:'border-color 0.2s, box-shadow 0.2s',
+                            boxShadow: open ? '0 0 0 3px rgba(34,197,94,0.1)' : 'none'
                         }}
                     >
                         <div style={{display:'flex', alignItems:'center', gap:10}}>
                             {selected ? (
                                 <>
                                     <div style={{
-                                        width:28, height:28, background:'var(--accent)',
-                                        borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center',
-                                        fontFamily:"'Bebas Neue',sans-serif", fontSize:14, color:'black', flexShrink:0
+                                        width:30, height:30, background:'var(--accent)',
+                                        borderRadius:9, display:'flex', alignItems:'center', justifyContent:'center',
+                                        fontFamily:"'Bebas Neue',sans-serif", fontSize:15, color:'black', flexShrink:0
                                     }}>{selected.name.charAt(0).toUpperCase()}</div>
                                     <div>
                                         <p style={{color:'var(--text)', fontSize:13, fontWeight:600, lineHeight:1.2}}>{selected.name}</p>
@@ -424,76 +440,102 @@
                                 </>
                             ) : (
                                 <>
-                                    <i className="fa-solid fa-user" style={{color:'rgba(255,255,255,0.25)', fontSize:14}}></i>
-                                    <span style={{color:'rgba(255,255,255,0.3)', fontSize:14}}>Selecciona cliente...</span>
+                                    <div style={{
+                                        width:30, height:30, background:'rgba(255,255,255,0.06)',
+                                        borderRadius:9, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0
+                                    }}>
+                                        <i className="fa-solid fa-user" style={{color:'rgba(255,255,255,0.25)', fontSize:12}}></i>
+                                    </div>
+                                    <span style={{color:'rgba(255,255,255,0.3)', fontSize:13}}>Selecciona cliente...</span>
                                 </>
                             )}
                         </div>
-                        <i className={`fa-solid fa-chevron-${open ? 'up' : 'down'}`} style={{color:'rgba(255,255,255,0.3)',fontSize:12}}></i>
+                        <i className={`fa-solid fa-chevron-${open ? 'up' : 'down'}`} style={{color:'rgba(255,255,255,0.3)',fontSize:11,transition:'transform 0.2s'}}></i>
                     </div>
 
+                    {/* Dropdown */}
                     {open && (
                         <div style={{
-                            position:'absolute', top:'calc(100% + 6px)', left:0, right:0,
+                            position:'absolute', top:'calc(100% + 8px)', left:0, right:0,
                             background:'#1a1a24', border:'1px solid rgba(255,255,255,0.1)',
-                            borderRadius:14, zIndex:200, overflow:'hidden',
-                            boxShadow:'0 20px 50px rgba(0,0,0,0.5)'
+                            borderRadius:16, zIndex:300, overflow:'hidden',
+                            boxShadow:'0 24px 60px rgba(0,0,0,0.6)',
+                            animation:'fadeUp 0.15s ease forwards'
                         }}>
-                            <div style={{padding:'10px 12px', borderBottom:'1px solid rgba(255,255,255,0.07)'}}>
+                            {/* Search */}
+                            <div style={{padding:'12px 12px 8px', borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
                                 <div style={{position:'relative'}}>
                                     <i className="fa-solid fa-magnifying-glass" style={{
-                                        position:'absolute', left:10, top:'50%',
+                                        position:'absolute', left:11, top:'50%',
                                         transform:'translateY(-50%)',
-                                        color:'rgba(255,255,255,0.3)', fontSize:12
+                                        color:'rgba(255,255,255,0.25)', fontSize:12, pointerEvents:'none'
                                     }}></i>
                                     <input
                                         autoFocus
                                         value={search}
                                         onChange={e => setSearch(e.target.value)}
-                                        placeholder="Buscar cliente..."
+                                        placeholder="Buscar por nombre o email..."
                                         style={{
                                             width:'100%', background:'rgba(255,255,255,0.05)',
                                             border:'1px solid rgba(255,255,255,0.08)',
-                                            borderRadius:8, padding:'8px 10px 8px 30px',
+                                            borderRadius:9, padding:'9px 10px 9px 30px',
                                             fontSize:13, color:'var(--text)',
                                             outline:'none', fontFamily:"'DM Sans',sans-serif"
                                         }}
                                     />
                                 </div>
                             </div>
-                            <div style={{maxHeight:220, overflowY:'auto'}}>
+
+                            {/* Count */}
+                            <div style={{padding:'6px 16px 4px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                                <span style={{fontSize:10, color:'rgba(255,255,255,0.2)', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.1em'}}>
+                                    {search ? `${filtered.length} resultado${filtered.length !== 1 ? 's' : ''}` : `${clients.length} clientes · A→Z`}
+                                </span>
+                            </div>
+
+                            {/* List */}
+                            <div style={{maxHeight:240, overflowY:'auto'}}>
                                 {filtered.length === 0 ? (
-                                    <div style={{padding:'16px', textAlign:'center', color:'rgba(255,255,255,0.3)', fontSize:13}}>
-                                        Sin resultados
+                                    <div style={{padding:'20px', textAlign:'center'}}>
+                                        <i className="fa-solid fa-face-frown" style={{color:'rgba(255,255,255,0.15)', fontSize:20, marginBottom:8, display:'block'}}></i>
+                                        <p style={{color:'rgba(255,255,255,0.3)', fontSize:13}}>Sin resultados para "{search}"</p>
                                     </div>
                                 ) : filtered.map((c, i) => (
                                     <div
                                         key={c.id}
                                         onClick={() => { onSelect(c.id); setOpen(false); setSearch(''); }}
                                         style={{
-                                            padding:'12px 16px', cursor:'pointer',
+                                            padding:'11px 16px', cursor:'pointer',
                                             display:'flex', alignItems:'center', gap:12,
                                             background: c.id === selectedClient ? 'rgba(34,197,94,0.08)' : 'transparent',
-                                            borderBottom: i < filtered.length-1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
-                                            transition:'background 0.15s'
+                                            borderBottom: i < filtered.length-1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
+                                            transition:'background 0.12s'
                                         }}
+                                        onMouseEnter={e => { if(c.id !== selectedClient) e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
+                                        onMouseLeave={e => { e.currentTarget.style.background = c.id === selectedClient ? 'rgba(34,197,94,0.08)' : 'transparent'; }}
                                     >
                                         <div style={{
-                                            width:32, height:32, borderRadius:9,
+                                            width:34, height:34, borderRadius:10, flexShrink:0,
                                             background: c.id === selectedClient ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)',
+                                            border: c.id === selectedClient ? '1px solid rgba(34,197,94,0.3)' : '1px solid rgba(255,255,255,0.06)',
                                             display:'flex', alignItems:'center', justifyContent:'center',
-                                            fontFamily:"'Bebas Neue',sans-serif", fontSize:16,
-                                            color: c.id === selectedClient ? 'var(--accent)' : 'var(--text)',
-                                            flexShrink:0
+                                            fontFamily:"'Bebas Neue',sans-serif", fontSize:17,
+                                            color: c.id === selectedClient ? 'var(--accent)' : 'rgba(255,255,255,0.5)'
                                         }}>
                                             {c.name.charAt(0).toUpperCase()}
                                         </div>
-                                        <div style={{flex:1}}>
-                                            <p style={{fontSize:13, fontWeight:600, color:'var(--text)'}}>{c.name}</p>
-                                            <p style={{fontSize:11, color:'rgba(255,255,255,0.3)'}}>{c.email}</p>
+                                        <div style={{flex:1, minWidth:0}}>
+                                            <p style={{fontSize:13, fontWeight:600, color: c.id === selectedClient ? 'var(--accent)' : 'var(--text)', lineHeight:1.3}}>{c.name}</p>
+                                            <p style={{fontSize:11, color:'rgba(255,255,255,0.25)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}>{c.email}</p>
                                         </div>
                                         {c.id === selectedClient && (
-                                            <i className="fa-solid fa-check" style={{color:'var(--accent)', fontSize:12}}></i>
+                                            <div style={{
+                                                width:20, height:20, borderRadius:6, flexShrink:0,
+                                                background:'rgba(34,197,94,0.15)',
+                                                display:'flex', alignItems:'center', justifyContent:'center'
+                                            }}>
+                                                <i className="fa-solid fa-check" style={{color:'var(--accent)', fontSize:10}}></i>
+                                            </div>
                                         )}
                                     </div>
                                 ))}
