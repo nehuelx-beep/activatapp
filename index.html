@@ -38,6 +38,7 @@
 
         .font-display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.04em; }
 
+        /* ---- NOISE OVERLAY ---- */
         body::before {
             content: '';
             position: fixed;
@@ -48,6 +49,7 @@
             opacity: 0.4;
         }
 
+        /* ---- GLOW ORB ---- */
         .orb {
             position: fixed;
             border-radius: 50%;
@@ -55,9 +57,10 @@
             pointer-events: none;
             z-index: 0;
         }
-        .orb-1 { width: 400px; height: 400px; background: rgba(232,255,62,0.06); top: -100px; right: -100px; }
-        .orb-2 { width: 300px; height: 300px; background: rgba(255,107,53,0.05); bottom: 100px; left: -80px; }
+        .orb-1 { width: 400px; height: 400px; background: rgba(34,197,94,0.07); top: -100px; right: -100px; }
+        .orb-2 { width: 300px; height: 300px; background: rgba(22,163,74,0.06); bottom: 100px; left: -80px; }
 
+        /* ---- ANIMATIONS ---- */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -73,10 +76,18 @@
             0% { transform: scale(1); opacity: 0.4; }
             100% { transform: scale(1.8); opacity: 0; }
         }
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
         @keyframes loading-bar {
             0% { left: -40%; }
             50% { left: 40%; }
             100% { left: 110%; }
+        }
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
         @keyframes bounce-subtle {
             0%, 100% { transform: translateY(0); }
@@ -95,18 +106,14 @@
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
         }
-        @keyframes dropdownOpen {
-            from { opacity: 0; transform: translateY(-8px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
 
         .anim-fadeUp { animation: fadeUp 0.5s ease forwards; }
         .anim-fadeIn { animation: fadeIn 0.4s ease forwards; }
         .anim-slideIn { animation: slideInBottom 0.45s cubic-bezier(0.16,1,0.3,1) forwards; }
         .anim-cardEnter { animation: card-enter 0.5s cubic-bezier(0.16,1,0.3,1) forwards; }
         .anim-successPop { animation: success-pop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
-        .anim-dropdownOpen { animation: dropdownOpen 0.2s cubic-bezier(0.16,1,0.3,1) forwards; }
 
+        /* ---- CARDS ---- */
         .card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -119,6 +126,7 @@
             border-radius: 20px;
         }
 
+        /* ---- ACCENT BUTTON ---- */
         .btn-accent {
             background: var(--accent);
             color: var(--ink);
@@ -149,6 +157,7 @@
         .btn-ghost:hover { background: rgba(255,255,255,0.1); }
         .btn-ghost:active { transform: scale(0.97); }
 
+        /* ---- INPUT ---- */
         .input-dark {
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
@@ -166,6 +175,7 @@
             background: rgba(34,197,94,0.04);
         }
 
+        /* ---- NAV ---- */
         .nav-bar {
             background: rgba(10,10,15,0.85);
             backdrop-filter: blur(20px);
@@ -175,6 +185,7 @@
             z-index: 50;
         }
 
+        /* ---- TAG ---- */
         .tag {
             display: inline-flex;
             align-items: center;
@@ -190,6 +201,7 @@
             text-transform: uppercase;
         }
 
+        /* ---- WORKOUT CARD ---- */
         .workout-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -199,6 +211,7 @@
         }
         .workout-card:hover { transform: translateY(-2px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
 
+        /* ---- TICKER ---- */
         .ticker-wrap {
             overflow: hidden;
             background: var(--accent);
@@ -217,6 +230,7 @@
             padding: 0 24px;
         }
 
+        /* ---- ACTIVITY ROW ---- */
         .activity-row {
             border-bottom: 1px solid var(--border);
             transition: background 0.2s;
@@ -224,6 +238,7 @@
         .activity-row:last-child { border-bottom: none; }
         .activity-row:hover { background: rgba(255,255,255,0.02); }
 
+        /* ---- PULSE DOT ---- */
         .pulse-dot {
             width: 8px; height: 8px;
             background: #4ade80;
@@ -239,15 +254,18 @@
             animation: pulse-ring 1.5s ease-out infinite;
         }
 
+        /* ---- SELECT ---- */
         select.input-dark option {
             background: #1a1a24;
             color: #f0f0f5;
         }
 
+        /* ---- SCROLLBAR ---- */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
 
+        /* ---- COMPLETED BADGE ---- */
         .completed-badge {
             background: linear-gradient(135deg, rgba(74,222,128,0.15), rgba(74,222,128,0.05));
             border: 1px solid rgba(74,222,128,0.3);
@@ -255,11 +273,13 @@
             border-radius: 14px;
         }
 
+        /* ---- MODAL OVERLAY ---- */
         .modal-overlay {
             background: rgba(0,0,0,0.85);
             backdrop-filter: blur(12px);
         }
 
+        /* ---- SEGMENT CONTROL ---- */
         .segment {
             background: rgba(255,255,255,0.05);
             border-radius: 12px;
@@ -282,6 +302,7 @@
             color: var(--ink);
         }
 
+        /* ---- TIMER DISPLAY ---- */
         .timer-display {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 80px;
@@ -289,181 +310,20 @@
             line-height: 1;
             color: var(--text);
         }
-        .timer-display.danger { color: #ff6b35; }
+        .timer-display.danger { color: #f87171; }
 
+        /* ---- STAGGER DELAYS ---- */
         .delay-1 { animation-delay: 0.05s; animation-fill-mode: both; }
         .delay-2 { animation-delay: 0.1s; animation-fill-mode: both; }
         .delay-3 { animation-delay: 0.15s; animation-fill-mode: both; }
         .delay-4 { animation-delay: 0.2s; animation-fill-mode: both; }
         .delay-5 { animation-delay: 0.25s; animation-fill-mode: both; }
 
+        /* ---- LOGIN BG ---- */
         .login-bg {
-            background: radial-gradient(ellipse at 80% 0%, rgba(34,197,94,0.08) 0%, transparent 60%),
-                        radial-gradient(ellipse at 0% 100%, rgba(255,107,53,0.07) 0%, transparent 50%),
+            background: radial-gradient(ellipse at 80% 0%, rgba(34,197,94,0.1) 0%, transparent 60%),
+                        radial-gradient(ellipse at 0% 100%, rgba(22,163,74,0.08) 0%, transparent 50%),
                         var(--ink);
-        }
-
-        /* ---- CLIENT SELECTOR ---- */
-        .client-selector-wrapper {
-            position: relative;
-        }
-        .client-selector-trigger {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text);
-            border-radius: 12px;
-            padding: 14px 16px;
-            width: 100%;
-            outline: none;
-            transition: border-color 0.2s, background 0.2s;
-            font-family: 'DM Sans', sans-serif;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            text-align: left;
-        }
-        .client-selector-trigger.open,
-        .client-selector-trigger:focus {
-            border-color: var(--accent);
-            background: rgba(34,197,94,0.04);
-        }
-        .client-selector-trigger.has-value {
-            border-color: rgba(34,197,94,0.4);
-            background: rgba(34,197,94,0.06);
-        }
-        .client-dropdown {
-            position: absolute;
-            top: calc(100% + 6px);
-            left: 0;
-            right: 0;
-            background: #1e1e2e;
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 16px;
-            z-index: 200;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
-        }
-        .client-search-box {
-            padding: 12px 12px 8px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-        .client-search-input {
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text);
-            border-radius: 10px;
-            padding: 10px 12px 10px 36px;
-            width: 100%;
-            outline: none;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 13px;
-            transition: border-color 0.2s;
-        }
-        .client-search-input::placeholder { color: rgba(255,255,255,0.25); }
-        .client-search-input:focus {
-            border-color: var(--accent);
-            background: rgba(34,197,94,0.04);
-        }
-        .client-search-icon {
-            position: absolute;
-            left: 24px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: rgba(255,255,255,0.25);
-            font-size: 12px;
-            pointer-events: none;
-        }
-        .client-list {
-            max-height: 220px;
-            overflow-y: auto;
-            padding: 6px;
-        }
-        .client-list::-webkit-scrollbar { width: 3px; }
-        .client-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-        .client-option {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.15s;
-            width: 100%;
-            text-align: left;
-            background: none;
-            border: none;
-            color: var(--text);
-            font-family: 'DM Sans', sans-serif;
-        }
-        .client-option:hover {
-            background: rgba(255,255,255,0.06);
-        }
-        .client-option.selected {
-            background: rgba(34,197,94,0.1);
-        }
-        .client-option-avatar {
-            width: 32px;
-            height: 32px;
-            background: rgba(255,255,255,0.07);
-            border-radius: 9px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 16px;
-            color: var(--text);
-            flex-shrink: 0;
-            transition: background 0.15s;
-        }
-        .client-option.selected .client-option-avatar {
-            background: rgba(34,197,94,0.2);
-            color: var(--accent);
-        }
-        .client-option-info { flex: 1; min-width: 0; }
-        .client-option-name {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .client-option-email {
-            font-size: 11px;
-            color: var(--muted);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .client-option-check {
-            color: var(--accent);
-            font-size: 11px;
-            flex-shrink: 0;
-        }
-        .client-empty {
-            padding: 20px;
-            text-align: center;
-            color: var(--muted);
-            font-size: 12px;
-        }
-        .client-count-badge {
-            background: rgba(34,197,94,0.12);
-            color: var(--accent);
-            border-radius: 6px;
-            padding: 2px 8px;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-        }
-        .letter-divider {
-            padding: 4px 12px 2px;
-            font-size: 9px;
-            font-weight: 700;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.2);
         }
     </style>
 </head>
@@ -488,6 +348,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
         window.doc = doc;
         window.setDoc = setDoc;
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -504,9 +365,12 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
+        const storage = getStorage(app);
 
         window.db = db;
         window.auth = auth;
+        window.storage = storage;
+        window.storageApi = { ref, uploadBytesResumable, getDownloadURL };
         window.firestore = { collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc };
         window.firebaseAuth = { onAuthStateChanged, signOut };
     </script>
@@ -518,192 +382,125 @@
             <i className={`fa-solid fa-${name} ${className}`}></i>
         );
 
-        // ========================
-        // CLIENT SELECTOR COMPONENT
-        // ========================
-        function ClientSelector({ clients, selectedClient, onSelect }) {
-            const [open, setOpen] = useState(false);
-            const [search, setSearch] = useState('');
-            const wrapperRef = useRef(null);
-            const searchRef = useRef(null);
+        function ClientPicker({ users, selectedClient, onSelect }) {
+            const [search, setSearch] = React.useState('');
+            const [open, setOpen] = React.useState(false);
 
-            // Sort clients alphabetically
-            const sortedClients = [...clients].sort((a, b) =>
-                a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
+            const clients = users
+                .filter(u => u.role === 'client')
+                .sort((a, b) => a.name.localeCompare(b, 'es', { sensitivity: 'base' }));
+
+            const filtered = clients.filter(c =>
+                c.name.toLowerCase().includes(search.toLowerCase())
             );
 
-            // Filter by search
-            const filtered = sortedClients.filter(c =>
-                c.name.toLowerCase().includes(search.toLowerCase()) ||
-                c.email.toLowerCase().includes(search.toLowerCase())
-            );
-
-            // Group by first letter
-            const grouped = filtered.reduce((acc, client) => {
-                const letter = client.name.charAt(0).toUpperCase();
-                if (!acc[letter]) acc[letter] = [];
-                acc[letter].push(client);
-                return acc;
-            }, {});
-
-            const selectedClientObj = clients.find(c => c.id === selectedClient);
-
-            // Close on outside click
-            useEffect(() => {
-                const handler = (e) => {
-                    if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
-                        setOpen(false);
-                        setSearch('');
-                    }
-                };
-                document.addEventListener('mousedown', handler);
-                return () => document.removeEventListener('mousedown', handler);
-            }, []);
-
-            // Focus search when opens
-            useEffect(() => {
-                if (open && searchRef.current) {
-                    setTimeout(() => searchRef.current?.focus(), 50);
-                }
-            }, [open]);
-
-            const handleSelect = (clientId) => {
-                onSelect(clientId);
-                setOpen(false);
-                setSearch('');
-            };
+            const selected = clients.find(c => c.id === selectedClient);
 
             return (
-                <div className="client-selector-wrapper" ref={wrapperRef}>
-                    {/* Trigger button */}
-                    <button
-                        type="button"
-                        className={`client-selector-trigger ${open ? 'open' : ''} ${selectedClient ? 'has-value' : ''}`}
+                <div style={{position:'relative'}}>
+                    <div
                         onClick={() => setOpen(!open)}
+                        style={{
+                            background:'rgba(255,255,255,0.05)',
+                            border: open ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
+                            borderRadius:12, padding:'14px 16px',
+                            cursor:'pointer', display:'flex',
+                            alignItems:'center', justifyContent:'space-between',
+                            transition:'border-color 0.2s'
+                        }}
                     >
-                        {selectedClientObj ? (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
-                                <div style={{
-                                    width: 28, height: 28,
-                                    background: 'rgba(34,197,94,0.2)',
-                                    borderRadius: 8,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    fontFamily: "'Bebas Neue', sans-serif",
-                                    fontSize: 15, color: 'var(--accent)',
-                                    flexShrink: 0
-                                }}>
-                                    {selectedClientObj.name.charAt(0).toUpperCase()}
-                                </div>
-                                <div style={{ minWidth: 0 }}>
-                                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                        {selectedClientObj.name}
-                                    </span>
-                                    <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                        {selectedClientObj.email}
-                                    </span>
-                                </div>
-                            </div>
-                        ) : (
-                            <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 14 }}>Selecciona cliente...</span>
-                        )}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                            {clients.length > 0 && (
-                                <span className="client-count-badge">{clients.length}</span>
+                        <div style={{display:'flex', alignItems:'center', gap:10}}>
+                            {selected ? (
+                                <>
+                                    <div style={{
+                                        width:28, height:28, background:'var(--accent)',
+                                        borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center',
+                                        fontFamily:"'Bebas Neue',sans-serif", fontSize:14, color:'black', flexShrink:0
+                                    }}>{selected.name.charAt(0).toUpperCase()}</div>
+                                    <div>
+                                        <p style={{color:'var(--text)', fontSize:13, fontWeight:600, lineHeight:1.2}}>{selected.name}</p>
+                                        <p style={{color:'rgba(255,255,255,0.3)', fontSize:11}}>{selected.email}</p>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <i className="fa-solid fa-user" style={{color:'rgba(255,255,255,0.25)', fontSize:14}}></i>
+                                    <span style={{color:'rgba(255,255,255,0.3)', fontSize:14}}>Selecciona cliente...</span>
+                                </>
                             )}
-                            <Icon
-                                name={open ? 'chevron-up' : 'chevron-down'}
-                                style={{ color: 'var(--muted)', fontSize: 11, transition: 'transform 0.2s' }}
-                            />
                         </div>
-                    </button>
+                        <i className={`fa-solid fa-chevron-${open ? 'up' : 'down'}`} style={{color:'rgba(255,255,255,0.3)',fontSize:12}}></i>
+                    </div>
 
-                    {/* Dropdown */}
                     {open && (
-                        <div className="client-dropdown anim-dropdownOpen">
-                            {/* Search box */}
-                            <div className="client-search-box">
-                                <div style={{ position: 'relative' }}>
-                                    <i className="fa-solid fa-magnifying-glass client-search-icon"></i>
+                        <div style={{
+                            position:'absolute', top:'calc(100% + 6px)', left:0, right:0,
+                            background:'#1a1a24', border:'1px solid rgba(255,255,255,0.1)',
+                            borderRadius:14, zIndex:200, overflow:'hidden',
+                            boxShadow:'0 20px 50px rgba(0,0,0,0.5)'
+                        }}>
+                            <div style={{padding:'10px 12px', borderBottom:'1px solid rgba(255,255,255,0.07)'}}>
+                                <div style={{position:'relative'}}>
+                                    <i className="fa-solid fa-magnifying-glass" style={{
+                                        position:'absolute', left:10, top:'50%',
+                                        transform:'translateY(-50%)',
+                                        color:'rgba(255,255,255,0.3)', fontSize:12
+                                    }}></i>
                                     <input
-                                        ref={searchRef}
-                                        className="client-search-input"
-                                        placeholder="Buscar cliente..."
+                                        autoFocus
                                         value={search}
                                         onChange={e => setSearch(e.target.value)}
-                                        onClick={e => e.stopPropagation()}
+                                        placeholder="Buscar cliente..."
+                                        style={{
+                                            width:'100%', background:'rgba(255,255,255,0.05)',
+                                            border:'1px solid rgba(255,255,255,0.08)',
+                                            borderRadius:8, padding:'8px 10px 8px 30px',
+                                            fontSize:13, color:'var(--text)',
+                                            outline:'none', fontFamily:"'DM Sans',sans-serif"
+                                        }}
                                     />
-                                    {search && (
-                                        <button
-                                            onClick={() => setSearch('')}
-                                            style={{
-                                                position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
-                                                background: 'none', border: 'none', color: 'var(--muted)',
-                                                cursor: 'pointer', fontSize: 11, padding: 4
-                                            }}
-                                        >
-                                            <Icon name="xmark" />
-                                        </button>
-                                    )}
                                 </div>
                             </div>
-
-                            {/* List */}
-                            <div className="client-list">
+                            <div style={{maxHeight:220, overflowY:'auto'}}>
                                 {filtered.length === 0 ? (
-                                    <div className="client-empty">
-                                        <Icon name="face-sad-tear" style={{ fontSize: 20, marginBottom: 6, display: 'block' }} />
-                                        No se encontró "{search}"
+                                    <div style={{padding:'16px', textAlign:'center', color:'rgba(255,255,255,0.3)', fontSize:13}}>
+                                        Sin resultados
                                     </div>
-                                ) : search ? (
-                                    // Flat list when searching (no letter groups)
-                                    filtered.map(client => (
-                                        <ClientOption
-                                            key={client.id}
-                                            client={client}
-                                            isSelected={selectedClient === client.id}
-                                            onSelect={handleSelect}
-                                        />
-                                    ))
-                                ) : (
-                                    // Grouped by letter when not searching
-                                    Object.keys(grouped).sort().map(letter => (
-                                        <div key={letter}>
-                                            <div className="letter-divider">{letter}</div>
-                                            {grouped[letter].map(client => (
-                                                <ClientOption
-                                                    key={client.id}
-                                                    client={client}
-                                                    isSelected={selectedClient === client.id}
-                                                    onSelect={handleSelect}
-                                                />
-                                            ))}
+                                ) : filtered.map((c, i) => (
+                                    <div
+                                        key={c.id}
+                                        onClick={() => { onSelect(c.id); setOpen(false); setSearch(''); }}
+                                        style={{
+                                            padding:'12px 16px', cursor:'pointer',
+                                            display:'flex', alignItems:'center', gap:12,
+                                            background: c.id === selectedClient ? 'rgba(34,197,94,0.08)' : 'transparent',
+                                            borderBottom: i < filtered.length-1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                                            transition:'background 0.15s'
+                                        }}
+                                    >
+                                        <div style={{
+                                            width:32, height:32, borderRadius:9,
+                                            background: c.id === selectedClient ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)',
+                                            display:'flex', alignItems:'center', justifyContent:'center',
+                                            fontFamily:"'Bebas Neue',sans-serif", fontSize:16,
+                                            color: c.id === selectedClient ? 'var(--accent)' : 'var(--text)',
+                                            flexShrink:0
+                                        }}>
+                                            {c.name.charAt(0).toUpperCase()}
                                         </div>
-                                    ))
-                                )}
+                                        <div style={{flex:1}}>
+                                            <p style={{fontSize:13, fontWeight:600, color:'var(--text)'}}>{c.name}</p>
+                                            <p style={{fontSize:11, color:'rgba(255,255,255,0.3)'}}>{c.email}</p>
+                                        </div>
+                                        {c.id === selectedClient && (
+                                            <i className="fa-solid fa-check" style={{color:'var(--accent)', fontSize:12}}></i>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     )}
                 </div>
-            );
-        }
-
-        function ClientOption({ client, isSelected, onSelect }) {
-            return (
-                <button
-                    className={`client-option ${isSelected ? 'selected' : ''}`}
-                    onClick={() => onSelect(client.id)}
-                >
-                    <div className="client-option-avatar">
-                        {client.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="client-option-info">
-                        <div className="client-option-name">{client.name}</div>
-                        <div className="client-option-email">{client.email}</div>
-                    </div>
-                    {isSelected && (
-                        <Icon name="check" className="client-option-check" />
-                    )}
-                </button>
             );
         }
 
@@ -725,8 +522,11 @@
             const [showAchievement, setShowAchievement] = useState(false);
             const [completedWorkoutTitle, setCompletedWorkoutTitle] = useState('');
             const [activitiesLimit, setActivitiesLimit] = useState(5);
+            const [clientSearch, setClientSearch] = useState('');
+            const [uploadProgress, setUploadProgress] = useState(null);
             const intervalRef = useRef(null);
 
+            // Timer logic
             useEffect(() => {
                 if (isActive) {
                     intervalRef.current = setInterval(() => {
@@ -863,7 +663,7 @@
             const handleImageChange = (e) => {
                 const selectedFile = e.target.files[0];
                 if (selectedFile) {
-                    if (selectedFile.size > 20 * 1024 * 1024) return alert("Máximo 20MB");
+                    // Sin límite de tamaño — Firebase Storage gestiona el archivo
                     setFile(selectedFile);
                     const reader = new FileReader();
                     reader.onloadend = () => setWorkoutData({ ...workoutData, image: reader.result });
@@ -884,25 +684,51 @@
             const handleSendWorkout = async () => {
                 if (!selectedClient) return alert("Selecciona cliente");
                 if (!workoutData.title) return alert("Título obligatorio");
-                const saveToFirestore = async (finalImage) => {
+
+                const saveToFirestore = async (mediaUrl) => {
                     try {
                         await window.firestore.addDoc(window.firestore.collection(window.db, "rutinas"), {
                             clientId: selectedClient,
                             title: workoutData.title,
                             description: workoutData.description || "",
-                            image: finalImage || "",
+                            image: mediaUrl || "",
                             date: new Date().toLocaleDateString(),
                             createdAt: new Date().toISOString()
                         });
                         alert("✅ Rutina enviada");
                         setWorkoutData({ title: '', description: '', image: null });
                         setFile(null);
-                    } catch (error) { alert("Error: " + error.message); }
+                        setUploadProgress(null);
+                    } catch (error) {
+                        setUploadProgress(null);
+                        alert("Error al guardar: " + error.message);
+                    }
                 };
+
                 if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => saveToFirestore(e.target.result);
-                    reader.readAsDataURL(file);
+                    try {
+                        const { ref, uploadBytesResumable, getDownloadURL } = window.storageApi;
+                        const fileRef = ref(window.storage, `rutinas/${Date.now()}_${file.name}`);
+                        const uploadTask = uploadBytesResumable(fileRef, file);
+
+                        uploadTask.on('state_changed',
+                            (snapshot) => {
+                                const pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                                setUploadProgress(pct);
+                            },
+                            (error) => {
+                                setUploadProgress(null);
+                                alert("Error al subir archivo: " + error.message);
+                            },
+                            async () => {
+                                const url = await getDownloadURL(uploadTask.snapshot.ref);
+                                await saveToFirestore(url);
+                            }
+                        );
+                    } catch (error) {
+                        setUploadProgress(null);
+                        alert("Error: " + error.message);
+                    }
                 } else {
                     saveToFirestore("");
                 }
@@ -988,6 +814,7 @@
                     <div className="orb orb-1"></div>
                     <div className="orb orb-2"></div>
                     <div className="w-full max-w-sm relative z-10">
+                        {/* Logo */}
                         <div className="text-center mb-10 anim-fadeUp">
                             <div style={{
                                 width: 72, height: 72,
@@ -1003,6 +830,7 @@
                             <h1 className="font-display text-5xl" style={{color:'var(--accent)', lineHeight:1}}>GYM</h1>
                         </div>
 
+                        {/* Install hint */}
                         <div className="card-glass p-4 mb-6 anim-fadeUp delay-1" style={{fontSize:11}}>
                             <p className="font-bold mb-1 uppercase" style={{color:'var(--accent)', letterSpacing:'0.1em', fontSize:10}}>📲 Instalar App</p>
                             <p style={{color:'var(--muted)'}}>
@@ -1012,6 +840,7 @@
                             </p>
                         </div>
 
+                        {/* Form */}
                         <div className="card p-6 space-y-3 anim-fadeUp delay-2">
                             <input className="input-dark" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
                             <input className="input-dark" type="password" placeholder="Contraseña" onChange={e => setFormData({...formData, password: e.target.value})} />
@@ -1030,260 +859,274 @@
             // ========================
             // ADMIN VIEW
             // ========================
-            if (currentUser.role === 'admin') {
-                const clientUsers = users.filter(u => u.role === 'client');
+            if (currentUser.role === 'admin') return (
+                <div className="min-h-screen" style={{background:'var(--ink)'}}>
+                    <div className="orb orb-1"></div>
+                    <div className="orb orb-2"></div>
 
-                return (
-                    <div className="min-h-screen" style={{background:'var(--ink)'}}>
-                        <div className="orb orb-1"></div>
-                        <div className="orb orb-2"></div>
+                    {/* NAV */}
+                    <nav className="nav-bar px-5 py-4 flex justify-between items-center relative z-10">
+                        <div className="flex items-center gap-3">
+                            <div style={{
+                                width: 36, height: 36, background: 'var(--accent)',
+                                borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                            }}>
+                                <Icon name="bolt" className="text-black text-sm" />
+                            </div>
+                            <div>
+                                <p className="font-display text-white text-lg" style={{lineHeight:1}}>ACTIVA-T GYM</p>
+                                <p style={{color:'var(--muted)', fontSize:10}}>Panel Admin · {currentUser.name}</p>
+                            </div>
+                        </div>
+                        <button onClick={handleLogout} className="btn-ghost px-4 py-2 text-xs font-bold">
+                            <Icon name="right-from-bracket" className="mr-2" />SALIR
+                        </button>
+                    </nav>
 
-                        <nav className="nav-bar px-5 py-4 flex justify-between items-center relative z-10">
-                            <div className="flex items-center gap-3">
-                                <div style={{
-                                    width: 36, height: 36, background: 'var(--accent)',
-                                    borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center'
-                                }}>
-                                    <Icon name="bolt" className="text-black text-sm" />
+                    {/* Ticker */}
+                    <div className="ticker-wrap relative z-10">
+                        <div className="ticker-inner">
+                            {['ENVIAR RUTINA', 'GESTIONAR CLIENTES', 'VER ACTIVIDAD', 'ACTIVA-T GYM', 'ENVIAR RUTINA', 'GESTIONAR CLIENTES', 'VER ACTIVIDAD', 'ACTIVA-T GYM'].map((t, i) => (
+                                <span key={i} className="ticker-item">★ {t}</span>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="p-5 max-w-xl mx-auto relative z-10 space-y-6 pb-16">
+
+                        {/* SEND WORKOUT CARD */}
+                        <div className="card p-6 anim-fadeUp delay-1">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div style={{width:40,height:40,background:'rgba(34,197,94,0.1)',borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                    <Icon name="paper-plane" style={{color:'var(--accent)'}} />
                                 </div>
                                 <div>
-                                    <p className="font-display text-white text-lg" style={{lineHeight:1}}>ACTIVA-T GYM</p>
-                                    <p style={{color:'var(--muted)', fontSize:10}}>Panel Admin · {currentUser.name}</p>
+                                    <h2 className="font-display text-2xl text-white">NUEVA RUTINA</h2>
+                                    <p style={{color:'var(--muted)',fontSize:12}}>Envía a un cliente</p>
                                 </div>
                             </div>
-                            <button onClick={handleLogout} className="btn-ghost px-4 py-2 text-xs font-bold">
-                                <Icon name="right-from-bracket" className="mr-2" />SALIR
-                            </button>
-                        </nav>
 
-                        <div className="ticker-wrap relative z-10">
-                            <div className="ticker-inner">
-                                {['ENVIAR RUTINA', 'GESTIONAR CLIENTES', 'VER ACTIVIDAD', 'ACTIVA-T GYM', 'ENVIAR RUTINA', 'GESTIONAR CLIENTES', 'VER ACTIVIDAD', 'ACTIVA-T GYM'].map((t, i) => (
-                                    <span key={i} className="ticker-item">★ {t}</span>
-                                ))}
+                            <div className="space-y-3">
+                                <ClientPicker
+                                    users={users}
+                                    selectedClient={selectedClient}
+                                    onSelect={setSelectedClient}
+                                />
+                                <input className="input-dark" placeholder="Título de la rutina" value={workoutData.title} onChange={e => setWorkoutData({...workoutData, title: e.target.value})} />
+                                <textarea
+                                    className="input-dark"
+                                    placeholder="Describe los ejercicios..."
+                                    value={workoutData.description}
+                                    onChange={e => setWorkoutData({...workoutData, description: e.target.value})}
+                                    rows="4"
+                                    style={{resize:'none'}}
+                                ></textarea>
+
+                                {/* File upload styled */}
+                                <label style={{
+                                    display:'block',
+                                    background:'rgba(255,255,255,0.04)',
+                                    border:'1px dashed rgba(255,255,255,0.15)',
+                                    borderRadius:12,
+                                    padding: '16px',
+                                    cursor:'pointer',
+                                    textAlign:'center',
+                                    transition:'border-color 0.2s'
+                                }}>
+                                    <Icon name="image" style={{color:'var(--muted)',fontSize:22}} />
+                                    <p style={{color:'var(--muted)',fontSize:12,marginTop:6}}>
+                                        {file ? `${file.name} (${(file.size / (1024*1024)).toFixed(1)} MB)` : 'Añadir imagen o vídeo'}
+                                    </p>
+                                    <input type="file" accept="image/*,video/mp4" onChange={handleImageChange} style={{display:'none'}} />
+                                </label>
+
+                                {/* PROGRESS BAR */}
+                                {uploadProgress !== null && (
+                                    <div style={{background:'rgba(255,255,255,0.05)',borderRadius:12,padding:'14px 16px',border:'1px solid rgba(255,255,255,0.08)'}}>
+                                        <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}>
+                                            <span style={{color:'var(--muted)',fontSize:11,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.08em'}}>Subiendo archivo...</span>
+                                            <span style={{color:'var(--accent)',fontSize:11,fontWeight:700}}>{uploadProgress}%</span>
+                                        </div>
+                                        <div style={{height:4,background:'rgba(255,255,255,0.08)',borderRadius:4,overflow:'hidden'}}>
+                                            <div style={{height:'100%',width:`${uploadProgress}%`,background:'var(--accent)',borderRadius:4,transition:'width 0.3s ease'}}></div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <button
+                                    onClick={handleSendWorkout}
+                                    disabled={uploadProgress !== null}
+                                    className="btn-accent w-full py-4 font-display text-xl tracking-wider"
+                                    style={{borderRadius:14, opacity: uploadProgress !== null ? 0.5 : 1, cursor: uploadProgress !== null ? 'not-allowed' : 'pointer'}}
+                                >
+                                    <Icon name="paper-plane" className="mr-2" />
+                                    {uploadProgress !== null ? `SUBIENDO ${uploadProgress}%` : 'ENVIAR RUTINA'}
+                                </button>
                             </div>
                         </div>
 
-                        <div className="p-5 max-w-xl mx-auto relative z-10 space-y-6 pb-16">
-
-                            {/* SEND WORKOUT CARD */}
-                            <div className="card p-6 anim-fadeUp delay-1">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div style={{width:40,height:40,background:'rgba(34,197,94,0.1)',borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center'}}>
-                                        <Icon name="paper-plane" style={{color:'var(--accent)'}} />
-                                    </div>
-                                    <div>
-                                        <h2 className="font-display text-2xl text-white">NUEVA RUTINA</h2>
-                                        <p style={{color:'var(--muted)',fontSize:12}}>Envía a un cliente</p>
-                                    </div>
+                        {/* ACTIVITY FEED */}
+                        <div className="anim-fadeUp delay-2">
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-2">
+                                    <div className="pulse-dot"></div>
+                                    <h3 className="font-display text-xl text-white">ACTIVIDAD RECIENTE</h3>
                                 </div>
-
-                                <div className="space-y-3">
-                                    {/* NEW: Searchable client selector */}
-                                    <ClientSelector
-                                        clients={clientUsers}
-                                        selectedClient={selectedClient}
-                                        onSelect={setSelectedClient}
-                                    />
-
-                                    <input className="input-dark" placeholder="Título de la rutina" value={workoutData.title} onChange={e => setWorkoutData({...workoutData, title: e.target.value})} />
-                                    <textarea
-                                        className="input-dark"
-                                        placeholder="Describe los ejercicios..."
-                                        value={workoutData.description}
-                                        onChange={e => setWorkoutData({...workoutData, description: e.target.value})}
-                                        rows="4"
-                                        style={{resize:'none'}}
-                                    ></textarea>
-
-                                    <label style={{
-                                        display:'block',
-                                        background:'rgba(255,255,255,0.04)',
-                                        border:'1px dashed rgba(255,255,255,0.15)',
-                                        borderRadius:12,
-                                        padding: '16px',
-                                        cursor:'pointer',
-                                        textAlign:'center',
-                                        transition:'border-color 0.2s'
-                                    }}>
-                                        <Icon name="image" style={{color:'var(--muted)',fontSize:22}} />
-                                        <p style={{color:'var(--muted)',fontSize:12,marginTop:6}}>
-                                            {file ? file.name : 'Añadir imagen o vídeo (máx. 20MB)'}
-                                        </p>
-                                        <input type="file" accept="image/*,video/mp4" onChange={handleImageChange} style={{display:'none'}} />
-                                    </label>
-
-                                    <button onClick={handleSendWorkout} className="btn-accent w-full py-4 font-display text-xl tracking-wider" style={{borderRadius:14}}>
-                                        <Icon name="paper-plane" className="mr-2" />ENVIAR RUTINA
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* ACTIVITY FEED */}
-                            <div className="anim-fadeUp delay-2">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="flex items-center gap-2">
-                                        <div className="pulse-dot"></div>
-                                        <h3 className="font-display text-xl text-white">ACTIVIDAD RECIENTE</h3>
-                                    </div>
-                                    {workouts.filter(w => w.completed).length > 0 && (
-                                        <span style={{color:'var(--muted)',fontSize:11}}>
-                                            {Math.min(activitiesLimit, workouts.filter(w => w.completed).length)} / {workouts.filter(w => w.completed).length}
-                                        </span>
-                                    )}
-                                </div>
-
-                                <div className="card overflow-hidden">
-                                    {workouts.filter(w => w.completed).length === 0 ? (
-                                        <div className="p-10 text-center">
-                                            <Icon name="moon" style={{color:'var(--muted)',fontSize:28,marginBottom:12}} />
-                                            <p style={{color:'var(--muted)',fontSize:13}}>Nadie ha entrenado... todavía</p>
-                                        </div>
-                                    ) : (
-                                        workouts.filter(w => w.completed)
-                                            .sort((a, b) => (b.completedAt || 0) - (a.completedAt || 0))
-                                            .slice(0, activitiesLimit)
-                                            .map((w, i) => {
-                                                const clientName = users.find(u => u.id === w.clientId)?.name || "Cliente borrado";
-                                                const date = w.completedAt ? new Date(w.completedAt).toLocaleDateString() : 'Hoy';
-                                                const time = w.completedAt ? new Date(w.completedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '';
-                                                return (
-                                                    <div key={w.id} className="activity-row p-4 flex items-start justify-between gap-3">
-                                                        <div style={{
-                                                            width:40,height:40,flexShrink:0,
-                                                            background:'rgba(74,222,128,0.1)',
-                                                            border:'1px solid rgba(74,222,128,0.2)',
-                                                            borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center'
-                                                        }}>
-                                                            <Icon name="check" style={{color:'#4ade80',fontSize:14}} />
-                                                        </div>
-                                                        <div style={{flex:1,minWidth:0}}>
-                                                            <p className="font-bold text-white text-sm">{clientName}</p>
-                                                            <p style={{fontSize:12,color:'var(--muted)'}}>Completó: <span style={{color:'var(--accent)'}}>{w.title}</span></p>
-                                                            {w.clientNote && (
-                                                                <p style={{
-                                                                    marginTop:6,fontSize:11,
-                                                                    background:'rgba(34,197,94,0.06)',
-                                                                    border:'1px solid rgba(34,197,94,0.1)',
-                                                                    color:'rgba(34,197,94,0.8)',
-                                                                    padding:'6px 10px',borderRadius:8,
-                                                                    fontStyle:'italic'
-                                                                }}>"{w.clientNote}"</p>
-                                                            )}
-                                                        </div>
-                                                        <div className="text-right" style={{flexShrink:0}}>
-                                                            <p style={{fontSize:10,color:'var(--muted)',fontWeight:700}}>{date}</p>
-                                                            <p style={{fontSize:11,color:'var(--muted)'}}>{time}</p>
-                                                            <button onClick={() => handleToggleComplete(w.id, true)} style={{fontSize:10,color:'#f87171',marginTop:4}} className="underline">
-                                                                Resetear
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })
-                                    )}
-                                </div>
-                                {workouts.filter(w => w.completed).length > activitiesLimit && (
-                                    <button
-                                        onClick={() => setActivitiesLimit(prev => prev + 5)}
-                                        className="btn-ghost w-full py-3 mt-3 text-xs font-bold"
-                                    >
-                                        <Icon name="chevron-down" className="mr-2" />MOSTRAR MÁS
-                                    </button>
+                                {workouts.filter(w => w.completed).length > 0 && (
+                                    <span style={{color:'var(--muted)',fontSize:11}}>
+                                        {Math.min(activitiesLimit, workouts.filter(w => w.completed).length)} / {workouts.filter(w => w.completed).length}
+                                    </span>
                                 )}
                             </div>
 
-                            {/* WORKOUT HISTORY */}
-                            {selectedClient && (
-                                <div className="anim-fadeUp delay-3">
-                                    <div className="flex items-center gap-2 mb-3">
-                                        <Icon name="clock-rotate-left" style={{color:'var(--accent)'}} />
-                                        <h3 className="font-display text-xl text-white">HISTORIAL DE RUTINAS</h3>
+                            <div className="card overflow-hidden">
+                                {workouts.filter(w => w.completed).length === 0 ? (
+                                    <div className="p-10 text-center">
+                                        <Icon name="moon" style={{color:'var(--muted)',fontSize:28,marginBottom:12}} />
+                                        <p style={{color:'var(--muted)',fontSize:13}}>Nadie ha entrenado... todavía</p>
                                     </div>
-                                    <div className="space-y-2">
-                                        {workouts.filter(w => w.clientId === selectedClient).length === 0 ? (
-                                            <div className="card p-8 text-center">
-                                                <p style={{color:'var(--muted)',fontSize:13}}>Este cliente aún no tiene rutinas.</p>
-                                            </div>
-                                        ) : (
-                                            workouts.filter(w => w.clientId === selectedClient).map(w => (
-                                                <div key={w.id} className="card p-4 flex gap-3">
-                                                    {w.image && (
-                                                        <div style={{width:52,height:52,flexShrink:0,borderRadius:12,overflow:'hidden',background:'rgba(255,255,255,0.05)'}}>
-                                                            {w.image.startsWith('data:video') ? (
-                                                                <div style={{width:'100%',height:'100%',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                                                                    <Icon name="video" style={{color:'var(--muted)',fontSize:16}} />
-                                                                </div>
-                                                            ) : (
-                                                                <img src={w.image} style={{width:'100%',height:'100%',objectFit:'cover'}} />
-                                                            )}
-                                                        </div>
-                                                    )}
+                                ) : (
+                                    workouts.filter(w => w.completed)
+                                        .sort((a, b) => (b.completedAt || 0) - (a.completedAt || 0))
+                                        .slice(0, activitiesLimit)
+                                        .map((w, i) => {
+                                            const clientName = users.find(u => u.id === w.clientId)?.name || "Cliente borrado";
+                                            const date = w.completedAt ? new Date(w.completedAt).toLocaleDateString() : 'Hoy';
+                                            const time = w.completedAt ? new Date(w.completedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '';
+                                            return (
+                                                <div key={w.id} className="activity-row p-4 flex items-start justify-between gap-3">
+                                                    <div style={{
+                                                        width:40,height:40,flexShrink:0,
+                                                        background:'rgba(74,222,128,0.1)',
+                                                        border:'1px solid rgba(74,222,128,0.2)',
+                                                        borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center'
+                                                    }}>
+                                                        <Icon name="check" style={{color:'#4ade80',fontSize:14}} />
+                                                    </div>
                                                     <div style={{flex:1,minWidth:0}}>
-                                                        <p className="font-bold text-white text-sm truncate">{w.title}</p>
-                                                        <p style={{fontSize:11,color:'var(--muted)'}}>{w.date}</p>
+                                                        <p className="font-bold text-white text-sm">{clientName}</p>
+                                                        <p style={{fontSize:12,color:'var(--muted)'}}>Completó: <span style={{color:'var(--accent)'}}>{w.title}</span></p>
                                                         {w.clientNote && (
-                                                            <div style={{
-                                                                marginTop:8,padding:'8px 12px',
-                                                                background:'rgba(34,197,94,0.05)',
+                                                            <p style={{
+                                                                marginTop:6,fontSize:11,
+                                                                background:'rgba(34,197,94,0.06)',
                                                                 border:'1px solid rgba(34,197,94,0.1)',
-                                                                borderRadius:10
-                                                            }}>
-                                                                <p style={{fontSize:10,fontWeight:700,color:'rgba(34,197,94,0.6)',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:3}}>
-                                                                    📝 Nota del cliente:
-                                                                </p>
-                                                                <p style={{fontSize:12,color:'rgba(255,255,255,0.7)',fontStyle:'italic'}}>"{w.clientNote}"</p>
-                                                            </div>
+                                                                color:'rgba(34,197,94,0.8)',
+                                                                padding:'6px 10px',borderRadius:8,
+                                                                fontStyle:'italic'
+                                                            }}>"{w.clientNote}"</p>
                                                         )}
                                                     </div>
-                                                    <button onClick={() => handleDeleteWorkout(w.id)} style={{color:'rgba(255,255,255,0.15)',alignSelf:'center',padding:8}} className="hover:text-red-400 transition-colors">
-                                                        <Icon name="trash-can" className="text-xs" />
-                                                    </button>
+                                                    <div className="text-right" style={{flexShrink:0}}>
+                                                        <p style={{fontSize:10,color:'var(--muted)',fontWeight:700}}>{date}</p>
+                                                        <p style={{fontSize:11,color:'var(--muted)'}}>{time}</p>
+                                                        <button onClick={() => handleToggleComplete(w.id, true)} style={{fontSize:10,color:'#f87171',marginTop:4}} className="underline">
+                                                            Resetear
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            ))
-                                        )}
-                                    </div>
-                                </div>
+                                            );
+                                        })
+                                )}
+                            </div>
+                            {workouts.filter(w => w.completed).length > activitiesLimit && (
+                                <button
+                                    onClick={() => setActivitiesLimit(prev => prev + 5)}
+                                    className="btn-ghost w-full py-3 mt-3 text-xs font-bold"
+                                >
+                                    <Icon name="chevron-down" className="mr-2" />MOSTRAR MÁS
+                                </button>
                             )}
+                        </div>
 
-                            {/* MANAGE CLIENTS */}
-                            <div className="anim-fadeUp delay-4">
+                        {/* WORKOUT HISTORY */}
+                        {selectedClient && (
+                            <div className="anim-fadeUp delay-3">
                                 <div className="flex items-center gap-2 mb-3">
-                                    <Icon name="users" style={{color:'var(--accent)'}} />
-                                    <h3 className="font-display text-xl text-white">GESTIONAR CLIENTES</h3>
+                                    <Icon name="clock-rotate-left" style={{color:'var(--accent)'}} />
+                                    <h3 className="font-display text-xl text-white">HISTORIAL DE RUTINAS</h3>
                                 </div>
                                 <div className="space-y-2">
-                                    {users.filter(u => u.role === 'client')
-                                        .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }))
-                                        .map(u => (
-                                        <div key={u.id} className="card p-4 flex justify-between items-center">
-                                            <div className="flex items-center gap-3">
-                                                <div style={{
-                                                    width:40,height:40,
-                                                    background:'rgba(255,255,255,0.06)',
-                                                    borderRadius:12,
-                                                    display:'flex',alignItems:'center',justifyContent:'center',
-                                                    fontFamily:"'Bebas Neue',sans-serif",
-                                                    fontSize:18,color:'var(--text)'
-                                                }}>
-                                                    {u.name.charAt(0).toUpperCase()}
-                                                </div>
-                                                <div>
-                                                    <p className="font-bold text-white text-sm">{u.name}</p>
-                                                    <p style={{fontSize:11,color:'var(--muted)'}}>{u.email}</p>
-                                                </div>
-                                            </div>
-                                            <button onClick={() => handleDeleteUser(u.id, u.name)} style={{color:'rgba(255,255,255,0.15)',padding:8}} className="hover:text-red-400 transition-colors">
-                                                <Icon name="user-minus" />
-                                            </button>
+                                    {workouts.filter(w => w.clientId === selectedClient).length === 0 ? (
+                                        <div className="card p-8 text-center">
+                                            <p style={{color:'var(--muted)',fontSize:13}}>Este cliente aún no tiene rutinas.</p>
                                         </div>
-                                    ))}
+                                    ) : (
+                                        workouts.filter(w => w.clientId === selectedClient).map(w => (
+                                            <div key={w.id} className="card p-4 flex gap-3">
+                                                {w.image && (
+                                                    <div style={{width:52,height:52,flexShrink:0,borderRadius:12,overflow:'hidden',background:'rgba(255,255,255,0.05)'}}>
+                                                        {w.image.startsWith('data:video') ? (
+                                                            <div style={{width:'100%',height:'100%',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                                                <Icon name="video" style={{color:'var(--muted)',fontSize:16}} />
+                                                            </div>
+                                                        ) : (
+                                                            <img src={w.image} style={{width:'100%',height:'100%',objectFit:'cover'}} />
+                                                        )}
+                                                    </div>
+                                                )}
+                                                <div style={{flex:1,minWidth:0}}>
+                                                    <p className="font-bold text-white text-sm truncate">{w.title}</p>
+                                                    <p style={{fontSize:11,color:'var(--muted)'}}>{w.date}</p>
+                                                    {w.clientNote && (
+                                                        <div style={{
+                                                            marginTop:8,padding:'8px 12px',
+                                                            background:'rgba(34,197,94,0.05)',
+                                                            border:'1px solid rgba(34,197,94,0.1)',
+                                                            borderRadius:10
+                                                        }}>
+                                                            <p style={{fontSize:10,fontWeight:700,color:'rgba(34,197,94,0.6)',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:3}}>
+                                                                📝 Nota del cliente:
+                                                            </p>
+                                                            <p style={{fontSize:12,color:'rgba(255,255,255,0.7)',fontStyle:'italic'}}>"{w.clientNote}"</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <button onClick={() => handleDeleteWorkout(w.id)} style={{color:'rgba(255,255,255,0.15)',alignSelf:'center',padding:8}} className="hover:text-red-400 transition-colors">
+                                                    <Icon name="trash-can" className="text-xs" />
+                                                </button>
+                                            </div>
+                                        ))
+                                    )}
                                 </div>
+                            </div>
+                        )}
+
+                        {/* MANAGE CLIENTS */}
+                        <div className="anim-fadeUp delay-4">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Icon name="users" style={{color:'var(--accent)'}} />
+                                <h3 className="font-display text-xl text-white">GESTIONAR CLIENTES</h3>
+                            </div>
+                            <div className="space-y-2">
+                                {users.filter(u => u.role === 'client').map(u => (
+                                    <div key={u.id} className="card p-4 flex justify-between items-center">
+                                        <div className="flex items-center gap-3">
+                                            <div style={{
+                                                width:40,height:40,
+                                                background:'rgba(255,255,255,0.06)',
+                                                borderRadius:12,
+                                                display:'flex',alignItems:'center',justifyContent:'center',
+                                                fontFamily:"'Bebas Neue',sans-serif",
+                                                fontSize:18,color:'var(--text)'
+                                            }}>
+                                                {u.name.charAt(0).toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-white text-sm">{u.name}</p>
+                                                <p style={{fontSize:11,color:'var(--muted)'}}>{u.email}</p>
+                                            </div>
+                                        </div>
+                                        <button onClick={() => handleDeleteUser(u.id, u.name)} style={{color:'rgba(255,255,255,0.15)',padding:8}} className="hover:text-red-400 transition-colors">
+                                            <Icon name="user-minus" />
+                                        </button>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
-                );
-            }
+                </div>
+            );
 
             // ========================
             // CLIENT VIEW
@@ -1297,12 +1140,14 @@
                         <div className="orb orb-1"></div>
                         <div className="orb orb-2"></div>
 
+                        {/* ZOOM IMAGE MODAL */}
                         {zoomImage && (
                             <div className="fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4 anim-fadeIn" onClick={() => setZoomImage(null)}>
                                 <img src={zoomImage} className="max-w-full max-h-[85vh] rounded-2xl shadow-2xl" />
                             </div>
                         )}
 
+                        {/* NAV */}
                         <nav className="nav-bar px-5 py-4 flex justify-between items-center relative z-10">
                             <div className="flex items-center gap-3">
                                 <div style={{width:36,height:36,background:'var(--accent)',borderRadius:10,display:'flex',alignItems:'center',justifyContent:'center'}}>
@@ -1318,6 +1163,7 @@
                             </button>
                         </nav>
 
+                        {/* HERO HEADER */}
                         <div className="px-5 pt-6 pb-2 relative z-10">
                             <p style={{color:'var(--muted)',fontSize:12,textTransform:'uppercase',letterSpacing:'0.15em',marginBottom:4}}>Bienvenido de vuelta</p>
                             <h1 className="font-display text-white" style={{fontSize:48,lineHeight:1}}>¡VAMOS</h1>
@@ -1325,6 +1171,7 @@
                         </div>
 
                         <div className="px-5 pb-5 relative z-10">
+                            {/* TOOLS BUTTON */}
                             <button
                                 onClick={() => setShowTools(true)}
                                 className="btn-ghost w-full py-4 font-bold flex items-center justify-center gap-3 mb-6 mt-4"
@@ -1335,10 +1182,12 @@
                                 <Icon name="chevron-right" style={{color:'var(--muted)',fontSize:12,marginLeft:'auto'}} />
                             </button>
 
+                            {/* WORKOUT CARDS */}
                             <div className="space-y-5">
                                 {myWorkouts.map((w, i) => (
                                     <div key={w.id} className={`workout-card anim-cardEnter delay-${Math.min(i+1,5)}`}>
 
+                                        {/* Media */}
                                         {w.image && (
                                             <div style={{position:'relative',background:'#000',width:'100%',aspectRatio:'16/9',overflow:'hidden'}}>
                                                 {w.image.startsWith('data:video') ? (
@@ -1354,6 +1203,7 @@
                                         )}
 
                                         <div className="p-5">
+                                            {/* Title row */}
                                             <div className="flex items-start justify-between gap-3 mb-1">
                                                 <h3 className="font-display text-white" style={{fontSize:26,lineHeight:1.1}}>{w.title.toUpperCase()}</h3>
                                                 {w.completed && (
@@ -1371,6 +1221,7 @@
                                             </div>
                                             <p style={{color:'var(--muted)',fontSize:11,marginBottom:14}}>{w.date}</p>
 
+                                            {/* Description */}
                                             {w.description && (
                                                 <p style={{
                                                     color:'rgba(255,255,255,0.65)',
@@ -1383,6 +1234,7 @@
                                                 }}>{w.description}</p>
                                             )}
 
+                                            {/* NOTES */}
                                             <div style={{
                                                 background:'rgba(255,255,255,0.03)',
                                                 border:'1px solid var(--border)',
@@ -1445,6 +1297,7 @@
                                                 </button>
                                             </div>
 
+                                            {/* COMPLETE BUTTON */}
                                             <div>
                                                 {w.completed ? (
                                                     <div className="anim-successPop completed-badge p-4 flex items-center justify-center gap-3 font-bold" style={{fontSize:14}}>
@@ -1480,7 +1333,7 @@
                             </div>
                         </div>
 
-                        {/* TOOLS MODAL */}
+                        {/* ---- TOOLS MODAL ---- */}
                         {showTools && (
                             <div className="fixed inset-0 z-[100] modal-overlay flex items-end sm:items-center justify-center anim-fadeIn">
                                 <div className="w-full max-w-md bg-surface anim-slideIn" style={{
@@ -1489,6 +1342,7 @@
                                     borderBottom:'none',
                                     border:'1px solid var(--border)'
                                 }}>
+                                    {/* Handle bar */}
                                     <div style={{display:'flex',justifyContent:'center',paddingTop:12,paddingBottom:4}}>
                                         <div style={{width:40,height:4,background:'rgba(255,255,255,0.15)',borderRadius:4}}></div>
                                     </div>
@@ -1505,6 +1359,7 @@
                                             </button>
                                         </div>
 
+                                        {/* Segment */}
                                         <div className="segment mb-6">
                                             <button
                                                 className={`segment-btn ${toolMode==='chrono'?'active':''}`}
@@ -1516,6 +1371,7 @@
                                             >TEMPORIZADOR</button>
                                         </div>
 
+                                        {/* Timer display */}
                                         <div style={{
                                             background:'rgba(255,255,255,0.03)',
                                             border:'1px solid var(--border)',
@@ -1533,6 +1389,7 @@
                                             </div>
                                         </div>
 
+                                        {/* Quick time buttons (timer mode) */}
                                         {toolMode === 'timer' && !isActive && (
                                             <div style={{display:'flex',gap:8,marginBottom:16,justifyContent:'center'}}>
                                                 {[30, 60, 90, 120].map(t => (
@@ -1562,7 +1419,7 @@
                                             <button
                                                 onClick={() => setIsActive(!isActive)}
                                                 style={{
-                                                    background: isActive ? 'var(--accent2)' : 'var(--accent)',
+                                                    background: isActive ? '#16a34a' : 'var(--accent)',
                                                     color: 'var(--ink)',
                                                     borderRadius:14,
                                                     padding:'16px',
@@ -1591,7 +1448,7 @@
                             </div>
                         )}
 
-                        {/* ACHIEVEMENT MODAL */}
+                        {/* ---- ACHIEVEMENT MODAL ---- */}
                         {showAchievement && (
                             <div className="fixed inset-0 z-[200] flex items-center justify-center modal-overlay p-4 anim-fadeIn">
                                 <div className="relative w-full max-w-sm flex flex-col items-center">
@@ -1614,14 +1471,16 @@
                                         textAlign:'center',
                                         border:'3px solid rgba(34,197,94,0.2)',
                                         position:'relative',
+                                        overflow:'hidden'
                                     }}>
-                                        <div style={{position:'absolute',top:-60,right:-60,width:200,height:200,background:'rgba(34,197,94,0.06)',borderRadius:'50%',filter:'blur(40px)'}}></div>
+                                        {/* BG accent */}
+                                        <div style={{position:'absolute',top:-60,right:-60,width:200,height:200,background:'rgba(34,197,94,0.08)',borderRadius:'50%',filter:'blur(40px)'}}></div>
 
                                         <div style={{marginTop:32,position:'relative',zIndex:1}}>
                                             <div style={{
                                                 display:'inline-block',
                                                 background:'rgba(34,197,94,0.1)',
-                                                border:'1px solid rgba(34,197,94,0.2)',
+                                                border:'1px solid rgba(34,197,94,0.25)',
                                                 borderRadius:50,padding:'4px 16px',
                                                 fontSize:10,fontWeight:700,
                                                 color:'var(--accent)',
