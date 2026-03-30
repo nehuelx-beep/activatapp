@@ -1182,10 +1182,45 @@
                         <div className="orb orb-1"></div>
                         <div className="orb orb-2"></div>
 
-                        {/* ZOOM IMAGE MODAL */}
+                        {/* ZOOM MEDIA MODAL */}
                         {zoomImage && (
-                            <div className="fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4 anim-fadeIn" onClick={() => setZoomImage(null)}>
-                                <img src={zoomImage} className="max-w-full max-h-[85vh] rounded-2xl shadow-2xl" />
+                            <div
+                                style={{
+                                    position:'fixed', inset:0, zIndex:9000,
+                                    background:'rgba(0,0,0,0.96)',
+                                    display:'flex', alignItems:'center', justifyContent:'center',
+                                    padding:16, WebkitBackfaceVisibility:'hidden'
+                                }}
+                                onClick={() => setZoomImage(null)}
+                            >
+                                <button onClick={() => setZoomImage(null)} style={{
+                                    position:'absolute', top:16, right:16,
+                                    width:40, height:40, borderRadius:12,
+                                    background:'rgba(255,255,255,0.1)',
+                                    border:'none', color:'white', fontSize:18,
+                                    display:'flex', alignItems:'center', justifyContent:'center',
+                                    cursor:'pointer', zIndex:1
+                                }}>
+                                    <i className="fa-solid fa-xmark"></i>
+                                </button>
+                                {/\.mp4|video/.test(zoomImage) ? (
+                                    <video
+                                        src={zoomImage}
+                                        controls
+                                        autoPlay
+                                        onClick={e => e.stopPropagation()}
+                                        style={{
+                                            maxWidth:'100%', maxHeight:'85vh',
+                                            borderRadius:16, outline:'none',
+                                            display:'block'
+                                        }}
+                                    />
+                                ) : (
+                                    <img
+                                        src={zoomImage}
+                                        style={{maxWidth:'100%', maxHeight:'85vh', borderRadius:16, display:'block'}}
+                                    />
+                                )}
                             </div>
                         )}
 
@@ -1230,19 +1265,28 @@
                                     <div key={w.id} className={`workout-card anim-cardEnter delay-${Math.min(i+1,5)}`}>
 
                                         {/* Media */}
-                                        {w.image && (
-                                            <div style={{position:'relative',background:'#000',width:'100%',aspectRatio:'16/9',overflow:'hidden'}}>
-                                                {w.image.startsWith('data:video') ? (
-                                                    <video src={w.image} controls style={{width:'100%',height:'100%',objectFit:'contain'}} />
-                                                ) : (
-                                                    <img
-                                                        src={w.image}
-                                                        style={{width:'100%',height:'100%',objectFit:'cover',cursor:'zoom-in'}}
-                                                        onClick={() => setZoomImage(w.image)}
-                                                    />
-                                                )}
-                                            </div>
-                                        )}
+                                        {w.image && (() => {
+                                            const isVideo = w.image.startsWith('data:video') || /\.mp4(\?|$)|%2F.*\.mp4|\/video\//i.test(w.image);
+                                            return (
+                                                <div style={{position:'relative',background:'#000',width:'100%',aspectRatio:'16/9',overflow:'hidden'}}>
+                                                    {isVideo ? (
+                                                        <video
+                                                            src={w.image}
+                                                            controls
+                                                            playsInline
+                                                            style={{width:'100%',height:'100%',objectFit:'contain',display:'block'}}
+                                                            onClick={e => { e.stopPropagation(); setZoomImage(w.image); }}
+                                                        />
+                                                    ) : (
+                                                        <img
+                                                            src={w.image}
+                                                            style={{width:'100%',height:'100%',objectFit:'cover',cursor:'zoom-in',display:'block'}}
+                                                            onClick={() => setZoomImage(w.image)}
+                                                        />
+                                                    )}
+                                                </div>
+                                            );
+                                        })()}
 
                                         <div className="p-5">
                                             {/* Title row */}
