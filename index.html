@@ -348,7 +348,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL, listAll, getMetadata } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
         window.doc = doc;
         window.setDoc = setDoc;
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -370,7 +370,7 @@
         window.db = db;
         window.auth = auth;
         window.storage = storage;
-        window.storageApi = { ref, uploadBytesResumable, getDownloadURL };
+        window.storageApi = { ref, uploadBytesResumable, getDownloadURL, listAll, getMetadata };
         window.firestore = { collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc };
         window.firebaseAuth = { onAuthStateChanged, signOut };
     </script>
@@ -564,6 +564,8 @@
             const [showAchievement, setShowAchievement] = useState(false);
             const [completedWorkoutTitle, setCompletedWorkoutTitle] = useState('');
             const [activitiesLimit, setActivitiesLimit] = useState(5);
+            const [storageUsage, setStorageUsage] = useState(null);
+            const [loadingStorage, setLoadingStorage] = useState(false);
             const [clientSearch, setClientSearch] = useState('');
             const [uploadProgress, setUploadProgress] = useState(null);
             const intervalRef = useRef(null);
@@ -651,6 +653,36 @@
                         await window.firestore.deleteDoc(docRef);
                     } catch (e) { alert("Error al borrar usuario"); }
                 }
+            };
+
+            const fetchStorageUsage = async () => {
+                setLoadingStorage(true);
+                try {
+                    const { ref, listAll, getMetadata } = window.storageApi;
+                    const rootRef = ref(window.storage, '/');
+                    
+                    const getAllFiles = async (folderRef) => {
+                        const result = await listAll(folderRef);
+                        const subFiles = await Promise.all(result.prefixes.map(getAllFiles));
+                        return [...result.items, ...subFiles.flat()];
+                    };
+
+                    const allFiles = await getAllFiles(rootRef);
+                    const metadatas = await Promise.all(allFiles.map(f => getMetadata(f)));
+                    const totalBytes = metadatas.reduce((acc, m) => acc + (m.size || 0), 0);
+                    const totalGB = totalBytes / (1024 * 1024 * 1024);
+                    const freeGB = 5; // Firebase Storage free tier
+                    setStorageUsage({
+                        usedBytes: totalBytes,
+                        usedGB: totalGB,
+                        freeGB,
+                        pct: Math.min((totalGB / freeGB) * 100, 100),
+                        fileCount: allFiles.length
+                    });
+                } catch (e) {
+                    alert("Error al obtener uso: " + e.message);
+                }
+                setLoadingStorage(false);
             };
 
             useEffect(() => {
@@ -1133,6 +1165,116 @@
                                 </div>
                             </div>
                         )}
+
+                        {/* STORAGE USAGE */}
+                        <div className="anim-fadeUp delay-4">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Icon name="database" style={{color:'var(--accent)'}} />
+                                <h3 className="font-display text-xl text-white">USO DE STORAGE</h3>
+                            </div>
+                            <div className="card p-5">
+                                {!storageUsage ? (
+                                    <button
+                                        onClick={fetchStorageUsage}
+                                        disabled={loadingStorage}
+                                        className="btn-ghost w-full py-4 font-bold flex items-center justify-center gap-3"
+                                        style={{fontSize:13,letterSpacing:'0.05em'}}
+                                    >
+                                        {loadingStorage ? (
+                                            <>
+                                                <i className="fa-solid fa-spinner" style={{color:'var(--accent)',animation:'spin-slow 1s linear infinite'}}></i>
+                                                Calculando...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Icon name="chart-pie" style={{color:'var(--accent)'}} />
+                                                VER ESPACIO USADO
+                                            </>
+                                        )}
+                                    </button>
+                                ) : (
+                                    <div>
+                                        {/* Big numbers */}
+                                        <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',marginBottom:16}}>
+                                            <div>
+                                                <p style={{color:'var(--muted)',fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',marginBottom:4}}>Usado</p>
+                                                <p style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:40,color:'var(--text)',lineHeight:1}}>
+                                                    {storageUsage.usedGB >= 1
+                                                        ? `${storageUsage.usedGB.toFixed(2)} GB`
+                                                        : `${(storageUsage.usedGB * 1024).toFixed(1)} MB`
+                                                    }
+                                                </p>
+                                                <p style={{color:'var(--muted)',fontSize:11,marginTop:2}}>{storageUsage.fileCount} archivo{storageUsage.fileCount !== 1 ? 's' : ''}</p>
+                                            </div>
+                                            <div style={{textAlign:'right'}}>
+                                                <p style={{color:'var(--muted)',fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',marginBottom:4}}>Disponible</p>
+                                                <p style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:40,lineHeight:1,
+                                                    color: storageUsage.pct > 80 ? '#f87171' : storageUsage.pct > 50 ? '#fb923c' : 'var(--accent)'}}>
+                                                    {(storageUsage.freeGB - storageUsage.usedGB).toFixed(2)} GB
+                                                </p>
+                                                <p style={{color:'var(--muted)',fontSize:11,marginTop:2}}>de {storageUsage.freeGB} GB gratis</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Progress bar */}
+                                        <div style={{marginBottom:10}}>
+                                            <div style={{height:8,background:'rgba(255,255,255,0.07)',borderRadius:8,overflow:'hidden'}}>
+                                                <div style={{
+                                                    height:'100%',
+                                                    width:`${storageUsage.pct}%`,
+                                                    borderRadius:8,
+                                                    background: storageUsage.pct > 80
+                                                        ? 'linear-gradient(90deg,#f87171,#ef4444)'
+                                                        : storageUsage.pct > 50
+                                                        ? 'linear-gradient(90deg,#fb923c,#f97316)'
+                                                        : 'linear-gradient(90deg,var(--accent),#16a34a)',
+                                                    transition:'width 0.8s cubic-bezier(0.16,1,0.3,1)',
+                                                    boxShadow: storageUsage.pct > 80
+                                                        ? '0 0 12px rgba(248,113,113,0.5)'
+                                                        : '0 0 12px rgba(34,197,94,0.4)'
+                                                }}></div>
+                                            </div>
+                                            <div style={{display:'flex',justifyContent:'space-between',marginTop:6}}>
+                                                <span style={{fontSize:11,color:'var(--muted)'}}>0 GB</span>
+                                                <span style={{
+                                                    fontSize:11,fontWeight:700,
+                                                    color: storageUsage.pct > 80 ? '#f87171' : storageUsage.pct > 50 ? '#fb923c' : 'var(--accent)'
+                                                }}>{storageUsage.pct.toFixed(1)}% usado</span>
+                                                <span style={{fontSize:11,color:'var(--muted)'}}>5 GB</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Warning if close to limit */}
+                                        {storageUsage.pct > 80 && (
+                                            <div style={{
+                                                marginTop:12,padding:'10px 14px',
+                                                background:'rgba(248,113,113,0.08)',
+                                                border:'1px solid rgba(248,113,113,0.2)',
+                                                borderRadius:10,display:'flex',alignItems:'center',gap:8
+                                            }}>
+                                                <Icon name="triangle-exclamation" style={{color:'#f87171',fontSize:13}} />
+                                                <p style={{fontSize:12,color:'#f87171'}}>Estás cerca del límite gratuito. Considera limpiar archivos antiguos.</p>
+                                            </div>
+                                        )}
+
+                                        {/* Refresh button */}
+                                        <button
+                                            onClick={() => { setStorageUsage(null); fetchStorageUsage(); }}
+                                            style={{
+                                                marginTop:14,width:'100%',
+                                                background:'transparent',border:'none',
+                                                color:'rgba(255,255,255,0.2)',fontSize:11,
+                                                fontWeight:700,textTransform:'uppercase',
+                                                letterSpacing:'0.08em',cursor:'pointer',
+                                                display:'flex',alignItems:'center',justifyContent:'center',gap:6
+                                            }}
+                                        >
+                                            <Icon name="rotate" style={{fontSize:10}} /> Actualizar
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
 
                         {/* MANAGE CLIENTS */}
                         <div className="anim-fadeUp delay-4">
