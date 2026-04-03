@@ -746,13 +746,20 @@
             };
 
             const handleRegister = async () => {
+                if (!formData.name || !formData.email || !formData.password) {
+                    return alert("Rellena todos los campos");
+                }
+                const emailExists = users.some(u => u.email.toLowerCase() === formData.email.toLowerCase());
+                if (emailExists) {
+                    return alert("Ya existe una cuenta con ese email");
+                }
                 try {
                     await window.firestore.addDoc(window.firestore.collection(window.db, "usuarios"), {
                         ...formData, role: 'client', createdAt: new Date().toISOString()
                     });
                     alert("Registrado");
                     setView('login');
-                } catch (e) { alert("Error"); }
+                } catch (e) { alert("Error al registrar"); }
             };
 
             const handleSendWorkout = async () => {
@@ -1349,7 +1356,7 @@
                                     <video
                                         src={zoomImage}
                                         controls
-                                        autoPlay="none"
+                                        autoPlay
                                         onClick={e => e.stopPropagation()}
                                         style={{
                                             maxWidth:'100%', maxHeight:'85vh',
