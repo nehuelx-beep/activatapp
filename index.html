@@ -226,7 +226,9 @@
     </script>
 
     <!-- ✅ React/Babel — NO usa import, solo window.xxx -->
-    <script type="text/babel">
+    <script type="text/babel" data-type="module" data-presets="env,react">
+        const React = window.React;
+        const ReactDOM = window.ReactDOM;
         const { useState, useEffect, useRef } = React;
 
         const Icon = ({ name, className = "" }) => (
