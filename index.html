@@ -38,7 +38,6 @@
 
         .font-display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.04em; }
 
-        /* ---- NOISE OVERLAY ---- */
         body::before {
             content: '';
             position: fixed;
@@ -49,63 +48,20 @@
             opacity: 0.4;
         }
 
-        /* ---- GLOW ORB ---- */
-        .orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(80px);
-            pointer-events: none;
-            z-index: 0;
-        }
+        .orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; }
         .orb-1 { width: 400px; height: 400px; background: rgba(34,197,94,0.07); top: -100px; right: -100px; }
         .orb-2 { width: 300px; height: 300px; background: rgba(22,163,74,0.06); bottom: 100px; left: -80px; }
 
-        /* ---- ANIMATIONS ---- */
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; } to { opacity: 1; }
-        }
-        @keyframes slideInBottom {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse-ring {
-            0% { transform: scale(1); opacity: 0.4; }
-            100% { transform: scale(1.8); opacity: 0; }
-        }
-        @keyframes shimmer {
-            0% { background-position: -200% center; }
-            100% { background-position: 200% center; }
-        }
-        @keyframes loading-bar {
-            0% { left: -40%; }
-            50% { left: 40%; }
-            100% { left: 110%; }
-        }
-        @keyframes spin-slow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        @keyframes bounce-subtle {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
-        }
-        @keyframes card-enter {
-            from { opacity: 0; transform: translateY(30px) scale(0.97); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes success-pop {
-            0% { transform: scale(0.8); opacity: 0; }
-            60% { transform: scale(1.05); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        @keyframes ticker {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInBottom { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse-ring { 0% { transform: scale(1); opacity: 0.4; } 100% { transform: scale(1.8); opacity: 0; } }
+        @keyframes loading-bar { 0% { left: -40%; } 50% { left: 40%; } 100% { left: 110%; } }
+        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes bounce-subtle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes card-enter { from { opacity: 0; transform: translateY(30px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes success-pop { 0% { transform: scale(0.8); opacity: 0; } 60% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
         .anim-fadeUp { animation: fadeUp 0.5s ease forwards; }
         .anim-fadeIn { animation: fadeIn 0.4s ease forwards; }
@@ -113,213 +69,63 @@
         .anim-cardEnter { animation: card-enter 0.5s cubic-bezier(0.16,1,0.3,1) forwards; }
         .anim-successPop { animation: success-pop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
 
-        /* ---- CARDS ---- */
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-        }
-        .card-glass {
-            background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 20px;
-        }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; }
+        .card-glass { background: rgba(255,255,255,0.04); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; }
 
-        /* ---- ACCENT BUTTON ---- */
-        .btn-accent {
-            background: var(--accent);
-            color: var(--ink);
-            font-weight: 700;
-            border-radius: 14px;
-            transition: all 0.2s;
-            position: relative;
-            overflow: hidden;
-        }
-        .btn-accent::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
+        .btn-accent { background: var(--accent); color: var(--ink); font-weight: 700; border-radius: 14px; transition: all 0.2s; position: relative; overflow: hidden; }
+        .btn-accent::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent); opacity: 0; transition: opacity 0.2s; }
         .btn-accent:active { transform: scale(0.97); }
         .btn-accent:hover::after { opacity: 1; }
 
-        .btn-ghost {
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text);
-            border-radius: 14px;
-            transition: all 0.2s;
-        }
+        .btn-ghost { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: var(--text); border-radius: 14px; transition: all 0.2s; }
         .btn-ghost:hover { background: rgba(255,255,255,0.1); }
         .btn-ghost:active { transform: scale(0.97); }
 
-        /* ---- INPUT ---- */
-        .input-dark {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text);
-            border-radius: 12px;
-            padding: 14px 16px;
-            width: 100%;
-            outline: none;
-            transition: border-color 0.2s, background 0.2s;
-            font-family: 'DM Sans', sans-serif;
-        }
+        .input-dark { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text); border-radius: 12px; padding: 14px 16px; width: 100%; outline: none; transition: border-color 0.2s, background 0.2s; font-family: 'DM Sans', sans-serif; }
         .input-dark::placeholder { color: rgba(255,255,255,0.25); }
-        .input-dark:focus {
-            border-color: var(--accent);
-            background: rgba(34,197,94,0.04);
-        }
+        .input-dark:focus { border-color: var(--accent); background: rgba(34,197,94,0.04); }
 
-        /* ---- NAV ---- */
-        .nav-bar {
-            background: rgba(10,10,15,0.85);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
+        .nav-bar { background: rgba(10,10,15,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; }
 
-        /* ---- TAG ---- */
-        .tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(34,197,94,0.1);
-            color: var(--accent);
-            border: 1px solid rgba(34,197,94,0.2);
-            border-radius: 50px;
-            padding: 4px 12px;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
+        .tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(34,197,94,0.1); color: var(--accent); border: 1px solid rgba(34,197,94,0.2); border-radius: 50px; padding: 4px 12px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
 
-        /* ---- WORKOUT CARD ---- */
-        .workout-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
+        .workout-card { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; }
         .workout-card:hover { transform: translateY(-2px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
 
-        /* ---- TICKER ---- */
-        .ticker-wrap {
-            overflow: hidden;
-            background: var(--accent);
-            padding: 8px 0;
-        }
-        .ticker-inner {
-            display: flex;
-            white-space: nowrap;
-            animation: ticker 18s linear infinite;
-        }
-        .ticker-item {
-            color: var(--ink);
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 13px;
-            letter-spacing: 0.1em;
-            padding: 0 24px;
-        }
+        .ticker-wrap { overflow: hidden; background: var(--accent); padding: 8px 0; }
+        .ticker-inner { display: flex; white-space: nowrap; animation: ticker 18s linear infinite; }
+        .ticker-item { color: var(--ink); font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 0.1em; padding: 0 24px; }
 
-        /* ---- ACTIVITY ROW ---- */
-        .activity-row {
-            border-bottom: 1px solid var(--border);
-            transition: background 0.2s;
-        }
+        .activity-row { border-bottom: 1px solid var(--border); transition: background 0.2s; }
         .activity-row:last-child { border-bottom: none; }
         .activity-row:hover { background: rgba(255,255,255,0.02); }
 
-        /* ---- PULSE DOT ---- */
-        .pulse-dot {
-            width: 8px; height: 8px;
-            background: #4ade80;
-            border-radius: 50%;
-            position: relative;
-        }
-        .pulse-dot::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            background: #4ade80;
-            animation: pulse-ring 1.5s ease-out infinite;
-        }
+        .pulse-dot { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; position: relative; }
+        .pulse-dot::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: #4ade80; animation: pulse-ring 1.5s ease-out infinite; }
 
-        /* ---- SELECT ---- */
-        select.input-dark option {
-            background: #1a1a24;
-            color: #f0f0f5;
-        }
+        select.input-dark option { background: #1a1a24; color: #f0f0f5; }
 
-        /* ---- SCROLLBAR ---- */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
 
-        /* ---- COMPLETED BADGE ---- */
-        .completed-badge {
-            background: linear-gradient(135deg, rgba(74,222,128,0.15), rgba(74,222,128,0.05));
-            border: 1px solid rgba(74,222,128,0.3);
-            color: #4ade80;
-            border-radius: 14px;
-        }
+        .completed-badge { background: linear-gradient(135deg, rgba(74,222,128,0.15), rgba(74,222,128,0.05)); border: 1px solid rgba(74,222,128,0.3); color: #4ade80; border-radius: 14px; }
 
-        /* ---- MODAL OVERLAY ---- */
-        .modal-overlay {
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(12px);
-        }
+        .modal-overlay { background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); }
 
-        /* ---- SEGMENT CONTROL ---- */
-        .segment {
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            padding: 4px;
-            display: flex;
-        }
-        .segment-btn {
-            flex: 1;
-            padding: 8px;
-            border-radius: 9px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            transition: all 0.2s;
-            color: rgba(255,255,255,0.4);
-        }
-        .segment-btn.active {
-            background: var(--accent);
-            color: var(--ink);
-        }
+        .segment { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 4px; display: flex; }
+        .segment-btn { flex: 1; padding: 8px; border-radius: 9px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; transition: all 0.2s; color: rgba(255,255,255,0.4); }
+        .segment-btn.active { background: var(--accent); color: var(--ink); }
 
-        /* ---- TIMER DISPLAY ---- */
-        .timer-display {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 80px;
-            letter-spacing: 0.04em;
-            line-height: 1;
-            color: var(--text);
-        }
+        .timer-display { font-family: 'Bebas Neue', sans-serif; font-size: 80px; letter-spacing: 0.04em; line-height: 1; color: var(--text); }
         .timer-display.danger { color: #f87171; }
 
-        /* ---- STAGGER DELAYS ---- */
         .delay-1 { animation-delay: 0.05s; animation-fill-mode: both; }
         .delay-2 { animation-delay: 0.1s; animation-fill-mode: both; }
         .delay-3 { animation-delay: 0.15s; animation-fill-mode: both; }
         .delay-4 { animation-delay: 0.2s; animation-fill-mode: both; }
         .delay-5 { animation-delay: 0.25s; animation-fill-mode: both; }
 
-        /* ---- LOGIN BG ---- */
         .login-bg {
             background: radial-gradient(ellipse at 80% 0%, rgba(34,197,94,0.1) 0%, transparent 60%),
                         radial-gradient(ellipse at 0% 100%, rgba(22,163,74,0.08) 0%, transparent 50%),
@@ -345,12 +151,11 @@
         </div>
     </div>
 
+    <!-- ✅ Firebase se carga como módulo ES6 separado -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytesResumable, getDownloadURL, listAll, getMetadata } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-        window.doc = doc;
-        window.setDoc = setDoc;
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -367,14 +172,22 @@
         const auth = getAuth(app);
         const storage = getStorage(app);
 
+        // Exponer todo en window para que Babel pueda accederlo
         window.db = db;
         window.auth = auth;
         window.storage = storage;
+        window.doc = doc;
+        window.setDoc = setDoc;
         window.storageApi = { ref, uploadBytesResumable, getDownloadURL, listAll, getMetadata };
         window.firestore = { collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc };
         window.firebaseAuth = { onAuthStateChanged, signOut };
+
+        // ✅ Señal para que React sepa que Firebase está listo
+        window._firebaseReady = true;
+        window.dispatchEvent(new Event('firebaseReady'));
     </script>
 
+    <!-- ✅ React/Babel — NO usa import, solo window.xxx -->
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
@@ -387,7 +200,6 @@
             const [open, setOpen] = React.useState(false);
             const wrapperRef = React.useRef(null);
 
-            // Cierra el dropdown al hacer clic fuera
             React.useEffect(() => {
                 const handleClickOutside = (e) => {
                     if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
@@ -412,7 +224,6 @@
 
             return (
                 <div ref={wrapperRef} style={{position:'relative'}}>
-                    {/* Trigger */}
                     <div
                         onClick={() => { setOpen(!open); setSearch(''); }}
                         style={{
@@ -453,7 +264,6 @@
                         <i className={`fa-solid fa-chevron-${open ? 'up' : 'down'}`} style={{color:'rgba(255,255,255,0.3)',fontSize:11,transition:'transform 0.2s'}}></i>
                     </div>
 
-                    {/* Dropdown */}
                     {open && (
                         <div style={{
                             position:'absolute', top:'calc(100% + 8px)', left:0, right:0,
@@ -462,7 +272,6 @@
                             boxShadow:'0 24px 60px rgba(0,0,0,0.6)',
                             animation:'fadeUp 0.15s ease forwards'
                         }}>
-                            {/* Search */}
                             <div style={{padding:'12px 12px 8px', borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
                                 <div style={{position:'relative'}}>
                                     <i className="fa-solid fa-magnifying-glass" style={{
@@ -486,14 +295,12 @@
                                 </div>
                             </div>
 
-                            {/* Count */}
                             <div style={{padding:'6px 16px 4px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                                 <span style={{fontSize:10, color:'rgba(255,255,255,0.2)', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.1em'}}>
                                     {search ? `${filtered.length} resultado${filtered.length !== 1 ? 's' : ''}` : `${clients.length} clientes · A→Z`}
                                 </span>
                             </div>
 
-                            {/* List */}
                             <div style={{maxHeight:240, overflowY:'auto'}}>
                                 {filtered.length === 0 ? (
                                     <div style={{padding:'20px', textAlign:'center'}}>
@@ -547,6 +354,7 @@
         }
 
         function GymApp() {
+            const [firebaseReady, setFirebaseReady] = useState(window._firebaseReady || false);
             const [currentUser, setCurrentUser] = useState(null);
             const [users, setUsers] = useState([]);
             const [workouts, setWorkouts] = useState([]);
@@ -566,11 +374,21 @@
             const [activitiesLimit, setActivitiesLimit] = useState(5);
             const [storageUsage, setStorageUsage] = useState(null);
             const [loadingStorage, setLoadingStorage] = useState(false);
-            const [clientSearch, setClientSearch] = useState('');
             const [uploadProgress, setUploadProgress] = useState(null);
             const intervalRef = useRef(null);
 
-            // Timer logic
+            // ✅ Esperar a que Firebase esté listo antes de arrancar
+            useEffect(() => {
+                if (window._firebaseReady) {
+                    setFirebaseReady(true);
+                    return;
+                }
+                const handler = () => setFirebaseReady(true);
+                window.addEventListener('firebaseReady', handler);
+                return () => window.removeEventListener('firebaseReady', handler);
+            }, []);
+
+            // Timer
             useEffect(() => {
                 if (isActive) {
                     intervalRef.current = setInterval(() => {
@@ -597,14 +415,10 @@
             const handleUpdateNote = async (workoutId, noteText) => {
                 try {
                     const workoutRef = window.firestore.doc(window.db, 'rutinas', workoutId);
-                    if (window.firestore.updateDoc) {
-                        await window.firestore.updateDoc(workoutRef, { clientNote: noteText });
-                    } else {
-                        await updateDoc(workoutRef, { clientNote: noteText });
-                    }
+                    await window.firestore.updateDoc(workoutRef, { clientNote: noteText });
                     return true;
                 } catch (error) {
-                    alert("Sigue fallando: " + error.message);
+                    alert("Error al guardar nota: " + error.message);
                     return false;
                 }
             };
@@ -617,7 +431,7 @@
                         completedAt: !currentStatus ? Date.now() : null
                     });
                 } catch (error) {
-                    alert("Error al resetear/completar: " + error.message);
+                    alert("Error al completar: " + error.message);
                 }
             };
 
@@ -627,9 +441,9 @@
                 try {
                     const canvas = await html2canvas(card, { scale: 2, useCORS: true, backgroundColor: null });
                     canvas.toBlob(async (blob) => {
-                        const file = new File([blob], 'mi-logro-gym.png', { type: 'image/png' });
-                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                            await navigator.share({ files: [file], title: '¡Entreno completado!', text: 'Mira mi entrenamiento de hoy en Activa-T Gym 💪' });
+                        const f = new File([blob], 'mi-logro-gym.png', { type: 'image/png' });
+                        if (navigator.canShare && navigator.canShare({ files: [f] })) {
+                            await navigator.share({ files: [f], title: '¡Entreno completado!', text: 'Mira mi entrenamiento de hoy en Activa-T Gym 💪' });
                         } else {
                             alert("Tu navegador no permite compartir imágenes directamente. ¡Haz una captura!");
                         }
@@ -660,18 +474,16 @@
                 try {
                     const { ref, listAll, getMetadata } = window.storageApi;
                     const rootRef = ref(window.storage, '/');
-                    
                     const getAllFiles = async (folderRef) => {
                         const result = await listAll(folderRef);
                         const subFiles = await Promise.all(result.prefixes.map(getAllFiles));
                         return [...result.items, ...subFiles.flat()];
                     };
-
                     const allFiles = await getAllFiles(rootRef);
                     const metadatas = await Promise.all(allFiles.map(f => getMetadata(f)));
                     const totalBytes = metadatas.reduce((acc, m) => acc + (m.size || 0), 0);
                     const totalGB = totalBytes / (1024 * 1024 * 1024);
-                    const freeGB = 5; // Firebase Storage free tier
+                    const freeGB = 5;
                     setStorageUsage({
                         usedBytes: totalBytes,
                         usedGB: totalGB,
@@ -685,11 +497,13 @@
                 setLoadingStorage(false);
             };
 
+            // ✅ Suscripciones a Firestore — solo cuando Firebase está listo
             useEffect(() => {
-                if (!window.db) return;
+                if (!firebaseReady || !window.db) return;
+
                 const qUsers = window.firestore.query(window.firestore.collection(window.db, "usuarios"));
                 const unsubUsers = window.firestore.onSnapshot(qUsers, (snapshot) => {
-                    const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     const adminExist = docs.find(u => u.role === 'admin');
                     if (!adminExist) {
                         docs.push({ email: 'ggcaparra38@gmail.com', password: 'templerenovatio', name: 'Gabi', role: 'admin' });
@@ -706,9 +520,10 @@
                     }
                     setLoading(false);
                 });
+
                 const qWorkouts = window.firestore.query(window.firestore.collection(window.db, "rutinas"));
                 const unsubWorkouts = window.firestore.onSnapshot(qWorkouts, (snapshot) => {
-                    const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     list.sort((a, b) => {
                         const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
                         const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
@@ -716,8 +531,9 @@
                     });
                     setWorkouts(list);
                 });
+
                 return () => { unsubUsers(); unsubWorkouts(); };
-            }, []);
+            }, [firebaseReady]);
 
             const handleLogin = () => {
                 const user = users.find(u => u.email === formData.email && u.password === formData.password);
@@ -737,7 +553,6 @@
             const handleImageChange = (e) => {
                 const selectedFile = e.target.files[0];
                 if (selectedFile) {
-                    // Sin límite de tamaño — Firebase Storage gestiona el archivo
                     setFile(selectedFile);
                     const reader = new FileReader();
                     reader.onloadend = () => setWorkoutData({ ...workoutData, image: reader.result });
@@ -750,9 +565,7 @@
                     return alert("Rellena todos los campos");
                 }
                 const emailExists = users.some(u => u.email.toLowerCase() === formData.email.toLowerCase());
-                if (emailExists) {
-                    return alert("Ya existe una cuenta con ese email");
-                }
+                if (emailExists) return alert("Ya existe una cuenta con ese email");
                 try {
                     await window.firestore.addDoc(window.firestore.collection(window.db, "usuarios"), {
                         ...formData, role: 'client', createdAt: new Date().toISOString()
@@ -791,7 +604,6 @@
                         const { ref, uploadBytesResumable, getDownloadURL } = window.storageApi;
                         const fileRef = ref(window.storage, `rutinas/${Date.now()}_${file.name}`);
                         const uploadTask = uploadBytesResumable(fileRef, file);
-
                         uploadTask.on('state_changed',
                             (snapshot) => {
                                 const pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
@@ -815,9 +627,7 @@
                 }
             };
 
-            // ========================
-            // LOADING SCREEN
-            // ========================
+            // LOADING
             if (loading) return (
                 <div className="min-h-screen login-bg flex items-center justify-center">
                     <div className="orb orb-1"></div>
@@ -825,95 +635,59 @@
                     <div className="text-center relative z-10">
                         <div className="flex items-center justify-center mb-8">
                             <div style={{animation:'bounce-subtle 1.5s ease-in-out infinite'}}>
-                                <div style={{
-                                    width: 64, height: 64,
-                                    background: 'var(--accent)',
-                                    borderRadius: 18,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    boxShadow: '0 0 40px rgba(34,197,94,0.4)'
-                                }}>
+                                <div style={{width:64,height:64,background:'var(--accent)',borderRadius:18,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 40px rgba(34,197,94,0.4)'}}>
                                     <Icon name="bolt" className="text-black text-2xl" />
                                 </div>
                             </div>
                         </div>
                         <p className="font-display text-4xl text-white mb-8">ACTIVA-T GYM</p>
-                        <div style={{width: 180, height: 2, background: 'rgba(255,255,255,0.07)', borderRadius: 4, overflow: 'hidden', margin: '0 auto', position: 'relative'}}>
-                            <div style={{
-                                height: '100%', width: '40%',
-                                background: 'var(--accent)',
-                                borderRadius: 4,
-                                position: 'absolute',
-                                animation: 'loading-bar 1.5s infinite ease-in-out'
-                            }}></div>
+                        <div style={{width:180,height:2,background:'rgba(255,255,255,0.07)',borderRadius:4,overflow:'hidden',margin:'0 auto',position:'relative'}}>
+                            <div style={{height:'100%',width:'40%',background:'var(--accent)',borderRadius:4,position:'absolute',animation:'loading-bar 1.5s infinite ease-in-out'}}></div>
                         </div>
                     </div>
                 </div>
             );
 
-            // ========================
-            // REGISTER VIEW
-            // ========================
+            // REGISTER
             if (view === 'register') return (
                 <div className="min-h-screen login-bg flex items-center justify-center p-6">
                     <div className="orb orb-1"></div>
                     <div className="orb orb-2"></div>
                     <div className="w-full max-w-sm relative z-10 anim-fadeUp">
                         <div className="text-center mb-8">
-                            <div style={{
-                                width: 56, height: 56,
-                                background: 'var(--accent)',
-                                borderRadius: 16,
-                                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                                boxShadow: '0 0 30px rgba(34,197,94,0.3)',
-                                marginBottom: 16
-                            }}>
+                            <div style={{width:56,height:56,background:'var(--accent)',borderRadius:16,display:'inline-flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 30px rgba(34,197,94,0.3)',marginBottom:16}}>
                                 <Icon name="user-plus" className="text-black text-xl" />
                             </div>
                             <h1 className="font-display text-4xl text-white">NUEVO CLIENTE</h1>
-                            <p style={{color:'var(--muted)', fontSize: 13, marginTop: 4}}>Crea tu acceso a la app</p>
+                            <p style={{color:'var(--muted)',fontSize:13,marginTop:4}}>Crea tu acceso a la app</p>
                         </div>
                         <div className="card p-6 space-y-3">
                             <input className="input-dark" placeholder="Tu nombre" onChange={e => setFormData({...formData, name: e.target.value})} />
                             <input className="input-dark" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
                             <input className="input-dark" type="password" placeholder="Contraseña" onChange={e => setFormData({...formData, password: e.target.value})} />
-                            <button onClick={handleRegister} className="btn-accent w-full py-4 font-display text-lg tracking-wider" style={{borderRadius: 14}}>
-                                REGISTRARSE
-                            </button>
+                            <button onClick={handleRegister} className="btn-accent w-full py-4 font-display text-lg tracking-wider" style={{borderRadius:14}}>REGISTRARSE</button>
                         </div>
-                        <button onClick={() => setView('login')} style={{color:'var(--muted)', fontSize:13}} className="w-full mt-4 text-center block hover:opacity-80 transition-opacity">
-                            ← Volver al inicio
-                        </button>
+                        <button onClick={() => setView('login')} style={{color:'var(--muted)',fontSize:13}} className="w-full mt-4 text-center block hover:opacity-80 transition-opacity">← Volver al inicio</button>
                     </div>
                 </div>
             );
 
-            // ========================
-            // LOGIN VIEW
-            // ========================
+            // LOGIN
             if (!currentUser) return (
                 <div className="min-h-screen login-bg flex items-center justify-center p-6">
                     <div className="orb orb-1"></div>
                     <div className="orb orb-2"></div>
                     <div className="w-full max-w-sm relative z-10">
-                        {/* Logo */}
                         <div className="text-center mb-10 anim-fadeUp">
-                            <div style={{
-                                width: 72, height: 72,
-                                background: 'var(--accent)',
-                                borderRadius: 22,
-                                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                                boxShadow: '0 0 50px rgba(34,197,94,0.35)',
-                                marginBottom: 20
-                            }}>
+                            <div style={{width:72,height:72,background:'var(--accent)',borderRadius:22,display:'inline-flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 50px rgba(34,197,94,0.35)',marginBottom:20}}>
                                 <Icon name="bolt" className="text-black text-3xl" />
                             </div>
                             <h1 className="font-display text-5xl text-white" style={{lineHeight:1}}>ACTIVA-T</h1>
-                            <h1 className="font-display text-5xl" style={{color:'var(--accent)', lineHeight:1}}>GYM</h1>
+                            <h1 className="font-display text-5xl" style={{color:'var(--accent)',lineHeight:1}}>GYM</h1>
                         </div>
 
-                        {/* Install hint */}
                         <div className="card-glass p-4 mb-6 anim-fadeUp delay-1" style={{fontSize:11}}>
-                            <p className="font-bold mb-1 uppercase" style={{color:'var(--accent)', letterSpacing:'0.1em', fontSize:10}}>📲 Instalar App</p>
+                            <p className="font-bold mb-1 uppercase" style={{color:'var(--accent)',letterSpacing:'0.1em',fontSize:10}}>📲 Instalar App</p>
                             <p style={{color:'var(--muted)'}}>
                                 {/iPhone|iPad|iPod/.test(navigator.userAgent)
                                     ? 'Pulsa Compartir → "Añadir a pantalla de inicio"'
@@ -921,42 +695,33 @@
                             </p>
                         </div>
 
-                        {/* Form */}
                         <div className="card p-6 space-y-3 anim-fadeUp delay-2">
                             <input className="input-dark" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
                             <input className="input-dark" type="password" placeholder="Contraseña" onChange={e => setFormData({...formData, password: e.target.value})} />
-                            <button onClick={handleLogin} className="btn-accent w-full py-4 font-display text-xl tracking-wider" style={{borderRadius: 14}}>
-                                ENTRAR
-                            </button>
+                            <button onClick={handleLogin} className="btn-accent w-full py-4 font-display text-xl tracking-wider" style={{borderRadius:14}}>ENTRAR</button>
                         </div>
 
-                        <button onClick={() => setView('register')} style={{color:'var(--accent)', fontSize:13}} className="w-full mt-5 text-center block hover:opacity-80 transition-opacity anim-fadeUp delay-3">
+                        <button onClick={() => setView('register')} style={{color:'var(--accent)',fontSize:13}} className="w-full mt-5 text-center block hover:opacity-80 transition-opacity anim-fadeUp delay-3">
                             ¿Sin cuenta? Regístrate →
                         </button>
                     </div>
                 </div>
             );
 
-            // ========================
-            // ADMIN VIEW
-            // ========================
+            // ADMIN
             if (currentUser.role === 'admin') return (
                 <div className="min-h-screen" style={{background:'var(--ink)'}}>
                     <div className="orb orb-1"></div>
                     <div className="orb orb-2"></div>
 
-                    {/* NAV */}
                     <nav className="nav-bar px-5 py-4 flex justify-between items-center relative z-10">
                         <div className="flex items-center gap-3">
-                            <div style={{
-                                width: 36, height: 36, background: 'var(--accent)',
-                                borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center'
-                            }}>
+                            <div style={{width:36,height:36,background:'var(--accent)',borderRadius:10,display:'flex',alignItems:'center',justifyContent:'center'}}>
                                 <Icon name="bolt" className="text-black text-sm" />
                             </div>
                             <div>
                                 <p className="font-display text-white text-lg" style={{lineHeight:1}}>ACTIVA-T GYM</p>
-                                <p style={{color:'var(--muted)', fontSize:10}}>Panel Admin · {currentUser.name}</p>
+                                <p style={{color:'var(--muted)',fontSize:10}}>Panel Admin · {currentUser.name}</p>
                             </div>
                         </div>
                         <button onClick={handleLogout} className="btn-ghost px-4 py-2 text-xs font-bold">
@@ -964,10 +729,9 @@
                         </button>
                     </nav>
 
-                    {/* Ticker */}
                     <div className="ticker-wrap relative z-10">
                         <div className="ticker-inner">
-                            {['ENVIAR RUTINA', 'GESTIONAR CLIENTES', 'VER ACTIVIDAD', 'ACTIVA-T GYM', 'ENVIAR RUTINA', 'GESTIONAR CLIENTES', 'VER ACTIVIDAD', 'ACTIVA-T GYM'].map((t, i) => (
+                            {['ENVIAR RUTINA','GESTIONAR CLIENTES','VER ACTIVIDAD','ACTIVA-T GYM','ENVIAR RUTINA','GESTIONAR CLIENTES','VER ACTIVIDAD','ACTIVA-T GYM'].map((t, i) => (
                                 <span key={i} className="ticker-item">★ {t}</span>
                             ))}
                         </div>
@@ -975,7 +739,7 @@
 
                     <div className="p-5 max-w-xl mx-auto relative z-10 space-y-6 pb-16">
 
-                        {/* SEND WORKOUT CARD */}
+                        {/* SEND WORKOUT */}
                         <div className="card p-6 anim-fadeUp delay-1">
                             <div className="flex items-center gap-3 mb-6">
                                 <div style={{width:40,height:40,background:'rgba(34,197,94,0.1)',borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center'}}>
@@ -986,42 +750,19 @@
                                     <p style={{color:'var(--muted)',fontSize:12}}>Envía a un cliente</p>
                                 </div>
                             </div>
-
                             <div className="space-y-3">
-                                <ClientPicker
-                                    users={users}
-                                    selectedClient={selectedClient}
-                                    onSelect={setSelectedClient}
-                                />
+                                <ClientPicker users={users} selectedClient={selectedClient} onSelect={setSelectedClient} />
                                 <input className="input-dark" placeholder="Título de la rutina" value={workoutData.title} onChange={e => setWorkoutData({...workoutData, title: e.target.value})} />
-                                <textarea
-                                    className="input-dark"
-                                    placeholder="Describe los ejercicios..."
-                                    value={workoutData.description}
-                                    onChange={e => setWorkoutData({...workoutData, description: e.target.value})}
-                                    rows="4"
-                                    style={{resize:'none'}}
-                                ></textarea>
+                                <textarea className="input-dark" placeholder="Describe los ejercicios..." value={workoutData.description} onChange={e => setWorkoutData({...workoutData, description: e.target.value})} rows="4" style={{resize:'none'}}></textarea>
 
-                                {/* File upload styled */}
-                                <label style={{
-                                    display:'block',
-                                    background:'rgba(255,255,255,0.04)',
-                                    border:'1px dashed rgba(255,255,255,0.15)',
-                                    borderRadius:12,
-                                    padding: '16px',
-                                    cursor:'pointer',
-                                    textAlign:'center',
-                                    transition:'border-color 0.2s'
-                                }}>
+                                <label style={{display:'block',background:'rgba(255,255,255,0.04)',border:'1px dashed rgba(255,255,255,0.15)',borderRadius:12,padding:'16px',cursor:'pointer',textAlign:'center',transition:'border-color 0.2s'}}>
                                     <Icon name="image" style={{color:'var(--muted)',fontSize:22}} />
                                     <p style={{color:'var(--muted)',fontSize:12,marginTop:6}}>
-                                        {file ? `${file.name} (${(file.size / (1024*1024)).toFixed(1)} MB)` : 'Añadir imagen o vídeo'}
+                                        {file ? `${file.name} (${(file.size/(1024*1024)).toFixed(1)} MB)` : 'Añadir imagen o vídeo'}
                                     </p>
                                     <input type="file" accept="image/*,video/mp4" onChange={handleImageChange} style={{display:'none'}} />
                                 </label>
 
-                                {/* PROGRESS BAR */}
                                 {uploadProgress !== null && (
                                     <div style={{background:'rgba(255,255,255,0.05)',borderRadius:12,padding:'14px 16px',border:'1px solid rgba(255,255,255,0.08)'}}>
                                         <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}>
@@ -1034,12 +775,7 @@
                                     </div>
                                 )}
 
-                                <button
-                                    onClick={handleSendWorkout}
-                                    disabled={uploadProgress !== null}
-                                    className="btn-accent w-full py-4 font-display text-xl tracking-wider"
-                                    style={{borderRadius:14, opacity: uploadProgress !== null ? 0.5 : 1, cursor: uploadProgress !== null ? 'not-allowed' : 'pointer'}}
-                                >
+                                <button onClick={handleSendWorkout} disabled={uploadProgress !== null} className="btn-accent w-full py-4 font-display text-xl tracking-wider" style={{borderRadius:14,opacity:uploadProgress!==null?0.5:1,cursor:uploadProgress!==null?'not-allowed':'pointer'}}>
                                     <Icon name="paper-plane" className="mr-2" />
                                     {uploadProgress !== null ? `SUBIENDO ${uploadProgress}%` : 'ENVIAR RUTINA'}
                                 </button>
@@ -1059,7 +795,6 @@
                                     </span>
                                 )}
                             </div>
-
                             <div className="card overflow-hidden">
                                 {workouts.filter(w => w.completed).length === 0 ? (
                                     <div className="p-10 text-center">
@@ -1073,37 +808,23 @@
                                         .map((w, i) => {
                                             const clientName = users.find(u => u.id === w.clientId)?.name || "Cliente borrado";
                                             const date = w.completedAt ? new Date(w.completedAt).toLocaleDateString() : 'Hoy';
-                                            const time = w.completedAt ? new Date(w.completedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '';
+                                            const time = w.completedAt ? new Date(w.completedAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
                                             return (
                                                 <div key={w.id} className="activity-row p-4 flex items-start justify-between gap-3">
-                                                    <div style={{
-                                                        width:40,height:40,flexShrink:0,
-                                                        background:'rgba(74,222,128,0.1)',
-                                                        border:'1px solid rgba(74,222,128,0.2)',
-                                                        borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center'
-                                                    }}>
+                                                    <div style={{width:40,height:40,flexShrink:0,background:'rgba(74,222,128,0.1)',border:'1px solid rgba(74,222,128,0.2)',borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center'}}>
                                                         <Icon name="check" style={{color:'#4ade80',fontSize:14}} />
                                                     </div>
                                                     <div style={{flex:1,minWidth:0}}>
                                                         <p className="font-bold text-white text-sm">{clientName}</p>
                                                         <p style={{fontSize:12,color:'var(--muted)'}}>Completó: <span style={{color:'var(--accent)'}}>{w.title}</span></p>
                                                         {w.clientNote && (
-                                                            <p style={{
-                                                                marginTop:6,fontSize:11,
-                                                                background:'rgba(34,197,94,0.06)',
-                                                                border:'1px solid rgba(34,197,94,0.1)',
-                                                                color:'rgba(34,197,94,0.8)',
-                                                                padding:'6px 10px',borderRadius:8,
-                                                                fontStyle:'italic'
-                                                            }}>"{w.clientNote}"</p>
+                                                            <p style={{marginTop:6,fontSize:11,background:'rgba(34,197,94,0.06)',border:'1px solid rgba(34,197,94,0.1)',color:'rgba(34,197,94,0.8)',padding:'6px 10px',borderRadius:8,fontStyle:'italic'}}>"{w.clientNote}"</p>
                                                         )}
                                                     </div>
                                                     <div className="text-right" style={{flexShrink:0}}>
                                                         <p style={{fontSize:10,color:'var(--muted)',fontWeight:700}}>{date}</p>
                                                         <p style={{fontSize:11,color:'var(--muted)'}}>{time}</p>
-                                                        <button onClick={() => handleToggleComplete(w.id, true)} style={{fontSize:10,color:'#f87171',marginTop:4}} className="underline">
-                                                            Resetear
-                                                        </button>
+                                                        <button onClick={() => handleToggleComplete(w.id, true)} style={{fontSize:10,color:'#f87171',marginTop:4}} className="underline">Resetear</button>
                                                     </div>
                                                 </div>
                                             );
@@ -1111,10 +832,7 @@
                                 )}
                             </div>
                             {workouts.filter(w => w.completed).length > activitiesLimit && (
-                                <button
-                                    onClick={() => setActivitiesLimit(prev => prev + 5)}
-                                    className="btn-ghost w-full py-3 mt-3 text-xs font-bold"
-                                >
+                                <button onClick={() => setActivitiesLimit(prev => prev + 5)} className="btn-ghost w-full py-3 mt-3 text-xs font-bold">
                                     <Icon name="chevron-down" className="mr-2" />MOSTRAR MÁS
                                 </button>
                             )}
@@ -1150,15 +868,8 @@
                                                     <p className="font-bold text-white text-sm truncate">{w.title}</p>
                                                     <p style={{fontSize:11,color:'var(--muted)'}}>{w.date}</p>
                                                     {w.clientNote && (
-                                                        <div style={{
-                                                            marginTop:8,padding:'8px 12px',
-                                                            background:'rgba(34,197,94,0.05)',
-                                                            border:'1px solid rgba(34,197,94,0.1)',
-                                                            borderRadius:10
-                                                        }}>
-                                                            <p style={{fontSize:10,fontWeight:700,color:'rgba(34,197,94,0.6)',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:3}}>
-                                                                📝 Nota del cliente:
-                                                            </p>
+                                                        <div style={{marginTop:8,padding:'8px 12px',background:'rgba(34,197,94,0.05)',border:'1px solid rgba(34,197,94,0.1)',borderRadius:10}}>
+                                                            <p style={{fontSize:10,fontWeight:700,color:'rgba(34,197,94,0.6)',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:3}}>📝 Nota del cliente:</p>
                                                             <p style={{fontSize:12,color:'rgba(255,255,255,0.7)',fontStyle:'italic'}}>"{w.clientNote}"</p>
                                                         </div>
                                                     )}
@@ -1173,7 +884,7 @@
                             </div>
                         )}
 
-                        {/* STORAGE USAGE */}
+                        {/* STORAGE */}
                         <div className="anim-fadeUp delay-4">
                             <div className="flex items-center gap-2 mb-3">
                                 <Icon name="database" style={{color:'var(--accent)'}} />
@@ -1181,101 +892,48 @@
                             </div>
                             <div className="card p-5">
                                 {!storageUsage ? (
-                                    <button
-                                        onClick={fetchStorageUsage}
-                                        disabled={loadingStorage}
-                                        className="btn-ghost w-full py-4 font-bold flex items-center justify-center gap-3"
-                                        style={{fontSize:13,letterSpacing:'0.05em'}}
-                                    >
+                                    <button onClick={fetchStorageUsage} disabled={loadingStorage} className="btn-ghost w-full py-4 font-bold flex items-center justify-center gap-3" style={{fontSize:13,letterSpacing:'0.05em'}}>
                                         {loadingStorage ? (
-                                            <>
-                                                <i className="fa-solid fa-spinner" style={{color:'var(--accent)',animation:'spin-slow 1s linear infinite'}}></i>
-                                                Calculando...
-                                            </>
+                                            <><i className="fa-solid fa-spinner" style={{color:'var(--accent)',animation:'spin-slow 1s linear infinite'}}></i>Calculando...</>
                                         ) : (
-                                            <>
-                                                <Icon name="chart-pie" style={{color:'var(--accent)'}} />
-                                                VER ESPACIO USADO
-                                            </>
+                                            <><Icon name="chart-pie" style={{color:'var(--accent)'}} />VER ESPACIO USADO</>
                                         )}
                                     </button>
                                 ) : (
                                     <div>
-                                        {/* Big numbers */}
                                         <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',marginBottom:16}}>
                                             <div>
                                                 <p style={{color:'var(--muted)',fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',marginBottom:4}}>Usado</p>
                                                 <p style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:40,color:'var(--text)',lineHeight:1}}>
-                                                    {storageUsage.usedGB >= 1
-                                                        ? `${storageUsage.usedGB.toFixed(2)} GB`
-                                                        : `${(storageUsage.usedGB * 1024).toFixed(1)} MB`
-                                                    }
+                                                    {storageUsage.usedGB >= 1 ? `${storageUsage.usedGB.toFixed(2)} GB` : `${(storageUsage.usedGB*1024).toFixed(1)} MB`}
                                                 </p>
-                                                <p style={{color:'var(--muted)',fontSize:11,marginTop:2}}>{storageUsage.fileCount} archivo{storageUsage.fileCount !== 1 ? 's' : ''}</p>
+                                                <p style={{color:'var(--muted)',fontSize:11,marginTop:2}}>{storageUsage.fileCount} archivo{storageUsage.fileCount!==1?'s':''}</p>
                                             </div>
                                             <div style={{textAlign:'right'}}>
                                                 <p style={{color:'var(--muted)',fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',marginBottom:4}}>Disponible</p>
-                                                <p style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:40,lineHeight:1,
-                                                    color: storageUsage.pct > 80 ? '#f87171' : storageUsage.pct > 50 ? '#fb923c' : 'var(--accent)'}}>
-                                                    {(storageUsage.freeGB - storageUsage.usedGB).toFixed(2)} GB
+                                                <p style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:40,lineHeight:1,color:storageUsage.pct>80?'#f87171':storageUsage.pct>50?'#fb923c':'var(--accent)'}}>
+                                                    {(storageUsage.freeGB-storageUsage.usedGB).toFixed(2)} GB
                                                 </p>
                                                 <p style={{color:'var(--muted)',fontSize:11,marginTop:2}}>de {storageUsage.freeGB} GB gratis</p>
                                             </div>
                                         </div>
-
-                                        {/* Progress bar */}
                                         <div style={{marginBottom:10}}>
                                             <div style={{height:8,background:'rgba(255,255,255,0.07)',borderRadius:8,overflow:'hidden'}}>
-                                                <div style={{
-                                                    height:'100%',
-                                                    width:`${storageUsage.pct}%`,
-                                                    borderRadius:8,
-                                                    background: storageUsage.pct > 80
-                                                        ? 'linear-gradient(90deg,#f87171,#ef4444)'
-                                                        : storageUsage.pct > 50
-                                                        ? 'linear-gradient(90deg,#fb923c,#f97316)'
-                                                        : 'linear-gradient(90deg,var(--accent),#16a34a)',
-                                                    transition:'width 0.8s cubic-bezier(0.16,1,0.3,1)',
-                                                    boxShadow: storageUsage.pct > 80
-                                                        ? '0 0 12px rgba(248,113,113,0.5)'
-                                                        : '0 0 12px rgba(34,197,94,0.4)'
-                                                }}></div>
+                                                <div style={{height:'100%',width:`${storageUsage.pct}%`,borderRadius:8,background:storageUsage.pct>80?'linear-gradient(90deg,#f87171,#ef4444)':storageUsage.pct>50?'linear-gradient(90deg,#fb923c,#f97316)':'linear-gradient(90deg,var(--accent),#16a34a)',transition:'width 0.8s cubic-bezier(0.16,1,0.3,1)',boxShadow:storageUsage.pct>80?'0 0 12px rgba(248,113,113,0.5)':'0 0 12px rgba(34,197,94,0.4)'}}></div>
                                             </div>
                                             <div style={{display:'flex',justifyContent:'space-between',marginTop:6}}>
                                                 <span style={{fontSize:11,color:'var(--muted)'}}>0 GB</span>
-                                                <span style={{
-                                                    fontSize:11,fontWeight:700,
-                                                    color: storageUsage.pct > 80 ? '#f87171' : storageUsage.pct > 50 ? '#fb923c' : 'var(--accent)'
-                                                }}>{storageUsage.pct.toFixed(1)}% usado</span>
+                                                <span style={{fontSize:11,fontWeight:700,color:storageUsage.pct>80?'#f87171':storageUsage.pct>50?'#fb923c':'var(--accent)'}}>{storageUsage.pct.toFixed(1)}% usado</span>
                                                 <span style={{fontSize:11,color:'var(--muted)'}}>5 GB</span>
                                             </div>
                                         </div>
-
-                                        {/* Warning if close to limit */}
                                         {storageUsage.pct > 80 && (
-                                            <div style={{
-                                                marginTop:12,padding:'10px 14px',
-                                                background:'rgba(248,113,113,0.08)',
-                                                border:'1px solid rgba(248,113,113,0.2)',
-                                                borderRadius:10,display:'flex',alignItems:'center',gap:8
-                                            }}>
+                                            <div style={{marginTop:12,padding:'10px 14px',background:'rgba(248,113,113,0.08)',border:'1px solid rgba(248,113,113,0.2)',borderRadius:10,display:'flex',alignItems:'center',gap:8}}>
                                                 <Icon name="triangle-exclamation" style={{color:'#f87171',fontSize:13}} />
                                                 <p style={{fontSize:12,color:'#f87171'}}>Estás cerca del límite gratuito. Considera limpiar archivos antiguos.</p>
                                             </div>
                                         )}
-
-                                        {/* Refresh button */}
-                                        <button
-                                            onClick={() => { setStorageUsage(null); fetchStorageUsage(); }}
-                                            style={{
-                                                marginTop:14,width:'100%',
-                                                background:'transparent',border:'none',
-                                                color:'rgba(255,255,255,0.2)',fontSize:11,
-                                                fontWeight:700,textTransform:'uppercase',
-                                                letterSpacing:'0.08em',cursor:'pointer',
-                                                display:'flex',alignItems:'center',justifyContent:'center',gap:6
-                                            }}
-                                        >
+                                        <button onClick={() => { setStorageUsage(null); fetchStorageUsage(); }} style={{marginTop:14,width:'100%',background:'transparent',border:'none',color:'rgba(255,255,255,0.2)',fontSize:11,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.08em',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
                                             <Icon name="rotate" style={{fontSize:10}} /> Actualizar
                                         </button>
                                     </div>
@@ -1293,14 +951,7 @@
                                 {users.filter(u => u.role === 'client').map(u => (
                                     <div key={u.id} className="card p-4 flex justify-between items-center">
                                         <div className="flex items-center gap-3">
-                                            <div style={{
-                                                width:40,height:40,
-                                                background:'rgba(255,255,255,0.06)',
-                                                borderRadius:12,
-                                                display:'flex',alignItems:'center',justifyContent:'center',
-                                                fontFamily:"'Bebas Neue',sans-serif",
-                                                fontSize:18,color:'var(--text)'
-                                            }}>
+                                            <div style={{width:40,height:40,background:'rgba(255,255,255,0.06)',borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center',fontFamily:"'Bebas Neue',sans-serif",fontSize:18,color:'var(--text)'}}>
                                                 {u.name.charAt(0).toUpperCase()}
                                             </div>
                                             <div>
@@ -1319,9 +970,7 @@
                 </div>
             );
 
-            // ========================
             // CLIENT VIEW
-            // ========================
             if (currentUser.role === 'client') {
                 const myWorkouts = workouts.filter(w => w.clientId === currentUser.id);
                 const completedCount = myWorkouts.filter(w => w.completed).length;
@@ -1331,49 +980,20 @@
                         <div className="orb orb-1"></div>
                         <div className="orb orb-2"></div>
 
-                        {/* ZOOM MEDIA MODAL */}
+                        {/* ZOOM MODAL */}
                         {zoomImage && (
-                            <div
-                                style={{
-                                    position:'fixed', inset:0, zIndex:9000,
-                                    background:'rgba(0,0,0,0.96)',
-                                    display:'flex', alignItems:'center', justifyContent:'center',
-                                    padding:16, WebkitBackfaceVisibility:'hidden'
-                                }}
-                                onClick={() => setZoomImage(null)}
-                            >
-                                <button onClick={() => setZoomImage(null)} style={{
-                                    position:'absolute', top:16, right:16,
-                                    width:40, height:40, borderRadius:12,
-                                    background:'rgba(255,255,255,0.1)',
-                                    border:'none', color:'white', fontSize:18,
-                                    display:'flex', alignItems:'center', justifyContent:'center',
-                                    cursor:'pointer', zIndex:1
-                                }}>
+                            <div style={{position:'fixed',inset:0,zIndex:9000,background:'rgba(0,0,0,0.96)',display:'flex',alignItems:'center',justifyContent:'center',padding:16}} onClick={() => setZoomImage(null)}>
+                                <button onClick={() => setZoomImage(null)} style={{position:'absolute',top:16,right:16,width:40,height:40,borderRadius:12,background:'rgba(255,255,255,0.1)',border:'none',color:'white',fontSize:18,display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',zIndex:1}}>
                                     <i className="fa-solid fa-xmark"></i>
                                 </button>
                                 {/\.mp4|video/.test(zoomImage) ? (
-                                    <video
-                                        src={zoomImage}
-                                        controls
-                                        autoPlay
-                                        onClick={e => e.stopPropagation()}
-                                        style={{
-                                            maxWidth:'100%', maxHeight:'85vh',
-                                            borderRadius:16, outline:'none',
-                                            display:'block'
-                                        }}
-                                    />
+                                    <video src={zoomImage} controls autoPlay onClick={e => e.stopPropagation()} style={{maxWidth:'100%',maxHeight:'85vh',borderRadius:16,outline:'none',display:'block'}} />
                                 ) : (
-                                    <img
-                                        src={zoomImage}
-                                        style={{maxWidth:'100%', maxHeight:'85vh', borderRadius:16, display:'block'}}
-                                    />
+                                    <img src={zoomImage} style={{maxWidth:'100%',maxHeight:'85vh',borderRadius:16,display:'block'}} />
                                 )}
                             </div>
                         )}
 
-                        {/* NAV */}
                         <nav className="nav-bar px-5 py-4 flex justify-between items-center relative z-10">
                             <div className="flex items-center gap-3">
                                 <div style={{width:36,height:36,background:'var(--accent)',borderRadius:10,display:'flex',alignItems:'center',justifyContent:'center'}}>
@@ -1384,12 +1004,9 @@
                                     <p style={{color:'var(--muted)',fontSize:10}}>{completedCount} completadas</p>
                                 </div>
                             </div>
-                            <button onClick={handleLogout} className="btn-ghost px-4 py-2 text-xs font-bold">
-                                SALIR
-                            </button>
+                            <button onClick={handleLogout} className="btn-ghost px-4 py-2 text-xs font-bold">SALIR</button>
                         </nav>
 
-                        {/* HERO HEADER */}
                         <div className="px-5 pt-6 pb-2 relative z-10">
                             <p style={{color:'var(--muted)',fontSize:12,textTransform:'uppercase',letterSpacing:'0.15em',marginBottom:4}}>Bienvenido de vuelta</p>
                             <h1 className="font-display text-white" style={{fontSize:48,lineHeight:1}}>¡VAMOS</h1>
@@ -1397,58 +1014,33 @@
                         </div>
 
                         <div className="px-5 pb-5 relative z-10">
-                            {/* TOOLS BUTTON */}
-                            <button
-                                onClick={() => setShowTools(true)}
-                                className="btn-ghost w-full py-4 font-bold flex items-center justify-center gap-3 mb-6 mt-4"
-                                style={{borderRadius:16, fontSize:13, letterSpacing:'0.05em'}}
-                            >
+                            <button onClick={() => setShowTools(true)} className="btn-ghost w-full py-4 font-bold flex items-center justify-center gap-3 mb-6 mt-4" style={{borderRadius:16,fontSize:13,letterSpacing:'0.05em'}}>
                                 <Icon name="stopwatch" style={{color:'var(--accent)',fontSize:18}} />
                                 <span>ABRIR HERRAMIENTAS</span>
                                 <Icon name="chevron-right" style={{color:'var(--muted)',fontSize:12,marginLeft:'auto'}} />
                             </button>
 
-                            {/* WORKOUT CARDS */}
                             <div className="space-y-5">
                                 {myWorkouts.map((w, i) => (
                                     <div key={w.id} className={`workout-card anim-cardEnter delay-${Math.min(i+1,5)}`}>
-
-                                        {/* Media */}
                                         {w.image && (() => {
                                             const isVideo = w.image.startsWith('data:video') || /\.mp4(\?|$)|%2F.*\.mp4|\/video\//i.test(w.image);
                                             return (
                                                 <div style={{position:'relative',background:'#000',width:'100%',aspectRatio:'16/9',overflow:'hidden'}}>
                                                     {isVideo ? (
-                                                        <video
-                                                            src={w.image}
-                                                            controls
-                                                            playsInline
-                                                            style={{width:'100%',height:'100%',objectFit:'contain',display:'block'}}
-                                                            onClick={e => { e.stopPropagation(); setZoomImage(w.image); }}
-                                                        />
+                                                        <video src={w.image} controls playsInline style={{width:'100%',height:'100%',objectFit:'contain',display:'block'}} onClick={e => { e.stopPropagation(); setZoomImage(w.image); }} />
                                                     ) : (
-                                                        <img
-                                                            src={w.image}
-                                                            style={{width:'100%',height:'100%',objectFit:'cover',cursor:'zoom-in',display:'block'}}
-                                                            onClick={() => setZoomImage(w.image)}
-                                                        />
+                                                        <img src={w.image} style={{width:'100%',height:'100%',objectFit:'cover',cursor:'zoom-in',display:'block'}} onClick={() => setZoomImage(w.image)} />
                                                     )}
                                                 </div>
                                             );
                                         })()}
 
                                         <div className="p-5">
-                                            {/* Title row */}
                                             <div className="flex items-start justify-between gap-3 mb-1">
                                                 <h3 className="font-display text-white" style={{fontSize:26,lineHeight:1.1}}>{w.title.toUpperCase()}</h3>
                                                 {w.completed && (
-                                                    <div style={{
-                                                        flexShrink:0,
-                                                        background:'rgba(74,222,128,0.1)',
-                                                        border:'1px solid rgba(74,222,128,0.25)',
-                                                        borderRadius:8,padding:'4px 8px',
-                                                        display:'flex',alignItems:'center',gap:4
-                                                    }}>
+                                                    <div style={{flexShrink:0,background:'rgba(74,222,128,0.1)',border:'1px solid rgba(74,222,128,0.25)',borderRadius:8,padding:'4px 8px',display:'flex',alignItems:'center',gap:4}}>
                                                         <Icon name="check" style={{color:'#4ade80',fontSize:10}} />
                                                         <span style={{color:'#4ade80',fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.05em'}}>Hecho</span>
                                                     </div>
@@ -1456,27 +1048,11 @@
                                             </div>
                                             <p style={{color:'var(--muted)',fontSize:11,marginBottom:14}}>{w.date}</p>
 
-                                            {/* Description */}
                                             {w.description && (
-                                                <p style={{
-                                                    color:'rgba(255,255,255,0.65)',
-                                                    fontSize:13,
-                                                    whiteSpace:'pre-line',
-                                                    lineHeight:1.7,
-                                                    borderTop:'1px solid var(--border)',
-                                                    paddingTop:14,
-                                                    marginBottom:16
-                                                }}>{w.description}</p>
+                                                <p style={{color:'rgba(255,255,255,0.65)',fontSize:13,whiteSpace:'pre-line',lineHeight:1.7,borderTop:'1px solid var(--border)',paddingTop:14,marginBottom:16}}>{w.description}</p>
                                             )}
 
-                                            {/* NOTES */}
-                                            <div style={{
-                                                background:'rgba(255,255,255,0.03)',
-                                                border:'1px solid var(--border)',
-                                                borderRadius:14,
-                                                padding:14,
-                                                marginBottom:14
-                                            }}>
+                                            <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid var(--border)',borderRadius:14,padding:14,marginBottom:14}}>
                                                 <p style={{color:'var(--muted)',fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',marginBottom:8}}>
                                                     <Icon name="pen-to-square" className="mr-1" /> Mis notas
                                                 </p>
@@ -1484,16 +1060,7 @@
                                                     id={`note-input-${w.id}`}
                                                     defaultValue={w.clientNote || ""}
                                                     placeholder="Anota tus pesos, sensaciones..."
-                                                    style={{
-                                                        width:'100%',
-                                                        background:'rgba(255,255,255,0.05)',
-                                                        border:'1px solid rgba(255,255,255,0.08)',
-                                                        borderRadius:10,padding:'10px 12px',
-                                                        fontSize:13,color:'var(--text)',
-                                                        outline:'none',resize:'none',
-                                                        fontFamily:"'DM Sans',sans-serif",
-                                                        lineHeight:1.5
-                                                    }}
+                                                    style={{width:'100%',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:10,padding:'10px 12px',fontSize:13,color:'var(--text)',outline:'none',resize:'none',fontFamily:"'DM Sans',sans-serif",lineHeight:1.5}}
                                                     rows="2"
                                                 />
                                                 <button
@@ -1517,22 +1084,10 @@
                                                             }, 2000);
                                                         }
                                                     }}
-                                                    style={{
-                                                        width:'100%',marginTop:8,
-                                                        background:'rgba(255,255,255,0.06)',
-                                                        border:'1px solid rgba(255,255,255,0.1)',
-                                                        color:'var(--text)',
-                                                        borderRadius:10,padding:'10px',
-                                                        fontSize:11,fontWeight:700,
-                                                        letterSpacing:'0.08em',textTransform:'uppercase',
-                                                        cursor:'pointer',transition:'all 0.2s'
-                                                    }}
-                                                >
-                                                    GUARDAR NOTA
-                                                </button>
+                                                    style={{width:'100%',marginTop:8,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',color:'var(--text)',borderRadius:10,padding:'10px',fontSize:11,fontWeight:700,letterSpacing:'0.08em',textTransform:'uppercase',cursor:'pointer',transition:'all 0.2s'}}
+                                                >GUARDAR NOTA</button>
                                             </div>
 
-                                            {/* COMPLETE BUTTON */}
                                             <div>
                                                 {w.completed ? (
                                                     <div className="anim-successPop completed-badge p-4 flex items-center justify-center gap-3 font-bold" style={{fontSize:14}}>
@@ -1568,54 +1123,27 @@
                             </div>
                         </div>
 
-                        {/* ---- TOOLS MODAL ---- */}
+                        {/* TOOLS MODAL */}
                         {showTools && (
                             <div className="fixed inset-0 z-[100] modal-overlay flex items-end sm:items-center justify-center anim-fadeIn">
-                                <div className="w-full max-w-md bg-surface anim-slideIn" style={{
-                                    background:'var(--surface)',
-                                    borderTopLeftRadius:28,borderTopRightRadius:28,
-                                    borderBottom:'none',
-                                    border:'1px solid var(--border)'
-                                }}>
-                                    {/* Handle bar */}
+                                <div className="w-full max-w-md anim-slideIn" style={{background:'var(--surface)',borderTopLeftRadius:28,borderTopRightRadius:28,border:'1px solid var(--border)'}}>
                                     <div style={{display:'flex',justifyContent:'center',paddingTop:12,paddingBottom:4}}>
                                         <div style={{width:40,height:4,background:'rgba(255,255,255,0.15)',borderRadius:4}}></div>
                                     </div>
                                     <div className="p-6">
                                         <div className="flex justify-between items-center mb-5">
                                             <h2 className="font-display text-3xl text-white">HERRAMIENTAS</h2>
-                                            <button onClick={() => { setIsActive(false); setShowTools(false); }} style={{
-                                                width:36,height:36,
-                                                background:'rgba(255,255,255,0.08)',
-                                                borderRadius:10,display:'flex',alignItems:'center',justifyContent:'center',
-                                                color:'var(--muted)'
-                                            }}>
+                                            <button onClick={() => { setIsActive(false); setShowTools(false); }} style={{width:36,height:36,background:'rgba(255,255,255,0.08)',borderRadius:10,display:'flex',alignItems:'center',justifyContent:'center',color:'var(--muted)'}}>
                                                 <Icon name="xmark" />
                                             </button>
                                         </div>
 
-                                        {/* Segment */}
                                         <div className="segment mb-6">
-                                            <button
-                                                className={`segment-btn ${toolMode==='chrono'?'active':''}`}
-                                                onClick={() => { setToolMode('chrono'); setSeconds(0); setIsActive(false); }}
-                                            >CRONÓMETRO</button>
-                                            <button
-                                                className={`segment-btn ${toolMode==='timer'?'active':''}`}
-                                                onClick={() => { setToolMode('timer'); setSeconds(60); setIsActive(false); }}
-                                            >TEMPORIZADOR</button>
+                                            <button className={`segment-btn ${toolMode==='chrono'?'active':''}`} onClick={() => { setToolMode('chrono'); setSeconds(0); setIsActive(false); }}>CRONÓMETRO</button>
+                                            <button className={`segment-btn ${toolMode==='timer'?'active':''}`} onClick={() => { setToolMode('timer'); setSeconds(60); setIsActive(false); }}>TEMPORIZADOR</button>
                                         </div>
 
-                                        {/* Timer display */}
-                                        <div style={{
-                                            background:'rgba(255,255,255,0.03)',
-                                            border:'1px solid var(--border)',
-                                            borderRadius:20,
-                                            padding:'32px 24px',
-                                            textAlign:'center',
-                                            marginBottom:20,
-                                            transition:'border-color 0.3s'
-                                        }}>
+                                        <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid var(--border)',borderRadius:20,padding:'32px 24px',textAlign:'center',marginBottom:20}}>
                                             <p style={{color:'var(--muted)',fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.15em',marginBottom:8}}>
                                                 {toolMode==='chrono' ? 'Tiempo transcurrido' : 'Tiempo de descanso'}
                                             </p>
@@ -1624,58 +1152,24 @@
                                             </div>
                                         </div>
 
-                                        {/* Quick time buttons (timer mode) */}
                                         {toolMode === 'timer' && !isActive && (
                                             <div style={{display:'flex',gap:8,marginBottom:16,justifyContent:'center'}}>
                                                 {[30, 60, 90, 120].map(t => (
-                                                    <button
-                                                        key={t}
-                                                        onClick={() => setSeconds(t)}
-                                                        style={{
-                                                            background: seconds===t ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.05)',
-                                                            border: seconds===t ? '1px solid rgba(34,197,94,0.3)' : '1px solid rgba(255,255,255,0.08)',
-                                                            color: seconds===t ? 'var(--accent)' : 'var(--muted)',
-                                                            borderRadius:10,padding:'8px 14px',
-                                                            fontSize:12,fontWeight:700,
-                                                            cursor:'pointer',transition:'all 0.2s'
-                                                        }}
-                                                    >{t}s</button>
+                                                    <button key={t} onClick={() => setSeconds(t)} style={{background:seconds===t?'rgba(34,197,94,0.15)':'rgba(255,255,255,0.05)',border:seconds===t?'1px solid rgba(34,197,94,0.3)':'1px solid rgba(255,255,255,0.08)',color:seconds===t?'var(--accent)':'var(--muted)',borderRadius:10,padding:'8px 14px',fontSize:12,fontWeight:700,cursor:'pointer',transition:'all 0.2s'}}>{t}s</button>
                                                 ))}
                                             </div>
                                         )}
 
                                         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
-                                            <button
-                                                onClick={() => { setSeconds(toolMode==='chrono' ? 0 : 60); setIsActive(false); }}
-                                                className="btn-ghost py-4 font-bold text-sm"
-                                            >
+                                            <button onClick={() => { setSeconds(toolMode==='chrono'?0:60); setIsActive(false); }} className="btn-ghost py-4 font-bold text-sm">
                                                 <Icon name="rotate-left" className="mr-2" />REINICIAR
                                             </button>
-                                            <button
-                                                onClick={() => setIsActive(!isActive)}
-                                                style={{
-                                                    background: isActive ? '#16a34a' : 'var(--accent)',
-                                                    color: 'var(--ink)',
-                                                    borderRadius:14,
-                                                    padding:'16px',
-                                                    fontFamily:"'Bebas Neue',sans-serif",
-                                                    fontSize:20,
-                                                    letterSpacing:'0.04em',
-                                                    cursor:'pointer',
-                                                    transition:'all 0.2s',
-                                                    border:'none'
-                                                }}
-                                            >
+                                            <button onClick={() => setIsActive(!isActive)} style={{background:isActive?'#16a34a':'var(--accent)',color:'var(--ink)',borderRadius:14,padding:'16px',fontFamily:"'Bebas Neue',sans-serif",fontSize:20,letterSpacing:'0.04em',cursor:'pointer',transition:'all 0.2s',border:'none'}}>
                                                 {isActive ? 'PAUSAR' : 'EMPEZAR'}
                                             </button>
                                         </div>
 
-                                        <button onClick={() => { setIsActive(false); setShowTools(false); }} style={{
-                                            width:'100%',marginTop:16,
-                                            color:'var(--muted)',fontSize:11,
-                                            fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',
-                                            background:'none',border:'none',cursor:'pointer'
-                                        }}>
+                                        <button onClick={() => { setIsActive(false); setShowTools(false); }} style={{width:'100%',marginTop:16,color:'var(--muted)',fontSize:11,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',background:'none',border:'none',cursor:'pointer'}}>
                                             Volver a la rutina
                                         </button>
                                     </div>
@@ -1683,95 +1177,42 @@
                             </div>
                         )}
 
-                        {/* ---- ACHIEVEMENT MODAL ---- */}
+                        {/* ACHIEVEMENT MODAL */}
                         {showAchievement && (
                             <div className="fixed inset-0 z-[200] flex items-center justify-center modal-overlay p-4 anim-fadeIn">
                                 <div className="relative w-full max-w-sm flex flex-col items-center">
-                                    <button
-                                        onClick={() => setShowAchievement(false)}
-                                        style={{alignSelf:'flex-end',color:'rgba(255,255,255,0.5)',fontSize:24,padding:8,marginBottom:8,background:'none',border:'none',cursor:'pointer'}}
-                                    >
+                                    <button onClick={() => setShowAchievement(false)} style={{alignSelf:'flex-end',color:'rgba(255,255,255,0.5)',fontSize:24,padding:8,marginBottom:8,background:'none',border:'none',cursor:'pointer'}}>
                                         <Icon name="xmark" />
                                     </button>
 
-                                    <div id="achievement-card" style={{
-                                        aspectRatio:'9/16',
-                                        width:'100%',
-                                        overflow:'hidden',
-                                        borderRadius:40,
-                                        background:'linear-gradient(135deg, #0a0a0f 0%, #13131a 40%, #1a1a30 100%)',
-                                        padding:32,
-                                        display:'flex',flexDirection:'column',
-                                        alignItems:'center',justifyContent:'space-between',
-                                        textAlign:'center',
-                                        border:'3px solid rgba(34,197,94,0.2)',
-                                        position:'relative',
-                                        overflow:'hidden'
-                                    }}>
-                                        {/* BG accent */}
+                                    <div id="achievement-card" style={{aspectRatio:'9/16',width:'100%',overflow:'hidden',borderRadius:40,background:'linear-gradient(135deg, #0a0a0f 0%, #13131a 40%, #1a1a30 100%)',padding:32,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'space-between',textAlign:'center',border:'3px solid rgba(34,197,94,0.2)',position:'relative'}}>
                                         <div style={{position:'absolute',top:-60,right:-60,width:200,height:200,background:'rgba(34,197,94,0.08)',borderRadius:'50%',filter:'blur(40px)'}}></div>
 
                                         <div style={{marginTop:32,position:'relative',zIndex:1}}>
-                                            <div style={{
-                                                display:'inline-block',
-                                                background:'rgba(34,197,94,0.1)',
-                                                border:'1px solid rgba(34,197,94,0.25)',
-                                                borderRadius:50,padding:'4px 16px',
-                                                fontSize:10,fontWeight:700,
-                                                color:'var(--accent)',
-                                                letterSpacing:'0.15em',textTransform:'uppercase',
-                                                marginBottom:16
-                                            }}>Activa-T Gym</div>
-                                            <h2 style={{
-                                                fontFamily:"'Bebas Neue',sans-serif",
-                                                fontSize:52,color:'white',
-                                                lineHeight:0.95
-                                            }}>ENTRENO<br/>COMPLETADO</h2>
+                                            <div style={{display:'inline-block',background:'rgba(34,197,94,0.1)',border:'1px solid rgba(34,197,94,0.25)',borderRadius:50,padding:'4px 16px',fontSize:10,fontWeight:700,color:'var(--accent)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:16}}>Activa-T Gym</div>
+                                            <h2 style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:52,color:'white',lineHeight:0.95}}>ENTRENO<br/>COMPLETADO</h2>
                                         </div>
 
                                         <div style={{position:'relative',zIndex:1,padding:'24px 0'}}>
-                                            <div style={{
-                                                width:72,height:72,
-                                                background:'var(--accent)',
-                                                borderRadius:20,
-                                                display:'flex',alignItems:'center',justifyContent:'center',
-                                                margin:'0 auto 16px',
-                                                boxShadow:'0 0 40px rgba(34,197,94,0.5)'
-                                            }}>
+                                            <div style={{width:72,height:72,background:'var(--accent)',borderRadius:20,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px',boxShadow:'0 0 40px rgba(34,197,94,0.5)'}}>
                                                 <Icon name="dumbbell" style={{color:'black',fontSize:28}} />
                                             </div>
-                                            <p style={{color:'rgba(255,255,255,0.5)',fontSize:12,textTransform:'uppercase',letterSpacing:'0.15em',marginBottom:6}}>
-                                                Bravo, {currentUser?.name}
-                                            </p>
-                                            <p style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:28,color:'white',lineHeight:1.1,padding:'0 16px'}}>
-                                                {completedWorkoutTitle}
-                                            </p>
+                                            <p style={{color:'rgba(255,255,255,0.5)',fontSize:12,textTransform:'uppercase',letterSpacing:'0.15em',marginBottom:6}}>Bravo, {currentUser?.name}</p>
+                                            <p style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:28,color:'white',lineHeight:1.1,padding:'0 16px'}}>{completedWorkoutTitle}</p>
                                         </div>
 
                                         <div style={{marginBottom:32,position:'relative',zIndex:1}}>
-                                            <div style={{
-                                                background:'var(--accent)',
-                                                borderRadius:12,padding:'8px 20px',
-                                                display:'inline-block'
-                                            }}>
-                                                <span style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:16,color:'black',letterSpacing:'0.05em'}}>
-                                                    @activat_gymdance
-                                                </span>
+                                            <div style={{background:'var(--accent)',borderRadius:12,padding:'8px 20px',display:'inline-block'}}>
+                                                <span style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:16,color:'black',letterSpacing:'0.05em'}}>@activat_gymdance</span>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div style={{marginTop:16,display:'flex',flexDirection:'column',gap:10,width:'100%'}}>
-                                        <button
-                                            onClick={handleShareAchievement}
-                                            className="btn-accent w-full py-4 font-display text-xl tracking-wider flex items-center justify-center gap-3"
-                                            style={{borderRadius:16}}
-                                        >
+                                        <button onClick={handleShareAchievement} className="btn-accent w-full py-4 font-display text-xl tracking-wider flex items-center justify-center gap-3" style={{borderRadius:16}}>
                                             <Icon name="share-nodes" />COMPARTIR LOGRO
                                         </button>
-                                        <p style={{color:'rgba(255,255,255,0.25)',fontSize:10,textAlign:'center',textTransform:'uppercase',letterSpacing:'0.1em'}}>
-                                            📸 O haz una captura de pantalla
-                                        </p>
+                                        <p style={{color:'rgba(255,255,255,0.25)',fontSize:10,textAlign:'center',textTransform:'uppercase',letterSpacing:'0.1em'}}>📸 O haz una captura de pantalla</p>
                                     </div>
                                 </div>
                             </div>
