@@ -225,8 +225,8 @@
         window.dispatchEvent(new Event('firebaseReady'));
     </script>
 
-    <!-- ✅ React/Babel — NO usa import, solo window.xxx -->
-    <script type="text/babel" data-type="module" data-presets="env,react">
+    <!-- React/Babel compila JSX con runtime clasico, sin imports -->
+    <script type="text/babel" data-plugins="transform-react-jsx">
         const React = window.React;
         const ReactDOM = window.ReactDOM;
         const { useState, useEffect, useRef } = React;
