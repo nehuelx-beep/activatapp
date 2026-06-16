@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd activatapp && npm run build",
+  "outputDirectory": "activatapp/dist",
+  "framework": "vite"
+}
