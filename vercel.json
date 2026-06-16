@@ -1,4 +1,0 @@
-{
-  "buildCommand": "npm --prefix activatapp install && npm --prefix activatapp run build",
-  "outputDirectory": "activatapp/dist"
-}
