@@ -8,6 +8,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Activa-T Gym</title>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations()
+                .then(registrations => registrations.forEach(registration => registration.unregister()));
+        }
+        if ('caches' in window) {
+            caches.keys().then(keys => keys.forEach(key => caches.delete(key)));
+        }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -211,6 +220,7 @@
         window.firestore = firestore;
         window.firebaseAuth = firebaseAuth;
 
+        console.info('Activa-T index sin imports ES module cargado');
         window._firebaseReady = true;
         window.dispatchEvent(new Event('firebaseReady'));
     </script>
